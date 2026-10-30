@@ -121,7 +121,7 @@
   @media (min-width: 768px) { .kartu-ringkasan { padding: 40px; } }
   .kartu-ringkasan p { font-size: 16.5px; line-height: 1.8; color: var(--teks); }
   .kartu-ringkasan p + p { font-size: 15px; color: var(--abu-2); }
-  .statistik-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; border-top: 1px solid rgba(195, 198, 215, .4); padding-top: 18px; }
+  .statistik-mini { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 14px; border-top: 1px solid rgba(195, 198, 215, .4); padding-top: 18px; }
   .statistik-mini b { display: block; font-size: 22px; color: var(--utama-hover); font-weight: 800; }
   .statistik-mini span { font-size: 12.5px; color: var(--abu); }
   .kolom-kecil { display: flex; flex-direction: column; gap: 24px; }
@@ -145,6 +145,101 @@
   .daftar-lini h4 { font-size: 17px; font-weight: 700; }
   .daftar-lini .instansi { font-size: 14px; color: var(--utama-hover); font-weight: 600; }
   .daftar-lini p { font-size: 14px; color: var(--abu-2); white-space: pre-line; }
+
+  /* ---------- rekam jejak (sertifikat · agenda · kinerja · wawasan) ---------- */
+  .rekam { margin-top: 64px; }
+  .rekam-kepala { display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px; }
+  .rekam-kepala h3 { font-size: 22px; display: flex; align-items: center; gap: 12px; }
+  .rekam-kepala h3 .ms { color: var(--utama); font-size: 26px; }
+  .tab-rekam { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px; margin: 0 -2px; }
+  .tab-rekam::-webkit-scrollbar { display: none; }
+  .tab-rekam button { flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(195, 198, 215, .7); background: var(--putih); color: var(--abu-2); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background var(--transisi), color var(--transisi), border-color var(--transisi); }
+  .tab-rekam button .ms { font-size: 19px; }
+  .tab-rekam button .n { font-size: 12px; background: var(--permukaan-rendah); color: var(--navy); border-radius: 99px; padding: 1px 8px; }
+  .tab-rekam button[aria-selected=true] { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .tab-rekam button[aria-selected=true] .ms { color: var(--kuning); }
+  .tab-rekam button[aria-selected=true] .n { background: rgba(255, 255, 255, .16); color: #fff; }
+  .alat-rekam { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 20px; }
+  .alat-rekam .filter { flex: 1; }
+  .alat-rekam .cari { position: relative; min-width: 220px; flex: 0 1 280px; }
+  .alat-rekam .cari .ms { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--abu); font-size: 20px; }
+  .alat-rekam .cari input { width: 100%; min-height: 42px; padding: 0 14px 0 40px; border-radius: 999px; border: 1px solid rgba(195, 198, 215, .8); background: var(--putih); font: inherit; font-size: 14px; }
+  .alat-rekam .cari input:focus { outline: 2px solid var(--utama); outline-offset: 1px; border-color: transparent; }
+  .grid-sert { display: grid; gap: 16px; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 768px) { .grid-sert { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+  @media (min-width: 1024px) { .grid-sert { grid-template-columns: repeat(4, 1fr); } }
+  .kartu-sert { display: flex; flex-direction: column; text-align: left; padding: 0; border: 1px solid rgba(195, 198, 215, .5); background: var(--putih); border-radius: var(--radius); overflow: hidden; cursor: zoom-in; font: inherit; color: inherit; transition: box-shadow var(--transisi), transform var(--transisi); }
+  .kartu-sert:hover, .kartu-sert:focus-visible { box-shadow: var(--bayang-tinggi); transform: translateY(-2px); }
+  .kartu-sert .gb { aspect-ratio: 1.414 / 1; background: #F4F6FA; display: grid; place-items: center; overflow: hidden; border-bottom: 1px solid #EEF1F6; }
+  .kartu-sert .gb img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .kartu-sert .tk { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; }
+  .kartu-sert b { font-size: 14px; line-height: 1.4; color: var(--navy); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .kartu-sert small { font-size: 12.5px; color: var(--abu); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  .hari-agenda { margin-bottom: 22px; }
+  .hari-agenda > h4 { font-size: 14px; color: var(--navy); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .hari-agenda > h4 .lencana { font-size: 11px; }
+  .acara { display: grid; grid-template-columns: 92px 1fr; gap: 14px; padding: 14px 16px; border-radius: 14px; background: var(--putih); border: 1px solid rgba(195, 198, 215, .45); margin-bottom: 10px; }
+  @media (min-width: 640px) { .acara { grid-template-columns: 120px 1fr; } }
+  .acara .jam { font-size: 13.5px; font-weight: 700; color: var(--utama-hover); line-height: 1.4; }
+  .acara .jam small { display: block; font-size: 11.5px; font-weight: 500; color: var(--abu); }
+  .acara h5 { font-size: 15px; line-height: 1.45; color: var(--navy); margin: 6px 0 2px; }
+  .acara p { font-size: 13.5px; color: var(--abu-2); }
+  .acara .tempat { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--abu); }
+  .acara .tempat .ms { font-size: 16px; }
+  .acara.kini { border-color: var(--kuning-redup); box-shadow: 0 0 0 3px rgba(255, 195, 0, .18); }
+  .daftar-kinerja { display: flex; flex-direction: column; gap: 14px; }
+  .kinerja { display: grid; grid-template-columns: 58px 1fr; gap: 14px; padding: 16px; border-radius: 16px; background: var(--putih); border: 1px solid rgba(195, 198, 215, .45); }
+  @media (min-width: 640px) { .kinerja { grid-template-columns: 64px 1fr 132px; align-items: start; } }
+  .kinerja .tgl { width: 58px; height: 62px; border-radius: 14px; background: var(--navy); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; }
+  .kinerja .tgl b { font-size: 22px; color: var(--kuning); }
+  .kinerja .tgl span { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+  .kinerja h5 { font-size: 15px; color: var(--navy); margin: 0 0 4px; }
+  .kinerja p { font-size: 14px; color: var(--abu-2); line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+  .kinerja p.buka { -webkit-line-clamp: unset; display: block; }
+  .kinerja .lagi { border: 0; background: none; color: var(--utama-hover); font: inherit; font-size: 13px; font-weight: 700; padding: 4px 0 0; cursor: pointer; }
+  .kinerja .foto-k { grid-column: 2; border: 0; padding: 0; border-radius: 12px; overflow: hidden; aspect-ratio: 4 / 3; max-width: 220px; cursor: zoom-in; background: var(--permukaan-tinggi); }
+  @media (min-width: 640px) { .kinerja .foto-k { grid-column: 3; grid-row: 1; max-width: none; } }
+  .kinerja .foto-k img { width: 100%; height: 100%; object-fit: cover; }
+  .grid-artikel { display: grid; gap: 22px; grid-template-columns: 1fr; }
+  @media (min-width: 768px) { .grid-artikel { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .grid-artikel { grid-template-columns: repeat(3, 1fr); } }
+  .kartu-artikel { display: flex; flex-direction: column; text-align: left; padding: 0; border: 0; background: var(--putih); border-radius: var(--radius); overflow: hidden; box-shadow: 0 1px 3px rgba(11, 31, 58, .08); cursor: pointer; font: inherit; color: inherit; transition: box-shadow var(--transisi), transform var(--transisi); }
+  .kartu-artikel:hover, .kartu-artikel:focus-visible { box-shadow: var(--bayang-tinggi); transform: translateY(-3px); }
+  .kartu-artikel .gb { aspect-ratio: 16 / 9; background: linear-gradient(135deg, var(--navy), var(--navy-3)); display: grid; place-items: center; overflow: hidden; color: var(--kuning); }
+  .kartu-artikel .gb .ms { font-size: 48px; opacity: .9; }
+  .kartu-artikel .gb img { width: 100%; height: 100%; object-fit: cover; }
+  .kartu-artikel .tk { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .kartu-artikel .meta { font-size: 12.5px; color: var(--abu); font-weight: 600; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .kartu-artikel h4 { font-size: 17px; line-height: 1.4; color: var(--navy); }
+  .kartu-artikel p { font-size: 14px; color: var(--abu-2); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .kartu-artikel .baca { margin-top: auto; padding-top: 6px; font-size: 13.5px; font-weight: 700; color: var(--utama-hover); display: inline-flex; align-items: center; gap: 4px; }
+  .kosong-rekam { text-align: center; padding: 36px 16px; color: var(--abu); background: rgba(255, 255, 255, .6); border-radius: var(--radius); border: 1px dashed rgba(195, 198, 215, .9); }
+  .kosong-rekam .ms { font-size: 40px; color: #A3B4D4; display: block; margin-bottom: 6px; }
+  .catatan-wita { font-size: 12.5px; color: var(--abu); margin-top: 4px; }
+  /* lightbox gambar */
+  .lightbox { position: fixed; inset: 0; z-index: 960; background: rgba(7, 28, 54, .9); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 56px 16px 20px; gap: 14px; }
+  .lightbox.buka { display: flex; }
+  .lightbox img { max-width: min(1100px, 100%); max-height: calc(100vh - 150px); object-fit: contain; border-radius: 10px; background: #fff; box-shadow: 0 30px 60px rgba(0, 0, 0, .35); }
+  .lightbox figcaption { color: #fff; text-align: center; max-width: 760px; font-size: 14.5px; line-height: 1.5; }
+  .lightbox figcaption small { display: block; color: var(--redup-navy); font-size: 13px; }
+  .lightbox .tutup { position: absolute; top: 12px; right: 12px; }
+  /* pembaca artikel */
+  .pembaca { position: fixed; inset: 0; z-index: 955; background: rgba(7, 28, 54, .6); display: none; align-items: stretch; justify-content: center; }
+  .pembaca.buka { display: flex; }
+  .pembaca .lembar-baca { background: var(--putih); width: 100%; max-width: 780px; overflow-y: auto; overscroll-behavior: contain; position: relative; }
+  @media (min-width: 820px) { .pembaca { padding: 28px 16px; } .pembaca .lembar-baca { border-radius: 24px; box-shadow: var(--bayang-tinggi); } }
+  .pembaca .bar-baca { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(255, 255, 255, .96); backdrop-filter: blur(6px); border-bottom: 1px solid var(--garis); }
+  .pembaca .sampul { aspect-ratio: 16 / 7; overflow: hidden; background: var(--permukaan-tinggi); }
+  .pembaca .sampul img { width: 100%; height: 100%; object-fit: cover; }
+  .pembaca article { padding: 28px 22px 48px; }
+  @media (min-width: 640px) { .pembaca article { padding: 36px 48px 64px; } }
+  .pembaca h2 { font-size: 26px; line-height: 1.3; font-weight: 800; letter-spacing: -.01em; margin: 10px 0 12px; }
+  @media (min-width: 640px) { .pembaca h2 { font-size: 32px; } }
+  .pembaca .lead { font-size: 17px; color: var(--abu-2); line-height: 1.7; border-left: 4px solid var(--kuning); padding-left: 14px; margin-bottom: 26px; }
+  .isi-artikel p { font-size: 16.5px; line-height: 1.85; color: var(--teks); margin: 0 0 16px; }
+  .isi-artikel h3 { font-size: 19px; line-height: 1.4; margin: 28px 0 10px; color: var(--navy); }
+  .isi-artikel ul { margin: 0 0 18px; padding-left: 22px; }
+  .isi-artikel li { font-size: 16px; line-height: 1.75; margin-bottom: 6px; }
 
   /* ---------- skills ---------- */
   #skills { background: var(--putih); }
@@ -401,6 +496,17 @@
         <div class="linimasa muncul" id="blok-pengalaman" hidden><h3><span class="ms">work_history</span>Pengalaman Profesional</h3><ol class="daftar-lini" id="daftar-pengalaman"></ol></div>
         <div class="linimasa muncul" id="blok-pendidikan" hidden><h3><span class="ms">school</span>Pendidikan</h3><ol class="daftar-lini" id="daftar-pendidikan"></ol></div>
       </div>
+      <!-- Rekam jejak: tab hanya muncul bila ada isinya -->
+      <div class="rekam muncul" id="blok-rekam" hidden>
+        <div class="rekam-kepala">
+          <h3><span class="ms">verified</span>Rekam Jejak &amp; Aktivitas</h3>
+          <div class="tab-rekam" role="tablist" aria-label="Rekam jejak dan aktivitas" id="tab-rekam"></div>
+        </div>
+        <div class="panel-rekam" id="panel-sertifikat" role="tabpanel" aria-labelledby="tab-sertifikat" hidden></div>
+        <div class="panel-rekam" id="panel-agenda" role="tabpanel" aria-labelledby="tab-agenda" hidden></div>
+        <div class="panel-rekam" id="panel-kinerja" role="tabpanel" aria-labelledby="tab-kinerja" hidden></div>
+        <div class="panel-rekam" id="panel-wawasan" role="tabpanel" aria-labelledby="tab-wawasan" hidden></div>
+      </div>
     </div>
   </section>
 
@@ -506,6 +612,20 @@
 <div class="modal-video" id="modal-video" role="dialog" aria-modal="true" aria-label="Video perkenalan">
   <button class="btn btn-ikon tutup" type="button" id="tutup-video" aria-label="Tutup video"><span class="ms">close</span></button>
   <div class="bingkai" id="bingkai-video"></div>
+</div>
+<figure class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Pratinjau gambar" style="margin:0">
+  <button class="btn btn-ikon tutup" type="button" id="tutup-lightbox" aria-label="Tutup gambar"><span class="ms">close</span></button>
+  <img id="lightbox-img" alt="">
+  <figcaption id="lightbox-teks"></figcaption>
+</figure>
+<div class="pembaca" id="pembaca" role="dialog" aria-modal="true" aria-labelledby="judul-baca">
+  <div class="lembar-baca" id="lembar-baca" tabindex="-1">
+    <div class="bar-baca">
+      <button class="btn btn-teks" type="button" id="tutup-baca"><span class="ms">arrow_back</span>Kembali</button>
+      <button class="btn btn-garis btn-kecil" type="button" id="salin-baca"><span class="ms">link</span>Salin tautan</button>
+    </div>
+    <div id="isi-baca"></div>
+  </div>
 </div>
 
 <!-- ======================= PEMELIHARAAN (UI-04) ======================= -->
@@ -635,7 +755,8 @@
     var minat = tentang.filter(function (t) { return t.jenis === 'minat'; }), tujuan = tentang.filter(function (t) { return t.jenis === 'tujuan_karier'; });
     $('#ringkasan').innerHTML = (ring.length ? ring.map(function (x) { return '<p>' + e(x) + '</p>'; }).join('') : '<p>' + e(namaPendek) + '</p>') +
       '<div class="statistik-mini">' + (th > 0 ? '<div><b>' + th + '+</b><span>Tahun pengalaman</span></div>' : '') +
-      (peng.length ? '<div><b>' + peng.length + '</b><span>Posisi dijalani</span></div>' : '') + (pend.length ? '<div><b>' + pend.length + '</b><span>Jenjang pendidikan</span></div>' : '') + '</div>';
+      (peng.length ? '<div><b>' + peng.length + '</b><span>Posisi dijalani</span></div>' : '') + (pend.length ? '<div><b>' + pend.length + '</b><span>Jenjang pendidikan</span></div>' : '') +
+      ((d.sertifikat || []).length ? '<div><b>' + d.sertifikat.length + '</b><span>Sertifikat</span></div>' : '') + '</div>';
     $('#kartu-minat').hidden = !minat.length;
     $('#daftar-minat').innerHTML = minat.map(function (m) { return '<span class="chip">' + e(m.judul) + '</span>'; }).join('');
     $('#kartu-tujuan').hidden = !tujuan.length;
@@ -650,6 +771,7 @@
     // urutan mengikuti kolom 'urutan' yang diatur admin (server sudah mengurutkan)
     $('#blok-pengalaman').hidden = !peng.length; $('#daftar-pengalaman').innerHTML = lini(peng);
     $('#blok-pendidikan').hidden = !pend.length; $('#daftar-pendidikan').innerHTML = lini(pend);
+    renderRekam(d);
 
     // skills (F5) — dikelompokkan per kategori
     var kat = {}, urutKat = [];
@@ -699,6 +821,173 @@
     if (s.info_bar_jam) kk += '<span><span class="ms">schedule</span>' + e(s.info_bar_jam) + '</span>';
     $('#kaki-kontak').innerHTML = kk || '<span><span class="ms">forum</span>Formulir kontak di atas</span>';
     animasiMuncul();
+    if (!REKAM.hashDicek) { REKAM.hashDicek = true; cekHashArtikel(); }
+  }
+
+  /* ---------------- rekam jejak: sertifikat · agenda · kinerja · wawasan ---------------- */
+  var REKAM = { tab: '', sertN: 8, sertF: '*', sertQ: '', agMode: 'datang', agN: 20, kinN: 6, wawN: 6, artikel: {}, hashDicek: false };
+  var TAB_REKAM = [['sertifikat', 'Sertifikat', 'workspace_premium'], ['agenda', 'Agenda', 'event'], ['kinerja', 'Kinerja Harian', 'task_alt'], ['wawasan', 'Wawasan & Insight', 'auto_stories']];
+  var WARNA_KAT = { Kuliah: 'biru', Seminar: 'kuning', Rapat: 'hijau' };
+  function kosongRekam(ikon, teks) { return '<div class="kosong-rekam"><span class="ms">' + ikon + '</span>' + window.API.esc(teks) + '</div>'; }
+  function tombolLebih(id, sisa, n) { return sisa > 0 ? '<div class="lebih" style="margin-top:24px"><button class="btn btn-garis" type="button" id="' + id + '"><span class="ms">expand_more</span>Tampilkan ' + Math.min(n, sisa) + ' lagi</button></div>' : ''; }
+  function renderRekam(d) {
+    var A = window.API, e = A.esc, hari = A.hariIniYmd();
+    var jumlah = {
+      sertifikat: (d.sertifikat || []).length,
+      agenda: (d.agenda || []).length ? A.jabarkanAgenda(d.agenda, hari, A.geserTgl(hari, 30)).length : -1,
+      kinerja: (d.kinerja || []).length, wawasan: (d.wawasan || []).length
+    };
+    var ada = TAB_REKAM.filter(function (t) { return t[0] === 'agenda' ? jumlah.agenda > -1 : jumlah[t[0]] > 0; });
+    $('#blok-rekam').hidden = !ada.length;
+    if (!ada.length) return;
+    if (!ada.some(function (t) { return t[0] === REKAM.tab; })) REKAM.tab = ada[0][0];
+    $('#tab-rekam').innerHTML = ada.map(function (t) {
+      var on = t[0] === REKAM.tab, n = jumlah[t[0]];
+      return '<button type="button" role="tab" id="tab-' + t[0] + '" aria-controls="panel-' + t[0] + '" aria-selected="' + on + '" tabindex="' + (on ? 0 : -1) + '" data-tab="' + t[0] + '"><span class="ms">' + t[2] + '</span>' + e(t[1]) + (n > 0 ? '<span class="n">' + n + '</span>' : '') + '</button>';
+    }).join('');
+    TAB_REKAM.forEach(function (t) { $('#panel-' + t[0]).hidden = t[0] !== REKAM.tab; });
+    renderSertifikat(d.sertifikat || []); renderAgenda(d.agenda || []); renderKinerja(d.kinerja || []); renderWawasan(d.wawasan || []);
+  }
+  function pilihTab(id, fokus) {
+    REKAM.tab = id;
+    $$('#tab-rekam [data-tab]').forEach(function (b) {
+      var on = b.getAttribute('data-tab') === id; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1;
+      if (on && fokus) b.focus();
+      if (on && b.scrollIntoView) try { b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (x) {}
+    });
+    TAB_REKAM.forEach(function (t) { $('#panel-' + t[0]).hidden = t[0] !== id; });
+  }
+
+  function renderSertifikat(list) {
+    var A = window.API, e = A.esc, jenis = {}, p = $('#panel-sertifikat');
+    list.forEach(function (s) { var j = s.jenis || 'Sertifikat'; jenis[j] = (jenis[j] || 0) + 1; });
+    var kj = Object.keys(jenis);
+    p.innerHTML = '<div class="alat-rekam">' + (kj.length > 1 ? '<div class="filter" role="group" aria-label="Filter jenis sertifikat"><button type="button" data-jenis="*" aria-pressed="' + (REKAM.sertF === '*') + '">Semua (' + list.length + ')</button>' +
+      kj.map(function (j) { return '<button type="button" data-jenis="' + e(j) + '" aria-pressed="' + (REKAM.sertF === j) + '">' + e(j) + ' (' + jenis[j] + ')</button>'; }).join('') + '</div>' : '<div class="filter"></div>') +
+      (list.length > 12 ? '<label class="cari"><span class="ms">search</span><input type="search" id="cari-sert" placeholder="Cari sertifikat…" aria-label="Cari sertifikat" value="' + e(REKAM.sertQ) + '"></label>' : '') + '</div>' +
+      '<div class="grid-sert" id="grid-sert"></div><div id="lebih-sert"></div>';
+    isiSertifikat(list);
+  }
+  function isiSertifikat(list) {
+    var A = window.API, e = A.esc, q = REKAM.sertQ.toLowerCase(), f = REKAM.sertF;
+    var cocok = list.filter(function (s) { return (f === '*' || (s.jenis || 'Sertifikat') === f) && (!q || (s.nama + ' ' + s.penerbit + ' ' + s.tahun + ' ' + s.jenis).toLowerCase().indexOf(q) > -1); });
+    $('#grid-sert').innerHTML = cocok.length ? cocok.slice(0, REKAM.sertN).map(function (s) {
+      var ket = [s.penerbit, s.tahun].filter(Boolean).join(' · ');
+      return '<button type="button" class="kartu-sert" data-gambar="' + e(A.urlAman(s.url_gambar)) + '" data-judul="' + e(s.nama) + '" data-ket="' + e(ket) + '" aria-label="Lihat sertifikat ' + e(s.nama) + '">' +
+        '<span class="gb"><img src="' + e(A.urlAman(s.url_gambar)) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"></span><span class="tk"><b>' + e(s.nama) + '</b><small>' + e(ket || s.jenis) + '</small></span></button>';
+    }).join('') : '';
+    if (!cocok.length) $('#grid-sert').innerHTML = '<div style="grid-column:1/-1">' + kosongRekam('search_off', 'Tidak ada sertifikat yang cocok.') + '</div>';
+    $('#lebih-sert').innerHTML = tombolLebih('b-lebih-sert', cocok.length - REKAM.sertN, 8);
+  }
+
+  function renderAgenda(list) {
+    var A = window.API, e = A.esc, hari = A.hariIniYmd(), p = $('#panel-agenda');
+    var datang = A.jabarkanAgenda(list, hari, A.geserTgl(hari, 30)), lalu = A.jabarkanAgenda(list, A.geserTgl(hari, -30), A.geserTgl(hari, -1)).reverse();
+    var mode = REKAM.agMode === 'lalu' && lalu.length ? 'lalu' : 'datang', rows = mode === 'lalu' ? lalu : datang;
+    var sekarang = new Date(), jamKini = ('0' + sekarang.getHours()).slice(-2) + ':' + ('0' + sekarang.getMinutes()).slice(-2);
+    var grup = [], idx = {};
+    rows.slice(0, REKAM.agN).forEach(function (k) { if (!(k.tgl in idx)) { idx[k.tgl] = grup.length; grup.push({ tgl: k.tgl, isi: [] }); } grup[idx[k.tgl]].isi.push(k); });
+    p.innerHTML = '<div class="alat-rekam"><div class="filter" role="group" aria-label="Rentang agenda"><button type="button" data-ag="datang" aria-pressed="' + (mode === 'datang') + '">30 hari ke depan (' + datang.length + ')</button>' +
+      (lalu.length ? '<button type="button" data-ag="lalu" aria-pressed="' + (mode === 'lalu') + '">30 hari terakhir (' + lalu.length + ')</button>' : '') + '</div></div>' +
+      (rows.length ? grup.map(function (g) {
+        var label = g.tgl === hari ? 'Hari ini' : g.tgl === A.geserTgl(hari, 1) ? 'Besok' : g.tgl === A.geserTgl(hari, -1) ? 'Kemarin' : '';
+        return '<div class="hari-agenda"><h4>' + (label ? '<span class="lencana ' + (g.tgl === hari ? 'kuning' : 'abu') + '">' + label + '</span>' : '') + e(A.tglHari(g.tgl, true)) + '</h4>' + g.isi.map(function (k) {
+          var kini = g.tgl === hari && k.jam_mulai && k.jam_mulai <= jamKini && (!k.jam_selesai || jamKini <= k.jam_selesai);
+          return '<div class="acara' + (kini ? ' kini' : '') + '"><div class="jam">' + (k.jam_mulai ? e(k.jam_mulai) + (k.jam_selesai ? '–' + e(k.jam_selesai) : '') + '<small>WITA</small>' : 'Sepanjang hari') + '</div>' +
+            '<div><span class="lencana ' + (WARNA_KAT[k.kategori] || 'abu') + '">' + e(k.kategori) + '</span>' + (kini ? ' <span class="lencana kuning">Sedang berlangsung</span>' : '') +
+            '<h5>' + e(k.judul) + '</h5>' + (k.tempat ? '<span class="tempat"><span class="ms">location_on</span>' + e(k.tempat) + '</span>' : '') + (k.keterangan ? '<p>' + e(k.keterangan) + '</p>' : '') + '</div></div>';
+        }).join('') + '</div>';
+      }).join('') + tombolLebih('b-lebih-ag', rows.length - REKAM.agN, 20)
+      : kosongRekam('event_available', mode === 'lalu' ? 'Tidak ada agenda dalam 30 hari terakhir.' : 'Belum ada agenda dalam 30 hari ke depan.'));
+  }
+
+  function renderKinerja(list) {
+    var A = window.API, e = A.esc, p = $('#panel-kinerja'), bln = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    p.innerHTML = list.length ? '<div class="daftar-kinerja">' + list.slice(0, REKAM.kinN).map(function (k) {
+      var m = String(k.tanggal).match(/^(\d{4})-(\d{2})-(\d{2})/), ft = A.urlAman(k.url_foto), panjang = String(k.output || '').length > 260;
+      return '<article class="kinerja"><div class="tgl" aria-hidden="true"><b>' + (m ? +m[3] : '') + '</b><span>' + (m ? bln[+m[2] - 1] : '') + '</span></div><div><h5>' + e(k.kegiatan) + '</h5>' +
+        '<small style="color:var(--abu);font-size:12.5px;display:block;margin-bottom:6px">' + e(A.tglHari(k.tanggal, true)) + '</small>' + (k.output ? '<p>' + e(k.output) + '</p>' + (panjang ? '<button type="button" class="lagi" data-lagi>Selengkapnya</button>' : '') : '') + '</div>' +
+        (ft ? '<button type="button" class="foto-k" data-gambar="' + e(ft) + '" data-judul="' + e(k.kegiatan) + '" data-ket="' + e(A.tglHari(k.tanggal, true)) + '" aria-label="Lihat foto ' + e(k.kegiatan) + '"><img src="' + e(ft) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"></button>' : '') + '</article>';
+    }).join('') + '</div>' + tombolLebih('b-lebih-kin', list.length - REKAM.kinN, 6) : '';
+  }
+
+  function renderWawasan(list) {
+    var A = window.API, e = A.esc, p = $('#panel-wawasan');
+    p.innerHTML = list.length ? '<div class="grid-artikel">' + list.slice(0, REKAM.wawN).map(function (w) {
+      var g = A.urlAman(w.url_gambar);
+      return '<button type="button" class="kartu-artikel" data-artikel="' + e(w.id) + '"><span class="gb">' + (g ? '<img src="' + e(g) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">' : '<span class="ms">auto_stories</span>') + '</span>' +
+        '<span class="tk"><span class="meta"><span class="ms" style="font-size:15px">calendar_today</span>' + e(A.tgl(w.tanggal)) + ' · ' + (w.menit || 1) + ' menit baca</span><h4>' + e(w.judul) + '</h4>' + (w.ringkasan ? '<p>' + e(w.ringkasan) + '</p>' : '') +
+        '<span class="baca">Baca selengkapnya<span class="ms" style="font-size:18px">arrow_forward</span></span></span></button>';
+    }).join('') + '</div>' + tombolLebih('b-lebih-waw', list.length - REKAM.wawN, 6) : '';
+  }
+
+  /* ---------- lightbox & pembaca artikel ---------- */
+  var fokusSebelum = null;
+  function bukaGambar(url, judul, ket) {
+    if (!url) return;
+    fokusSebelum = document.activeElement;
+    $('#lightbox-img').src = url; $('#lightbox-img').alt = judul || '';
+    $('#lightbox-teks').innerHTML = window.API.esc(judul || '') + (ket ? '<small>' + window.API.esc(ket) + '</small>' : '');
+    $('#lightbox').classList.add('buka'); document.body.style.overflow = 'hidden'; $('#tutup-lightbox').focus();
+  }
+  function tutupGambar() {
+    var l = $('#lightbox'); if (!l.classList.contains('buka')) return;
+    l.classList.remove('buka'); $('#lightbox-img').removeAttribute('src'); document.body.style.overflow = '';
+    if (fokusSebelum && fokusSebelum.focus) fokusSebelum.focus();
+  }
+  /** teks artikel → HTML aman: baris kosong/baris baru = paragraf, "## " = subjudul, "- " = butir; baris pendek tanpa titik di akhir = subjudul */
+  function formatArtikel(teks) {
+    var e = window.API.esc, baris = String(teks || '').replace(/\r\n?/g, '\n').split('\n'), out = [], ul = null;
+    var tutupUl = function () { if (ul) { out.push('<ul>' + ul.join('') + '</ul>'); ul = null; } };
+    for (var i = 0; i < baris.length; i++) {
+      var b = baris[i].trim(), m;
+      if (!b) { tutupUl(); continue; }
+      if ((m = b.match(/^#{2,3}\s+(.+)/))) { tutupUl(); out.push('<h3>' + e(m[1]) + '</h3>'); continue; }
+      if ((m = b.match(/^[-•*]\s+(.+)/))) { (ul = ul || []).push('<li>' + e(m[1]) + '</li>'); continue; }
+      tutupUl();
+      var berikut = (baris[i + 1] || '').trim();
+      var subjudul = b.length <= 90 && !/[.,;:!]$/.test(b) && !!berikut && /^[A-Z0-9(“"]/.test(b) && !/^[-•*]\s/.test(berikut);
+      out.push(subjudul ? '<h3>' + e(b) + '</h3>' : '<p>' + e(b) + '</p>');
+    }
+    tutupUl();
+    return out.join('');
+  }
+  function bukaArtikel(id) {
+    var A = window.API, e = A.esc, info = ((DATA && DATA.wawasan) || []).filter(function (w) { return w.id === id; })[0] || {};
+    fokusSebelum = document.activeElement;
+    var pb = $('#pembaca'), isi = $('#isi-baca');
+    pb.classList.add('buka'); document.body.style.overflow = 'hidden';
+    try { history.replaceState(null, '', '#wawasan=' + encodeURIComponent(id)); } catch (x) {}
+    var gambar = function (a) {
+      var g = A.urlAman(a.url_gambar);
+      isi.innerHTML = (g ? '<div class="sampul"><img src="' + e(g) + '" alt="" referrerpolicy="no-referrer"></div>' : '') + '<article><span class="eyebrow">Wawasan &amp; Insight</span><h2 id="judul-baca">' + e(a.judul) + '</h2>' +
+        '<p style="font-size:13.5px;color:var(--abu);margin-bottom:22px"><span class="ms" style="font-size:16px;vertical-align:-3px">calendar_today</span> ' + e(A.tgl(a.tanggal, true)) + (info.menit ? ' · ' + info.menit + ' menit baca' : '') + '</p>' +
+        (a.ringkasan ? '<p class="lead">' + e(a.ringkasan) + '</p>' : '') + '<div class="isi-artikel">' + formatArtikel(a.konten) + '</div></article>';
+      document.title = a.judul + ' — Wawasan';
+    };
+    if (REKAM.artikel[id]) gambar(REKAM.artikel[id]);
+    else {
+      isi.innerHTML = '<article><span class="eyebrow">Wawasan &amp; Insight</span><h2 id="judul-baca">' + e(info.judul || 'Memuat artikel…') + '</h2><span class="skeleton" style="display:block;height:16px;margin:18px 0 12px"></span><span class="skeleton" style="display:block;height:16px;width:90%;margin-bottom:12px"></span><span class="skeleton" style="display:block;height:16px;width:75%"></span></article>';
+      A.get({ action: 'pub.artikel', id: id }).then(function (r) {
+        if (!pb.classList.contains('buka')) return;
+        if (!r.ok) { isi.innerHTML = '<article>' + kosongRekam('error', r.message || 'Artikel tidak dapat dimuat.') + '</article>'; return; }
+        REKAM.artikel[id] = r.data; gambar(r.data);
+      });
+    }
+    $('#lembar-baca').scrollTop = 0; $('#lembar-baca').focus();
+  }
+  function tutupArtikel() {
+    var pb = $('#pembaca'); if (!pb.classList.contains('buka')) return;
+    pb.classList.remove('buka'); document.body.style.overflow = '';
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (x) {}
+    if (DATA && DATA.pengaturan && DATA.pengaturan.judul_situs) document.title = DATA.pengaturan.judul_situs;
+    if (fokusSebelum && fokusSebelum.focus) fokusSebelum.focus();
+  }
+  function cekHashArtikel() {
+    var m = location.hash.match(/^#wawasan=([\w-]+)/);
+    if (!m) return;
+    if (DATA && (DATA.wawasan || []).length) pilihTab('wawasan');
+    bukaArtikel(decodeURIComponent(m[1]));
   }
 
   function aturNavTesti() {
@@ -751,7 +1040,7 @@
     var setLaci = function (b) { laci.classList.toggle('buka', b); laci.setAttribute('aria-hidden', String(!b)); tb.setAttribute('aria-expanded', String(b)); document.body.style.overflow = b ? 'hidden' : ''; if (b) $('nav a', laci).focus(); };
     tb.addEventListener('click', function () { setLaci(true); });
     laci.addEventListener('click', function (ev) { if (ev.target.closest('[data-tutup-laci]') || ev.target.closest('a')) setLaci(false); });
-    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { setLaci(false); tutupVideo(); } });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { setLaci(false); tutupVideo(); tutupGambar(); tutupArtikel(); } });
     // menu aktif sesuai bagian yang terlihat
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (es) {
@@ -783,6 +1072,38 @@
       else catatEvent({ j: 'klik_cta', t: a.getAttribute('data-cta') });
       if (a.id === 'buka-video') bukaVideo();
     });
+    // rekam jejak: tab, filter, cari, lebih banyak, gambar, artikel
+    var rk = $('#blok-rekam');
+    rk.addEventListener('click', function (ev) {
+      var t = ev.target, b;
+      if ((b = t.closest('[data-tab]'))) return pilihTab(b.getAttribute('data-tab'));
+      if ((b = t.closest('[data-gambar]'))) return bukaGambar(b.getAttribute('data-gambar'), b.getAttribute('data-judul'), b.getAttribute('data-ket'));
+      if ((b = t.closest('[data-artikel]'))) return bukaArtikel(b.getAttribute('data-artikel'));
+      if ((b = t.closest('[data-lagi]'))) { var p = b.previousElementSibling; p.classList.toggle('buka'); b.textContent = p.classList.contains('buka') ? 'Ringkas' : 'Selengkapnya'; return; }
+      if ((b = t.closest('[data-jenis]'))) { REKAM.sertF = b.getAttribute('data-jenis'); REKAM.sertN = 8; $$('#panel-sertifikat [data-jenis]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); return isiSertifikat(DATA.sertifikat || []); }
+      if ((b = t.closest('[data-ag]'))) { REKAM.agMode = b.getAttribute('data-ag'); REKAM.agN = 20; return renderAgenda(DATA.agenda || []); }
+      if (t.closest('#b-lebih-sert')) { REKAM.sertN += 8; return isiSertifikat(DATA.sertifikat || []); }
+      if (t.closest('#b-lebih-ag')) { REKAM.agN += 20; return renderAgenda(DATA.agenda || []); }
+      if (t.closest('#b-lebih-kin')) { REKAM.kinN += 6; return renderKinerja(DATA.kinerja || []); }
+      if (t.closest('#b-lebih-waw')) { REKAM.wawN += 6; return renderWawasan(DATA.wawasan || []); }
+    });
+    rk.addEventListener('input', function (ev) { if (ev.target.id === 'cari-sert') { REKAM.sertQ = ev.target.value; REKAM.sertN = 8; isiSertifikat(DATA.sertifikat || []); } });
+    $('#tab-rekam').addEventListener('keydown', function (ev) {
+      if (ev.key !== 'ArrowRight' && ev.key !== 'ArrowLeft') return;
+      var t = $$('#tab-rekam [data-tab]'), i = t.indexOf(document.activeElement); if (i < 0) return;
+      ev.preventDefault(); pilihTab(t[(i + (ev.key === 'ArrowRight' ? 1 : t.length - 1)) % t.length].getAttribute('data-tab'), true);
+    });
+    $('#tutup-lightbox').addEventListener('click', tutupGambar);
+    $('#lightbox').addEventListener('click', function (ev) { if (ev.target.id === 'lightbox') tutupGambar(); });
+    $('#tutup-baca').addEventListener('click', tutupArtikel);
+    $('#pembaca').addEventListener('click', function (ev) { if (ev.target.id === 'pembaca') tutupArtikel(); });
+    $('#salin-baca').addEventListener('click', function () {
+      var b = this, u = location.href;
+      var ok = function () { b.innerHTML = '<span class="ms">check</span>Tautan disalin'; setTimeout(function () { b.innerHTML = '<span class="ms">link</span>Salin tautan'; }, 2200); };
+      if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) { navigator.share({ title: document.title, url: u }).catch(function () {}); return; }
+      if (navigator.clipboard) navigator.clipboard.writeText(u).then(ok, function () { prompt('Salin tautan ini:', u); }); else prompt('Salin tautan ini:', u);
+    });
+    window.addEventListener('hashchange', function () { if (DATA && /^#wawasan=/.test(location.hash)) cekHashArtikel(); });
     $('#tutup-video').addEventListener('click', tutupVideo);
     $('#modal-video').addEventListener('click', function (ev) { if (ev.target.id === 'modal-video') tutupVideo(); });
     $('#coba-lagi').addEventListener('click', function () { location.reload(); });

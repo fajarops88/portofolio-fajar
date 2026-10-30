@@ -262,7 +262,8 @@
    * MIGRASI DATA DARI SITUS LAMA (gas-migrasi-database)
    * ===================================================================== */
   var BAGIAN = [['profil', 'Profil (nama, tagline, ringkasan, foto, CV)'], ['tentang', 'Pengalaman & Pendidikan → Tentang'], ['portofolio', 'Karya → Portofolio'], ['testimoni', 'Survei berkomentar → Testimoni (disembunyikan)'],
-    ['kontak', 'Tautan sosial, email, WhatsApp → Kontak'], ['pengaturan', 'Nama situs, email notifikasi, WA → Pengaturan'], ['pesan', 'Pesan masuk'], ['statistik', 'Pengunjung harian → Statistik'], ['crm', 'CRM Kontak & Interaksi']];
+    ['kontak', 'Tautan sosial, email, WhatsApp → Kontak'], ['pengaturan', 'Nama situs, email notifikasi, WA → Pengaturan'], ['pesan', 'Pesan masuk'], ['statistik', 'Pengunjung harian → Statistik'], ['crm', 'CRM Kontak & Interaksi'],
+    ['sertifikat', 'Sertifikat (PDF tetap privat; gambar dibuat sesudahnya di menu Sertifikat)'], ['agenda', 'Agenda kegiatan (termasuk pengulangan mingguan)'], ['kinerja', 'Kinerja harian (dengan foto)'], ['wawasan', 'Wawasan & Insight (artikel + jadwal terbit)']];
   A.MODUL.migrasi = { judul: 'Migrasi Data', ikon: 'move_up', render: function (el) {
     el.innerHTML = '<div class="kepala-hal"><div><h1>Migrasi dari Situs Lama (Fajarfk)</h1><p>Impor data dari spreadsheet situs lama. Aman diulang: data yang sama tidak digandakan. Spreadsheet lama <b>hanya dibaca</b>, tidak pernah diubah.</p></div></div>' +
       '<div class="grid-2 lebar-kiri"><section class="panel"><form id="f-mig" novalidate><div class="grid-form">' +
@@ -271,7 +272,7 @@
       A.bidang({ k: 'timpa', label: 'Timpa data yang sudah ada', tipe: 'saklar', penuh: true, bantu: 'Mati (disarankan): perubahan yang sudah Anda buat di app baru tidak ditimpa data lama.' }) +
       '</div><div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap"><button class="btn btn-garis" type="button" id="b-pindai"><span class="ms">search</span>Pindai (Dry-run)</button><button class="btn btn-utama" type="button" id="b-jalan"><span class="ms">play_arrow</span>Jalankan Impor</button></div></form></section>' +
       '<aside class="panel"><div class="panel-kepala"><div><h2><span class="ms">checklist</span>Langkah Pindah (Cutover)</h2></div></div><ol style="padding-left:18px;font-size:14px;color:var(--abu-2);display:flex;flex-direction:column;gap:8px">' +
-      '<li><b>Pindai</b> dulu untuk melihat jumlah data tanpa menulis apa pun.</li><li><b>Jalankan Impor</b>, lalu periksa Profil, Portofolio, dan Kontak.</li><li>Setujui testimoni hasil impor (default disembunyikan).</li><li>Tepat sebelum mengumumkan alamat baru, <b>jalankan impor sekali lagi</b> untuk menangkap pesan/data terbaru.</li><li>Jangan hapus situs lama: data di luar cakupan (sertifikat, artikel, agenda, produk) tetap ada di sana.</li></ol></aside></div>' +
+      '<li><b>Pindai</b> dulu untuk melihat jumlah data tanpa menulis apa pun.</li><li><b>Jalankan Impor</b>, lalu periksa Profil, Portofolio, dan Kontak.</li><li>Setujui testimoni hasil impor (default disembunyikan).</li><li>Tepat sebelum mengumumkan alamat baru, <b>jalankan impor sekali lagi</b> untuk menangkap pesan/data terbaru.</li><li>Bila Sertifikat ikut diimpor: buka menu <b>Sertifikat → Buat gambar dari PDF</b> agar tampil di situs.</li><li>Jangan hapus situs lama: data di luar cakupan (produk &amp; pesanan) tetap ada di sana.</li></ol></aside></div>' +
       '<section class="panel" id="hasil-mig" style="margin-top:20px" hidden></section>';
     var f = $('#f-mig');
     var jalan = function (dry, b) {

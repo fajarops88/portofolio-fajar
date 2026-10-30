@@ -105,6 +105,7 @@ button.kpi { cursor: pointer; } button.kpi:hover { box-shadow: var(--bayang-ting
 .alat .cari .ms { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--abu); }
 .alat .cari input { padding-left: 40px; }
 .alat select.input, .alat input.input { width: auto; min-height: 42px; padding: 8px 12px; font-size: 14px; }
+.alat .cari input.input { width: 100%; padding-left: 40px; }   /* lebih spesifik: ikon kaca pembesar tidak menimpa teks */
 .tab { display: flex; gap: 4px; background: var(--permukaan-tinggi); padding: 4px; border-radius: 14px; overflow-x: auto; scrollbar-width: none; margin-bottom: 20px; width: fit-content; max-width: 100%; }
 .tab button { border: 0; background: none; padding: 9px 16px; border-radius: 10px; font-weight: 600; font-size: 13.5px; color: var(--abu-2); cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
 .tab button[aria-selected=true] { background: var(--putih); color: var(--navy); box-shadow: 0 1px 4px rgba(11, 31, 58, .12); }
@@ -134,6 +135,12 @@ table.tabel { width: 100%; border-collapse: collapse; font-size: 14px; backgroun
 .item .badan b { display: block; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .item .badan small { display: block; color: var(--abu); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .item .ujung { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+/* ponsel: tombol aksi pindah ke baris kedua agar judul item tidak terjepit habis */
+@media (max-width: 639px) {
+  .item { flex-wrap: wrap; row-gap: 10px; }
+  .item .badan { flex: 1 1 0; min-width: 120px; }
+  .item .ujung { flex: 1 0 100%; justify-content: flex-end; flex-wrap: wrap; padding-top: 10px; border-top: 1px dashed var(--garis); }
+}
 .item.tersembunyi { background: #FAFAFC; } .item.tersembunyi .badan b { color: var(--abu); }
 .btn-ikon.mini { width: 34px; min-height: 34px; border: 0; background: transparent; }
 .btn-ikon.mini:hover { background: var(--permukaan-rendah); }

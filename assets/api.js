@@ -143,8 +143,43 @@
     xlsx: 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
     jspdf: 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
     autotable: 'https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js',
-    qr: 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js'
+    qr: 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js',
+    // pdf.js 3.x (build UMD → window.pdfjsLib); dipakai dashboard untuk membuat gambar dari halaman 1 PDF sertifikat
+    pdfjs: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js',
+    pdfjsWorker: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js'
   };
+
+  /* ---------- tanggal & agenda (dipakai landing page dan dashboard) ---------- */
+  var HARI = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  function ymd(d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function hariIniYmd() { return ymd(new Date()); }
+  function geserTgl(s, n) { var d = new Date(s + 'T12:00:00'); d.setDate(d.getDate() + n); return ymd(d); }
+  function selisihHari(a, b) { return Math.round((new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00')) / 864e5); }
+  function hariDari(s) { return new Date(s + 'T12:00:00').getDay(); }
+  function indeksHari(nama) {
+    var s = String(nama || '').toLowerCase().replace(/[^a-z]/g, '');
+    for (var i = 0; i < 7; i++) if (HARI[i].toLowerCase() === s) return i;
+    return s === 'ahad' ? 0 : -1;
+  }
+  /** 'Sen, 2 Nov 2026' */
+  function tglHari(s, panjang) { return /^\d{4}-\d{2}-\d{2}/.test(s || '') ? (panjang ? HARI[hariDari(s.slice(0, 10))] : HARI[hariDari(s.slice(0, 10))].slice(0, 3)) + ', ' + tgl(s.slice(0, 10)) : String(s || ''); }
+  /** agenda + aturan mingguan → daftar kejadian { …agenda, tgl } dalam rentang [dari, sampai], urut waktu */
+  function jabarkanAgenda(rows, dari, sampai) {
+    var out = [];
+    (rows || []).forEach(function (a) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(a.tanggal || '')) return;
+      var h = a.ulang_hari ? indeksHari(a.ulang_hari) : -1, salin = function (t) { var o = {}; for (var k in a) o[k] = a[k]; o.tgl = t; return o; };
+      if (h < 0) { if (a.tanggal >= dari && a.tanggal <= sampai) out.push(salin(a.tanggal)); return; }
+      var akhir = a.ulang_sampai && a.ulang_sampai < sampai ? a.ulang_sampai : sampai, kecuali = String(a.kecuali || '').split(/[\s,;]+/);
+      var t = geserTgl(a.tanggal, (h - hariDari(a.tanggal) + 7) % 7);
+      if (t < dari) t = geserTgl(t, Math.floor(selisihHari(t, dari) / 7) * 7);
+      while (t < dari) t = geserTgl(t, 7);
+      for (var n = 0; t <= akhir && n < 400; n++, t = geserTgl(t, 7)) if (kecuali.indexOf(t) < 0) out.push(salin(t));
+    });
+    return out.sort(function (x, y) { return x.tgl < y.tgl ? -1 : x.tgl > y.tgl ? 1 : String(x.jam_mulai || '99') < String(y.jam_mulai || '99') ? -1 : 1; });
+  }
+  /** jumlah pertemuan agenda berulang (untuk keterangan di dashboard) */
+  function hitungPertemuan(a) { return a.ulang_hari ? jabarkanAgenda([a], a.tanggal, a.ulang_sampai || a.tanggal).length : 1; }
 
   /** kompres gambar di browser (sisi terpanjang maks. 1600 px) → {nama, mime, b64, ukuran} */
   function kompresGambar(file, maks, kualitas) {
@@ -179,5 +214,7 @@
 
   window.API = { post: post, get: get, beacon: beacon, swr: swr, devId: devId, perangkat: perangkat, siap: siap,
     esc: esc, urlAman: urlAman, rupiah: rupiah, tgl: tgl, relatif: relatif, muatSkrip: muatSkrip, LIB: LIB,
-    kompresGambar: kompresGambar, simpan: simpan, baca: baca, hapus: hapus, BULAN_PANJANG: BULAN_PANJANG };
+    kompresGambar: kompresGambar, simpan: simpan, baca: baca, hapus: hapus, BULAN_PANJANG: BULAN_PANJANG,
+    HARI: HARI, ymd: ymd, hariIniYmd: hariIniYmd, geserTgl: geserTgl, selisihHari: selisihHari, tglHari: tglHari,
+    jabarkanAgenda: jabarkanAgenda, hitungPertemuan: hitungPertemuan };
 })();

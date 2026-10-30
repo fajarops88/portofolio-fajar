@@ -12,7 +12,7 @@
   var MODUL = {};
   var GRUP = [
     ['Utama', ['beranda']],
-    ['Konten', ['profil', 'tentang', 'keahlian', 'portofolio', 'testimoni', 'kontak']],
+    ['Konten', ['profil', 'tentang', 'sertifikat', 'agenda', 'kinerja', 'wawasan', 'keahlian', 'portofolio', 'testimoni', 'kontak']],
     ['Aktivitas', ['pesan', 'statistik']],
     ['Bisnis', ['tagihan', 'notifikasi', 'crm']],
     ['Sistem', ['pengaturan', 'migrasi', 'sistem']]
@@ -293,7 +293,10 @@
     api('batch', { calls: [{ action: 'konten.list' }, { action: 'profil.get' }, { action: 'pengaturan.get' }, { action: 'pesan.list', data: { status: 'baru', per: 5 } }] }).then(function (r) {
       if (!r.ok) return;
       var h = r.data.hasil;
-      if (h[0].ok) S.cache.konten = h[0].data;
+      if (h[0].ok) {
+        S.cache.konten = h[0].data;
+        if (h[0].data._belumSetup) toast('Database belum diperbarui: buka editor Apps Script lalu jalankan setupAppEnvironment() sekali lagi agar menu ' + h[0].data._belumSetup.join(', ') + ' aktif.', 'info');
+      }
       if (h[1].ok) S.cache.profil = h[1].data;
       if (h[2].ok) S.cache.pengaturan = h[2].data;
       if (h[3].ok) setLencanaPesan(h[3].data.ringkasan.baru);
@@ -320,7 +323,7 @@
     $$('[data-keluar]').forEach(function (a) { a.onclick = function (ev) { ev.preventDefault(); keluar(); }; });
   }
   function bukaLembar(ids, judul, denganKeluar) {
-    var ket = { profil: 'Nama, headline, foto, tombol hero', tentang: 'Ringkasan, pengalaman, pendidikan', keahlian: 'Skill, kategori, level', portofolio: 'Proyek, gambar, urutan', testimoni: 'Ulasan & rating', kontak: 'Tautan kontak & sosial',
+    var ket = { profil: 'Nama, headline, foto, tombol hero', tentang: 'Ringkasan, pengalaman, pendidikan', sertifikat: 'PDF privat, gambar publik', agenda: 'Kuliah, seminar, rapat', kinerja: 'Catatan kegiatan harian', wawasan: 'Artikel & insight', keahlian: 'Skill, kategori, level', portofolio: 'Proyek, gambar, urutan', testimoni: 'Ulasan & rating', kontak: 'Tautan kontak & sosial',
       tagihan: 'Klien, tagihan, verifikasi', notifikasi: 'WhatsApp, email, blast', crm: 'Kontak terpadu', pengaturan: 'Situs, tampilan, keamanan', migrasi: 'Impor dari Fajarfk', sistem: 'Kesehatan sistem' };
     $('#lembar-isi').innerHTML = '<h3 style="font-size:17px;padding:0 4px">' + e(judul) + '</h3><p style="color:var(--abu);font-size:13px;padding:0 4px 8px">Pilih modul yang ingin dikelola</p>' +
       ids.filter(function (id) { return MODUL[id]; }).map(function (id) { return '<a href="#/' + id + '"><span class="ikon"><span class="ms">' + MODUL[id].ikon + '</span></span><span style="flex:1"><b>' + e(MODUL[id].judul) + '</b><small>' + e(ket[id] || '') + '</small></span><span class="ms" style="color:var(--abu)">chevron_right</span></a>'; }).join('') +
@@ -756,6 +759,7 @@
 
   /* ---------- ekspor untuk berkas modul lain ---------- */
   window.ADM = { MODUL: MODUL, S: S, api: api, toast: toast, modal: modal, konfirmasi: konfirmasi, laci: laci, sibuk: sibuk, ambil: ambil, tandaiGalat: tandaiGalat, bidang: bidang,
-    kosong: kosong, lencana: lencana, ubahPersen: ubahPersen, angka: angka, inisial: inisial, grafik: grafik, ekspor: bolehEkspor, ambilProfil: ambilProfil, $: $, $$: $$, e: e };
+    kosong: kosong, lencana: lencana, ubahPersen: ubahPersen, angka: angka, inisial: inisial, grafik: grafik, ekspor: bolehEkspor, ambilProfil: ambilProfil,
+    ambilKonten: ambilKonten, $: $, $$: $$, e: e };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai); else setTimeout(mulai, 0);
 })();
