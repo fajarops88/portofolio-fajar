@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard Admin</title>
+<!-- halaman admin tidak diindeks mesin pencari. Referrer hanya berisi origin: Google Sign-In MEMBUTUHKAN referrer
+     (no-referrer memicu galat "origin is not allowed"), sedangkan kunci rahasia ada di #hash yang tidak pernah dikirim
+     dan langsung dipindah ke sessionStorage oleh skrip di bawah. -->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#071C36">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://script.google.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<link rel="stylesheet" href="./assets/tema.css">
+<link rel="stylesheet" href="./assets/admin.css">
+<script>
+  // pindahkan kunci alamat rahasia dari URL ke sessionStorage SEBELUM apa pun dimuat, lalu bersihkan bilah alamat
+  (function () {
+    var m = location.hash.match(/(?:^#|&)k=([^&]+)/);
+    if (m) { try { sessionStorage.setItem('adm_k', decodeURIComponent(m[1])); } catch (e) {} history.replaceState(null, '', location.pathname + location.search); }
+    var k = null; try { k = sessionStorage.getItem('adm_k'); } catch (e) {}
+    if (!k) location.replace('./');        // tanpa alamat rahasia → kembali ke landing page
+  })();
+</script>
+<script src="./config.js"></script>
+<script src="./assets/api.js" defer></script>
+<script src="./assets/kwitansi.js" defer></script>
+<script src="./assets/admin.js" defer></script>
+<script src="./assets/admin-laporan.js" defer></script>
+<script src="./assets/admin-bisnis.js" defer></script>
+</head>
+<body class="admin">
+<!-- ============ LAYAR MASUK (UI-05 / UI-06) ============ -->
+<div class="layar-masuk" id="layar-masuk">
+  <div class="kartu-masuk" id="kartu-masuk" aria-live="polite">
+    <span class="ikon-besar"><span class="ms putar">progress_activity</span></span>
+    <h1>Memeriksa alamat…</h1>
+  </div>
+</div>
+
+<!-- ============ APLIKASI ============ -->
+<div class="aplikasi" id="aplikasi" hidden>
+  <aside class="sidebar" aria-label="Menu admin">
+    <div class="merek"><span class="logo" id="sb-logo">FK</span><span><b>Portofolio Diri</b><small>Admin Console</small></span></div>
+    <nav id="sb-nav"></nav>
+    <div class="bawah"><a href="#/keluar" data-keluar><span class="ms">logout</span>Keluar Akun</a></div>
+  </aside>
+  <div class="utama">
+    <header class="topbar">
+      <div class="remah" id="remah"><span class="ms" style="font-size:18px">shield_person</span><span>Admin</span><span>/</span><b id="remah-judul">Beranda</b></div>
+      <div class="kanan">
+        <span class="sesi" id="sesi" title="Sesi login berakhir otomatis"><span class="ms" style="font-size:16px">timer</span><span id="sesi-teks">–</span></span>
+        <a class="btn btn-garis btn-kecil" href="./" target="_blank" rel="noopener"><span class="ms">open_in_new</span><span class="sembunyi-hp">Lihat Situs</span></a>
+        <div class="profil-mini"><span class="avatar" id="tb-avatar">A</span><span><b id="tb-nama">Administrator</b><small id="tb-email"></small></span></div>
+      </div>
+    </header>
+    <main id="isi" tabindex="-1"></main>
+  </div>
+  <nav class="nav-bawah" aria-label="Navigasi bawah" id="nav-bawah">
+    <a href="#/beranda" data-r="beranda"><span class="ms">dashboard</span>Beranda</a>
+    <button type="button" id="buka-lembar" data-r="konten"><span class="ms">layers</span>Konten</button>
+    <a href="#/pesan" data-r="pesan"><span class="ms">mail</span>Pesan<span class="titik" id="nb-pesan" hidden>0</span></a>
+    <a href="#/statistik" data-r="statistik"><span class="ms">analytics</span>Statistik</a>
+    <button type="button" id="buka-lainnya" data-r="lainnya"><span class="ms">menu</span>Lainnya</button>
+  </nav>
+  <div class="lembar-latar" id="lembar-latar"><div class="lembar" role="dialog" aria-modal="true" aria-label="Menu modul"><div class="pegangan"></div><div id="lembar-isi"></div></div></div>
+</div>
+<div class="toast-wadah" id="toast" aria-live="polite"></div>
+<style>@media (max-width: 639px) { .sembunyi-hp { display: none; } }</style>
+</body>
+</html>

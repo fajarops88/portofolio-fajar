@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tagihan &amp; Kwitansi</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0B1F3A">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<link rel="stylesheet" href="./assets/tema.css">
+<style>
+  body { background: var(--permukaan-rendah); }
+  .atas { background: var(--navy-2); color: #fff; border-bottom: 4px solid var(--kuning); }
+  .atas .wadah { display: flex; align-items: center; gap: 14px; padding: 18px 20px; }
+  .wadah { max-width: 920px; margin: 0 auto; padding: 0 20px; }
+  .logo { width: 42px; height: 42px; border-radius: 12px; background: var(--kuning); color: var(--navy); display: grid; place-items: center; font-weight: 800; }
+  .atas b { display: block; font-size: 17px; } .atas small { color: var(--redup-navy); }
+  .isi { padding: 28px 0 60px; display: flex; flex-direction: column; gap: 20px; }
+  .kartu { padding: 22px; }
+  @media (min-width: 640px) { .kartu { padding: 28px; } }
+  h1 { font-size: 24px; } h2 { font-size: 18px; margin-bottom: 14px; }
+  .ringkas { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+  .ringkas div { background: var(--permukaan-rendah); border-radius: 14px; padding: 14px 16px; }
+  .ringkas small { display: block; font-size: 12px; color: var(--abu); font-weight: 600; }
+  .ringkas b { font-size: 19px; color: var(--navy); }
+  .tagihan { display: flex; align-items: center; gap: 14px; padding: 14px 4px; border-bottom: 1px solid var(--garis); }
+  .tagihan:last-child { border-bottom: 0; }
+  .tagihan input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--utama); flex-shrink: 0; }
+  .tagihan .nama { flex: 1; min-width: 0; }
+  .tagihan .nama b { display: block; color: var(--navy); }
+  .tagihan .nama small { color: var(--abu); }
+  .tagihan .jml { font-weight: 800; color: var(--navy); white-space: nowrap; text-align: right; }
+  .rekening { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px 16px; border-radius: 14px; background: #FFF4D6; color: #4A3700; font-weight: 600; }
+  .grid-form { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .grid-form { grid-template-columns: 1fr 1fr; } .penuh { grid-column: 1 / -1; } }
+  .unggah { border: 2px dashed #B5C7EA; border-radius: 14px; padding: 20px; text-align: center; cursor: pointer; background: #F8FAFF; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .unggah:hover, .unggah.seret { border-color: var(--utama); background: var(--biru-muda); }
+  .unggah img { max-height: 180px; border-radius: 10px; margin-top: 8px; }
+  .trx { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--garis); flex-wrap: wrap; }
+  .trx:last-child { border-bottom: 0; }
+  .total-pilih { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-radius: 14px; background: var(--navy); color: #fff; margin-top: 12px; }
+  .total-pilih b { font-size: 20px; color: var(--kuning); }
+  .hasil-verif { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 36px 20px; }
+  .hasil-verif .ikon { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; }
+  .hasil-verif .ikon .ms { font-size: 46px; }
+  .valid .ikon { background: var(--hijau-muda); color: var(--hijau); } .tidak .ikon { background: var(--merah-muda); color: var(--merah); }
+  .info-baris { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; text-align: left; font-size: 14px; }
+  .info-baris span { color: var(--abu); } .info-baris b { color: var(--navy); }
+  .kosong { text-align: center; color: var(--abu); padding: 18px; }
+</style>
+<script src="./config.js"></script>
+<script src="./assets/api.js" defer></script>
+<script src="./assets/kwitansi.js" defer></script>
+</head>
+<body>
+<header class="atas"><div class="wadah"><span class="logo" id="logo">FK</span><div><b id="nama-usaha">Tagihan &amp; Kwitansi</b><small id="sub-usaha">Halaman pembayaran klien</small></div></div></header>
+<main class="wadah isi" id="utama" aria-live="polite">
+  <div class="kartu skeleton" style="height:180px"></div>
+</main>
+<div class="toast-wadah" id="toast" aria-live="polite"></div>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var TOKEN = '', DATA = null, BUKTI = null;
+  function toast(pesan, jenis) {
+    var t = document.createElement('div'); t.className = 'toast ' + (jenis || 'sukses');
+    t.innerHTML = '<span class="ms">' + (jenis === 'galat' ? 'error' : 'check_circle') + '</span><span></span>'; t.lastChild.textContent = pesan;
+    $('#toast').appendChild(t); setTimeout(function () { t.remove(); }, 4500);
+  }
+  function lencana(st) {
+    var w = { 'Lunas': 'hijau', 'Gratis': 'hijau', 'Terverifikasi': 'hijau', 'Menunggu Verifikasi': 'kuning', 'Menunggu': 'kuning', 'Terlambat': 'merah', 'Ditolak': 'merah', 'Belum Bayar': 'oranye' }[st] || 'abu';
+    return '<span class="lencana ' + w + '">' + API.esc(st) + '</span>';
+  }
+  function mulai() {
+    if (!window.API) return setTimeout(mulai, 30);
+    var h = location.hash || '';
+    if (h.indexOf('#t=') === 0) { TOKEN = decodeURIComponent(h.slice(3)); muatTagihan(); }
+    else if (h.indexOf('#kwitansi=') === 0) verifikasi(decodeURIComponent(h.slice(10)));
+    else formVerifikasi();
+    window.addEventListener('hashchange', function () { location.reload(); });
+  }
+
+  /* ---------- verifikasi kwitansi (publik) ---------- */
+  function formVerifikasi(pesan) {
+    $('#utama').innerHTML = '<div class="kartu"><h1 style="margin-bottom:6px">Verifikasi Kwitansi</h1><p style="color:var(--abu-2);margin-bottom:18px">Pindai QR di kwitansi, atau tempel kode verifikasi (contoh <code>KW-2026-000001.AbC123xyZ9</code>).</p>' +
+      (pesan ? '<p class="lencana merah" style="margin-bottom:12px">' + API.esc(pesan) + '</p>' : '') +
+      '<form id="f-verif" style="display:flex;gap:10px;flex-wrap:wrap"><input class="input" id="kode" required style="flex:1;min-width:220px" placeholder="Kode verifikasi kwitansi" aria-label="Kode verifikasi kwitansi"><button class="btn btn-utama" type="submit"><span class="ms">verified</span>Periksa</button></form></div>';
+    $('#f-verif').addEventListener('submit', function (e) { e.preventDefault(); location.hash = 'kwitansi=' + encodeURIComponent($('#kode').value.trim()); });
+  }
+  function verifikasi(kode) {
+    API.get({ action: 'kwitansi.verify', kode: kode }).then(function (r) {
+      if (!r.ok) return formVerifikasi(r.message);
+      var d = r.data || {};
+      $('#utama').innerHTML = '<div class="kartu hasil-verif ' + (d.valid ? 'valid' : 'tidak') + '"><span class="ikon"><span class="ms isi">' + (d.valid ? 'verified' : 'gpp_bad') + '</span></span>' +
+        '<h1>' + (d.valid ? 'Kwitansi Asli' : 'Kwitansi Tidak Dikenal') + '</h1><p style="color:var(--abu-2)">' + API.esc(r.message) + '</p>' +
+        (d.valid ? '<div class="info-baris"><span>Nomor</span><b>' + API.esc(d.noKwitansi) + '</b><span>Penerbit</span><b>' + API.esc(d.penerbit) + '</b><span>Atas nama</span><b>' + API.esc(d.nama) + '</b><span>Total</span><b>' + API.rupiah(d.total) +
+          '</b><span>Tanggal verifikasi</span><b>' + API.tgl(d.tanggal, true) + '</b><span>Jumlah tagihan</span><b>' + d.jumlahTagihan + '</b></div>' : '') +
+        '<a class="btn btn-garis" href="./bayar.html" style="margin-top:8px">Periksa kwitansi lain</a></div>';
+      if (d.penerbit) $('#nama-usaha').textContent = d.penerbit;
+    });
+  }
+
+  /* ---------- tagihan klien ---------- */
+  function muatTagihan() {
+    API.post('klien.tagihanSaya', { t: TOKEN, dev: API.devId() }).then(function (r) {
+      if (!r.ok) { $('#utama').innerHTML = '<div class="kartu kosong"><span class="ms" style="font-size:44px;color:var(--merah)">link_off</span><h1 style="margin:8px 0">Tautan tidak dapat dibuka</h1><p>' + API.esc(r.message) + '</p></div>'; return; }
+      DATA = r.data; render();
+    });
+  }
+  function render() {
+    var d = DATA, e = API.esc, u = d.usaha || {};
+    $('#nama-usaha').textContent = u.nama || 'Tagihan'; $('#sub-usaha').textContent = u.alamat || '';
+    var nm = String(u.nama || 'F K').split(/\s+/); $('#logo').textContent = ((nm[0] || ' ')[0] + ((nm[nm.length - 1] || ' ')[0])).toUpperCase();
+    var belum = d.tagihan.filter(function (t) { return t.status === 'Belum Bayar' || t.status === 'Terlambat'; });
+    var h = '<div class="kartu"><h1>Halo, ' + e(d.klien.nama) + '</h1><p style="color:var(--abu-2);margin:4px 0 18px">' + e(d.klien.instansi || '') + '</p><div class="ringkas">' +
+      '<div><small>Belum dibayar</small><b>' + API.rupiah(d.ringkasan.tunggakan) + '</b></div><div><small>Menunggu verifikasi</small><b>' + API.rupiah(d.ringkasan.menunggu) + '</b></div><div><small>Sudah lunas</small><b>' + API.rupiah(d.ringkasan.lunas) + '</b></div></div></div>';
+    h += '<section class="kartu" aria-labelledby="j-tagihan"><h2 id="j-tagihan">Daftar Tagihan</h2>' + (d.tagihan.length ? d.tagihan.map(function (t) {
+      var bisa = t.status === 'Belum Bayar' || t.status === 'Terlambat';
+      return '<label class="tagihan">' + (bisa ? '<input type="checkbox" class="pilih" value="' + e(t.id) + '" data-jumlah="' + Number(t.jumlah) + '" checked>' : '<span class="ms" style="color:var(--hijau);width:20px">' + (t.status === 'Menunggu Verifikasi' ? 'hourglass_top' : 'check_circle') + '</span>') +
+        '<span class="nama"><b>' + e(t.nama_tagihan) + '</b><small>Jatuh tempo ' + API.tgl(t.jatuh_tempo, true) + (Number(t.potongan) ? ' · potongan ' + API.rupiah(t.potongan) : '') + (t.keterangan ? ' · ' + e(t.keterangan) : '') + '</small></span>' +
+        '<span class="jml">' + API.rupiah(t.jumlah) + '<br>' + lencana(t.status) + '</span></label>';
+    }).join('') : '<p class="kosong">Belum ada tagihan.</p>') + '</section>';
+    if (belum.length) {
+      h += '<section class="kartu" aria-labelledby="j-bayar"><h2 id="j-bayar">Kirim Bukti Pembayaran</h2>' +
+        (u.rekening ? '<div class="rekening"><span><span class="ms" style="vertical-align:-5px">account_balance</span> Transfer ke: ' + e(u.rekening) + '</span><button class="btn btn-kecil btn-garis" type="button" id="salin-rek"><span class="ms">content_copy</span>Salin</button></div>' : '') +
+        '<div class="total-pilih"><span>Total dipilih (<span id="n-pilih">0</span> tagihan)</span><b id="total-pilih">Rp 0</b></div>' +
+        '<form id="f-bayar" class="grid-form" style="margin-top:18px" novalidate>' +
+        '<div class="bidang"><label for="b-jumlah">Nominal ditransfer</label><input id="b-jumlah" inputmode="numeric" required></div>' +
+        '<div class="bidang"><label for="b-tgl">Tanggal transfer</label><input id="b-tgl" type="date" required></div>' +
+        '<div class="bidang"><label for="b-metode">Metode</label><select id="b-metode"><option>Transfer</option><option>QRIS</option><option>Tunai</option><option>Lainnya</option></select></div>' +
+        '<div class="bidang"><label for="b-ref">No. referensi (opsional)</label><input id="b-ref" maxlength="60"></div>' +
+        '<div class="bidang penuh"><span class="label">Bukti transfer (JPG/PNG/PDF, maks. 2 MB)</span><label class="unggah" id="zona" tabindex="0"><span class="ms" style="font-size:34px;color:var(--utama)">upload_file</span><b>Pilih atau seret berkas ke sini</b><small style="color:var(--abu)" id="nama-berkas">Belum ada berkas</small><input type="file" id="b-file" accept="image/jpeg,image/png,image/webp,application/pdf" class="sr-only"></label></div>' +
+        '<div class="bidang penuh"><label for="b-cat">Catatan (opsional)</label><textarea id="b-cat" maxlength="300" style="min-height:80px"></textarea></div>' +
+        '<div class="penuh"><button class="btn btn-utama" type="submit" id="kirim-bukti"><span class="ms">send</span>Kirim Bukti Pembayaran</button></div></form></section>';
+    }
+    h += '<section class="kartu" aria-labelledby="j-riwayat"><h2 id="j-riwayat">Riwayat Pembayaran &amp; Kwitansi</h2>' + (d.transaksi.length ? d.transaksi.map(function (x) {
+      return '<div class="trx"><div><b style="color:var(--navy)">' + API.rupiah(x.jumlah) + '</b> ' + lencana(x.status) + '<br><small style="color:var(--abu)">' + API.tgl(x.tanggal_bayar, true) + ' · ' + e(x.item.map(function (i) { return i.nama_tagihan; }).join(', ')) +
+        (x.status === 'Ditolak' && x.catatan ? '<br><span style="color:var(--merah)">Alasan: ' + e(x.catatan) + '</span>' : '') + '</small></div>' +
+        (x.status === 'Terverifikasi' && x.no_kwitansi ? '<button class="btn btn-kecil btn-navy" type="button" data-kw="' + e(x.pembayaranId) + '"><span class="ms">download</span>Kwitansi ' + e(x.no_kwitansi) + '</button>' : '') + '</div>';
+    }).join('') : '<p class="kosong">Belum ada pembayaran.</p>') + '</section>';
+    $('#utama').innerHTML = h;
+    pasang();
+  }
+  function hitung() {
+    var cb = Array.prototype.slice.call(document.querySelectorAll('.pilih:checked')), t = cb.reduce(function (s, c) { return s + Number(c.getAttribute('data-jumlah')); }, 0);
+    if (!$('#total-pilih')) return;
+    $('#total-pilih').textContent = API.rupiah(t); $('#n-pilih').textContent = cb.length;
+    $('#b-jumlah').value = t ? t.toLocaleString('id-ID') : '';
+  }
+  function pasang() {
+    document.querySelectorAll('.pilih').forEach(function (c) { c.addEventListener('change', hitung); });
+    document.querySelectorAll('[data-kw]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        b.disabled = true;
+        API.post('klien.kwitansi', { t: TOKEN, pembayaranId: b.getAttribute('data-kw'), dev: API.devId() }).then(function (r) {
+          if (!r.ok) { b.disabled = false; return toast(r.message, 'galat'); }
+          return Kwitansi.unduh(r.data).then(function () { b.disabled = false; toast('Kwitansi diunduh.'); });
+        }).catch(function (e) { b.disabled = false; toast(e.message, 'galat'); });
+      });
+    });
+    var f = $('#f-bayar'); if (!f) return;
+    $('#b-tgl').value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    $('#b-tgl').max = $('#b-tgl').value;
+    hitung();
+    if ($('#salin-rek')) $('#salin-rek').addEventListener('click', function () { var t = DATA.usaha.rekening; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { toast('Nomor rekening disalin.'); }, function () { toast(t); }); });
+    var zona = $('#zona'), file = $('#b-file');
+    var pilih = function (fl) {
+      if (!fl) return;
+      if (fl.size > 8 * 1024 * 1024) return toast('Berkas terlalu besar. Maksimal 2 MB setelah dikompres.', 'galat');
+      API.kompresGambar(fl, 1600, .8).then(function (b) {
+        if (b.ukuran > 2 * 1024 * 1024) { BUKTI = null; $('#nama-berkas').textContent = 'Berkas ' + (b.ukuran / 1048576).toFixed(1) + ' MB melebihi batas 2 MB.'; return toast('Berkas melebihi 2 MB. Kecilkan atau potong gambar.', 'galat'); }
+        BUKTI = b; $('#nama-berkas').textContent = fl.name + ' · ' + Math.max(1, Math.round(b.ukuran / 1024)) + ' KB';
+        var lama = zona.querySelector('img'); if (lama) lama.remove();
+        if (/^image/.test(b.mime)) { var im = document.createElement('img'); im.alt = 'Pratinjau bukti'; im.src = 'data:' + b.mime + ';base64,' + b.b64; zona.appendChild(im); }
+      }).catch(function (e) { toast(e.message, 'galat'); });
+    };
+    file.addEventListener('change', function () { pilih(file.files[0]); });
+    zona.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); file.click(); } });
+    ['dragover', 'dragenter'].forEach(function (ev) { zona.addEventListener(ev, function (e) { e.preventDefault(); zona.classList.add('seret'); }); });
+    ['dragleave', 'drop'].forEach(function (ev) { zona.addEventListener(ev, function (e) { e.preventDefault(); zona.classList.remove('seret'); }); });
+    zona.addEventListener('drop', function (e) { pilih(e.dataTransfer.files[0]); });
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var ids = Array.prototype.map.call(document.querySelectorAll('.pilih:checked'), function (c) { return c.value; });
+      if (!ids.length) return toast('Centang minimal satu tagihan.', 'galat');
+      if (!BUKTI) return toast('Unggah bukti transfer terlebih dahulu.', 'galat');
+      var tb = $('#kirim-bukti'); tb.disabled = true; tb.innerHTML = '<span class="ms putar">progress_activity</span>Mengirim…';
+      API.post('klien.kirimBukti', { t: TOKEN, dev: API.devId(), tagihanIds: ids, jumlah: $('#b-jumlah').value.replace(/[^\d]/g, ''), tanggalBayar: $('#b-tgl').value,
+        metode: $('#b-metode').value, noReferensi: $('#b-ref').value, catatan: $('#b-cat').value, bukti: { nama: BUKTI.nama, mime: BUKTI.mime, b64: BUKTI.b64 } }, { tanpaDedupe: true, timeout: 90000 }).then(function (r) {
+        if (!r.ok) { tb.disabled = false; tb.innerHTML = '<span class="ms">send</span>Kirim Bukti Pembayaran'; return toast(r.message, 'galat'); }
+        BUKTI = null; toast(r.message); muatTagihan(); window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai); else mulai();
+})();
+</script>
+</body>
+</html>
