@@ -304,6 +304,46 @@
   .avatar img { width: 100%; height: 100%; object-fit: cover; }
   .orang b { display: block; color: var(--navy); font-size: 15px; }
   .orang span { font-size: 13px; color: var(--abu); }
+  .aksi-testi { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .ajak-testi { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 28px; border-radius: var(--radius); background: var(--permukaan-rendah); border: 1.5px dashed rgba(115, 118, 134, .35); }
+  .ajak-testi .ms.besar { font-size: 36px; color: var(--utama); }
+  .ajak-testi p { color: var(--abu-2); max-width: 560px; }
+
+  /* ---------- formulir testimoni (lembar seperti pembaca artikel) ---------- */
+  .form-testi { display: flex; flex-direction: column; gap: 20px; margin-top: 22px; }
+  .pilih-jenis { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  @media (min-width: 560px) { .pilih-jenis { grid-template-columns: 1fr 1fr; } }
+  .pilih-jenis label { position: relative; display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 14px; border: 1.5px solid rgba(115, 118, 134, .3); background: var(--putih); cursor: pointer; transition: border-color var(--transisi), background var(--transisi); }
+  .pilih-jenis label.dipilih { border-color: var(--utama); background: #EEF3FF; }
+  .pilih-jenis label:focus-within { outline: 3px solid rgba(37, 99, 235, .3); outline-offset: 2px; }
+  .pilih-jenis input { position: absolute; opacity: 0; pointer-events: none; }
+  .pilih-jenis .ms { color: var(--utama); margin-top: 1px; }
+  .pilih-jenis b { display: block; color: var(--navy); font-size: 14.5px; }
+  .pilih-jenis small { display: block; color: var(--abu); font-size: 12.5px; line-height: 1.45; margin-top: 2px; }
+  .bintang-input { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; }
+  .bintang-input label { cursor: pointer; color: #C3C6D7; border-radius: 8px; line-height: 0; }
+  .bintang-input label.nyala { color: var(--kuning-redup); }
+  .bintang-input label:focus-within { outline: 2px solid var(--utama); outline-offset: 1px; }
+  .bintang-input .ms { font-size: 36px; }
+  .bintang-input input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .bintang-input .teks { margin-left: 10px; font-size: 13.5px; font-weight: 600; color: var(--abu-2); }
+  .pilih-nama { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pilih-nama label { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; border: 1.5px solid rgba(115, 118, 134, .3); cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--navy); }
+  .pilih-nama label.dipilih { border-color: var(--utama); background: #EEF3FF; }
+  .pilih-nama input { accent-color: var(--utama); margin: 0; }
+  .pratinjau-testi { border: 1px solid rgba(195, 198, 215, .7); border-radius: var(--radius); padding: 6px; }
+  .pratinjau-testi > small { display: block; padding: 6px 10px 8px; font-size: 11.5px; font-weight: 800; color: var(--abu); letter-spacing: .1em; text-transform: uppercase; }
+  .pratinjau-testi .kartu-testi { padding: 22px; }
+  .centang-baris { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 14px; background: var(--permukaan-rendah); cursor: pointer; font-size: 14px; line-height: 1.6; color: var(--teks); }
+  .centang-baris input { width: 20px; height: 20px; margin: 2px 0 0; flex-shrink: 0; accent-color: var(--utama); }
+  .bidang.salah .centang-baris { background: var(--merah-muda); }
+  .info-testi { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: #EEF3FF; color: var(--navy); font-size: 13.5px; line-height: 1.55; margin-top: 12px; }
+  .info-testi .ms { color: var(--utama); font-size: 20px; }
+  .info-testi.kuning { background: #FFF4D6; color: #6B4A00; } .info-testi.kuning .ms { color: var(--amber); }
+  #tulis-testi .bar-baca h3 { font-size: 15px; color: var(--navy); }
+  .lembar-pesan { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 40px 8px; }
+  .lembar-pesan .ms.besar { font-size: 44px; color: var(--utama); }
+  .lembar-pesan p { color: var(--abu-2); max-width: 440px; }
 
   /* ---------- kontak ---------- */
   #contact { background: var(--permukaan-rendah); }
@@ -535,9 +575,10 @@
     <div class="wadah">
       <div class="baris-kepala">
         <div class="kepala-bagian muncul"><span class="eyebrow">Testimoni</span><h2 id="judul-testimoni">Apa Kata Mereka</h2></div>
-        <div class="nav-geser"><button class="btn btn-ikon" type="button" id="testi-kiri" aria-label="Testimoni sebelumnya"><span class="ms">chevron_left</span></button><button class="btn btn-ikon" type="button" id="testi-kanan" aria-label="Testimoni berikutnya"><span class="ms">chevron_right</span></button></div>
+        <div class="aksi-testi"><button class="btn btn-garis btn-kecil" type="button" id="tombol-tulis-testi" hidden><span class="ms">rate_review</span>Tulis testimoni</button><div class="nav-geser"><button class="btn btn-ikon" type="button" id="testi-kiri" aria-label="Testimoni sebelumnya"><span class="ms">chevron_left</span></button><button class="btn btn-ikon" type="button" id="testi-kanan" aria-label="Testimoni berikutnya"><span class="ms">chevron_right</span></button></div></div>
       </div>
       <div class="geser" id="geser-testi" tabindex="0" aria-label="Daftar testimoni, geser ke samping"></div>
+      <div class="ajak-testi muncul" id="ajak-testi" hidden><span class="ms besar" aria-hidden="true">rate_review</span><h3 style="font-size:20px">Pernah bekerja sama dengan saya?</h3><p>Bagikan pengalaman Anda, sebagai pribadi atau atas nama instansi. Testimoni ditinjau dulu sebelum tampil di sini.</p><button class="btn btn-utama" type="button" data-tulis-testi><span class="ms">edit</span>Tulis testimoni</button></div>
     </div>
   </section>
 
@@ -625,6 +666,16 @@
       <button class="btn btn-garis btn-kecil" type="button" id="salin-baca"><span class="ms">link</span>Salin tautan</button>
     </div>
     <div id="isi-baca"></div>
+  </div>
+</div>
+
+<div class="pembaca" id="tulis-testi" role="dialog" aria-modal="true" aria-labelledby="judul-tulis">
+  <div class="lembar-baca" id="lembar-tulis" tabindex="-1">
+    <div class="bar-baca">
+      <button class="btn btn-teks" type="button" id="tutup-tulis"><span class="ms">arrow_back</span>Kembali</button>
+      <span class="lencana hijau" id="tulis-lencana" hidden><span class="ms" style="font-size:15px">verified</span>Tautan pribadi klien</span>
+    </div>
+    <article id="isi-tulis"></article>
   </div>
 </div>
 
@@ -789,8 +840,13 @@
     // portfolio (F6)
     renderProyek(d.portofolio || []);
     // testimoni (F7)
-    var ts = d.testimoni || [];
-    $('#testimoni').hidden = !ts.length;
+    var ts = d.testimoni || [], formTesti = modeTesti() === 'Semua';
+    $('#testimoni').hidden = !ts.length && !formTesti;
+    $('#tombol-tulis-testi').hidden = !formTesti || !ts.length;
+    $('#ajak-testi').hidden = !formTesti || !!ts.length;
+    $('#geser-testi').hidden = !ts.length;
+    // data terbaru (setelah cache) bisa mengubah mode: formulir umum yang sedang terbuka ikut menyesuaikan
+    if (!formTesti && !TESTI.t && $('#form-testi') && $('#tulis-testi').classList.contains('buka')) { TESTI.kunci = ''; bukaTulis(''); }
     $$('[data-opsional]').forEach(function (a) { a.hidden = !ts.length; });
     $('#geser-testi').innerHTML = ts.map(function (t) {
       var r = Math.max(1, Math.min(5, parseInt(t.rating, 10) || 5)), b = '';
@@ -821,7 +877,7 @@
     if (s.info_bar_jam) kk += '<span><span class="ms">schedule</span>' + e(s.info_bar_jam) + '</span>';
     $('#kaki-kontak').innerHTML = kk || '<span><span class="ms">forum</span>Formulir kontak di atas</span>';
     animasiMuncul();
-    if (!REKAM.hashDicek) { REKAM.hashDicek = true; cekHashArtikel(); }
+    if (!REKAM.hashDicek) { REKAM.hashDicek = true; cekHashArtikel(); cekHashTesti(); }
   }
 
   /* ---------------- rekam jejak: sertifikat · agenda · kinerja · wawasan ---------------- */
@@ -1040,7 +1096,7 @@
     var setLaci = function (b) { laci.classList.toggle('buka', b); laci.setAttribute('aria-hidden', String(!b)); tb.setAttribute('aria-expanded', String(b)); document.body.style.overflow = b ? 'hidden' : ''; if (b) $('nav a', laci).focus(); };
     tb.addEventListener('click', function () { setLaci(true); });
     laci.addEventListener('click', function (ev) { if (ev.target.closest('[data-tutup-laci]') || ev.target.closest('a')) setLaci(false); });
-    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { setLaci(false); tutupVideo(); tutupGambar(); tutupArtikel(); } });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { setLaci(false); tutupVideo(); tutupGambar(); tutupArtikel(); tutupTulis(); } });
     // menu aktif sesuai bagian yang terlihat
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (es) {
@@ -1103,7 +1159,10 @@
       if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) { navigator.share({ title: document.title, url: u }).catch(function () {}); return; }
       if (navigator.clipboard) navigator.clipboard.writeText(u).then(ok, function () { prompt('Salin tautan ini:', u); }); else prompt('Salin tautan ini:', u);
     });
-    window.addEventListener('hashchange', function () { if (DATA && /^#wawasan=/.test(location.hash)) cekHashArtikel(); });
+    window.addEventListener('hashchange', function () { if (DATA && /^#wawasan=/.test(location.hash)) cekHashArtikel(); if (DATA && /^#tulis-testimoni/.test(location.hash)) cekHashTesti(); });
+    // formulir testimoni
+    document.addEventListener('click', function (ev) { if (ev.target.closest('#tombol-tulis-testi,[data-tulis-testi]')) bukaTulis(''); });
+    $('#tutup-tulis').addEventListener('click', tutupTulis);
     $('#tutup-video').addEventListener('click', tutupVideo);
     $('#modal-video').addEventListener('click', function (ev) { if (ev.target.id === 'modal-video') tutupVideo(); });
     $('#coba-lagi').addEventListener('click', function () { location.reload(); });
@@ -1121,6 +1180,189 @@
     $('#modal-video').classList.add('buka'); $('#tutup-video').focus();
   }
   function tutupVideo() { var m = $('#modal-video'); if (!m.classList.contains('buka')) return; m.classList.remove('buka'); $('#bingkai-video').innerHTML = ''; }
+
+  /* ---------------- formulir testimoni (v1.2): perorangan / instansi, tampil setelah disetujui ---------------- */
+  var TESTI = { t: '', klien: null, menunggu: false, kunci: '' };
+  function modeTesti() { var m = DATA && DATA.pengaturan && DATA.pengaturan.testimoni_formulir; return m === 'Semua' || m === 'Tautan' ? m : 'Nonaktif'; }
+  function namaSingkat(n) {
+    var p = String(n || '').split(',')[0].trim().split(/\s+/).filter(Boolean);
+    return p.length < 2 ? (p[0] || '') : p[0] + ' ' + p.slice(1).map(function (x) { return x.charAt(0).toUpperCase() + '.'; }).join(' ');
+  }
+  function cekHashTesti() {
+    var m = location.hash.match(/^#tulis-testimoni(?:=([\w.-]+))?/);
+    if (m && !$('#tulis-testi').classList.contains('buka')) bukaTulis(m[1] || '');
+  }
+  function pesanTulis(ikon, judul, teks) {
+    var e = window.API.esc;
+    $('#isi-tulis').innerHTML = '<div class="lembar-pesan"><span class="ms besar" aria-hidden="true">' + ikon + '</span><h2 id="judul-tulis" style="font-size:22px">' + e(judul) + '</h2><p>' + e(teks) + '</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><a class="btn btn-garis btn-kecil" href="#contact" data-tutup-tulis><span class="ms">mail</span>Hubungi saya</a><button class="btn btn-utama btn-kecil" type="button" data-tutup-tulis><span class="ms">close</span>Tutup</button></div></div>';
+    $$('[data-tutup-tulis]', $('#isi-tulis')).forEach(function (b) { b.addEventListener('click', function () { tutupTulis(); }); });
+    TESTI.kunci = '';
+  }
+  function bukaTulis(t) {
+    var A = window.API, pb = $('#tulis-testi'), kunci = t || 'umum';
+    if (!pb.classList.contains('buka')) fokusSebelum = document.activeElement;
+    pb.classList.add('buka'); document.body.style.overflow = 'hidden';
+    try { history.replaceState(null, '', '#tulis-testimoni' + (t ? '=' + t : '')); } catch (x) {}
+    $('#lembar-tulis').scrollTop = 0; $('#lembar-tulis').focus();
+    if (TESTI.kunci === kunci && $('#form-testi')) return;            // isian yang belum terkirim dipertahankan
+    TESTI.t = t || ''; TESTI.klien = null; TESTI.menunggu = false; TESTI.kunci = '';
+    $('#tulis-lencana').hidden = true;
+    if (t) {
+      $('#isi-tulis').innerHTML = '<span class="skeleton" style="display:block;height:28px;width:60%;margin-bottom:16px"></span><span class="skeleton" style="display:block;height:16px;margin-bottom:10px"></span><span class="skeleton" style="display:block;height:220px"></span>';
+      A.post('pub.testiInfo', { t: t, dev: A.devId() }, { tanpaDedupe: true }).then(function (r) {
+        if (!pb.classList.contains('buka')) return;
+        if (!r.ok) return pesanTulis('link_off', 'Tautan tidak dapat dipakai', r.message || 'Tautan tidak valid.');
+        if (r.data.mode === 'Nonaktif') return pesanTulis('lock', 'Formulir sedang ditutup', 'Saat ini saya belum menerima testimoni baru. Terima kasih atas kesediaan Anda.');
+        TESTI.klien = r.data.klien || null; TESTI.menunggu = !!r.data.menunggu;
+        $('#tulis-lencana').hidden = false;
+        gambarFormTesti(kunci);
+      });
+      return;
+    }
+    var m = modeTesti();
+    if (m === 'Tautan') return pesanTulis('link', 'Testimoni lewat tautan pribadi', 'Testimoni hanya bisa dikirim lewat tautan pribadi yang saya bagikan. Bila kita pernah bekerja sama, hubungi saya untuk mendapatkan tautannya.');
+    if (m === 'Nonaktif') return pesanTulis('lock', 'Formulir sedang ditutup', 'Saat ini saya belum menerima testimoni baru. Terima kasih atas kesediaan Anda.');
+    gambarFormTesti(kunci);
+  }
+  function tutupTulis() {
+    var pb = $('#tulis-testi'); if (!pb.classList.contains('buka')) return;
+    pb.classList.remove('buka'); document.body.style.overflow = '';
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (x) {}
+    if (fokusSebelum && fokusSebelum.focus && document.contains(fokusSebelum)) fokusSebelum.focus({ preventScroll: true });
+  }
+  function gambarFormTesti(kunci) {
+    var A = window.API, e = A.esc, k = TESTI.klien || {}, wajib = '<span aria-hidden="true" style="color:var(--merah)"> *</span>';
+    var galat = function (n) { return '<span class="galat" id="tg-' + n + '"><span class="ms" style="font-size:16px">cancel</span><span></span></span>'; };
+    var bintang = '';
+    for (var n = 1; n <= 5; n++) bintang += '<label><input type="radio" name="rating" value="' + n + '" aria-label="' + n + ' dari 5 bintang"><span class="ms isi" aria-hidden="true">star</span></label>';
+    $('#isi-tulis').innerHTML = '<span class="eyebrow">Testimoni</span><h2 id="judul-tulis">Bagikan Pengalaman Anda</h2>' +
+      '<p style="color:var(--abu-2)">Testimoni Anda akan saya tinjau dulu sebelum tampil di situs. Email atau WhatsApp Anda tidak pernah ditampilkan.</p>' +
+      (TESTI.klien ? '<div class="info-testi"><span class="ms">verified</span><span>Anda mengisi lewat tautan pribadi untuk <b>' + e(k.nama) + '</b>' + (k.instansi ? ' (' + e(k.instansi) + ')' : '') + '. Data di bawah sudah terisi — silakan sesuaikan.</span></div>' : '') +
+      (TESTI.menunggu ? '<div class="info-testi kuning"><span class="ms">hourglass_top</span><span>Testimoni Anda sebelumnya masih ditinjau. Mengirim lagi akan <b>menggantikan</b> kiriman sebelumnya.</span></div>' : '') +
+      '<form class="form-testi" id="form-testi" novalidate>' +
+      '<div class="peringatan merah" id="tt-galat" role="alert"><span class="ms">error</span><span id="tt-galat-teks">Periksa kembali isian Anda.</span></div>' +
+      '<div class="peringatan kuning" id="tt-batas" role="alert"><span class="ms">schedule</span><span>Batas pengiriman tercapai. Silakan coba lagi dalam 1 jam.</span></div>' +
+      '<div class="bidang" data-bidang="jenis"><span class="label" id="lb-jenis">Testimoni ini dari' + wajib + '</span><div class="pilih-jenis" role="radiogroup" aria-labelledby="lb-jenis">' +
+        '<label><input type="radio" name="jenis" value="Perorangan"><span class="ms" aria-hidden="true">person</span><span><b>Pribadi / perorangan</b><small>Sebagai individu, mis. rekan kerja, peserta, atau pengguna layanan</small></span></label>' +
+        '<label><input type="radio" name="jenis" value="Instansi"><span class="ms" aria-hidden="true">apartment</span><span><b>Atas nama instansi</b><small>Mewakili dinas, perusahaan, atau lembaga tempat Anda bekerja</small></span></label></div>' + galat('jenis') + '</div>' +
+      '<div class="dua-kolom"><div class="bidang" data-bidang="nama"><label for="tt-nama" id="lb-nama">Nama lengkap' + wajib + '</label><input id="tt-nama" name="nama" autocomplete="name" maxlength="80" value="' + e(k.nama || '') + '">' + galat('nama') + '</div>' +
+        '<div class="bidang" data-bidang="jabatan"><label for="tt-jabatan" id="lb-jabatan">Pekerjaan / jabatan <span style="font-weight:500;color:var(--abu)">(opsional)</span></label><input id="tt-jabatan" name="jabatan" autocomplete="organization-title" maxlength="80" placeholder="mis. Kepala Bidang">' + galat('jabatan') + '</div></div>' +
+      '<div class="bidang" data-bidang="instansi"><label for="tt-instansi" id="lb-instansi">Instansi / perusahaan <span style="font-weight:500;color:var(--abu)">(opsional)</span></label><input id="tt-instansi" name="instansi" autocomplete="organization" maxlength="100" value="' + e(k.instansi || '') + '">' + galat('instansi') + '</div>' +
+      '<div class="bidang" data-bidang="rating"><span class="label" id="lb-rating">Penilaian' + wajib + '</span><div class="bintang-input" role="radiogroup" aria-labelledby="lb-rating">' + bintang + '<span class="teks" id="tt-rating-teks">Pilih 1–5 bintang</span></div>' + galat('rating') + '</div>' +
+      '<div class="bidang" data-bidang="isi"><label for="tt-isi">Testimoni Anda' + wajib + '</label><textarea id="tt-isi" name="isi" maxlength="600" placeholder="Ceritakan pengalaman Anda bekerja sama: apa yang dikerjakan, dan hasilnya bagi Anda atau instansi."></textarea>' +
+        '<div style="display:flex;justify-content:space-between;gap:10px">' + galat('isi') + '<span class="penghitung" id="tt-hitung" style="margin-left:auto">0/500</span></div></div>' +
+      '<div class="bidang" data-bidang="kontak"><label for="tt-kontak">Email atau WhatsApp' + (TESTI.klien ? ' <span style="font-weight:500;color:var(--abu)">(opsional)</span>' : wajib) + '</label><input id="tt-kontak" name="kontak" autocomplete="email" maxlength="150" placeholder="nama@contoh.com atau 0812xxxxxxx"><span class="bantu" style="font-size:12.5px;color:var(--abu)">Tidak ditampilkan di situs. Hanya untuk konfirmasi bila perlu.</span>' + galat('kontak') + '</div>' +
+      '<div class="bidang"><span class="label" id="lb-tampil">Nama yang ditampilkan</span><div class="pilih-nama" role="radiogroup" aria-labelledby="lb-tampil"><label class="dipilih"><input type="radio" name="tampil_nama" value="lengkap" checked>Nama lengkap</label><label><input type="radio" name="tampil_nama" value="singkat">Nama singkat <span id="tt-singkat" style="font-weight:500;color:var(--abu)"></span></label></div></div>' +
+      '<div class="pratinjau-testi" aria-live="polite"><small>Pratinjau di situs</small><figure class="kartu-testi" id="tt-pratinjau" style="margin:0"></figure></div>' +
+      '<div class="bidang" data-bidang="izin"><label class="centang-baris"><input type="checkbox" name="izin" id="tt-izin"><span>Saya <b>menyetujui</b> nama, jabatan/instansi, penilaian, dan isi testimoni di atas <b>ditampilkan di situs ini</b>. Saya dapat meminta testimoni dihapus kapan saja melalui kontak di situs.</span></label>' + galat('izin') + '</div>' +
+      '<div class="bidang" data-bidang="wewenang" id="bd-wewenang" hidden><label class="centang-baris"><input type="checkbox" name="wewenang" id="tt-wewenang"><span id="tx-wewenang">Saya berwenang menyampaikan testimoni ini atas nama instansi saya.</span></label>' + galat('wewenang') + '</div>' +
+      '<div class="jebakan" aria-hidden="true"><label for="tt-website">Jangan diisi</label><input id="tt-website" name="website" tabindex="-1" autocomplete="off"></div>' +
+      '<button class="btn btn-utama" type="submit" id="tt-kirim" style="align-self:flex-start;min-height:50px;padding:0 28px"><span class="ms">send</span><span>Kirim Testimoni</span></button></form>' +
+      '<div class="berhasil" id="tt-berhasil" role="status" tabindex="-1"><span class="centang"><span class="ms">check</span></span><h4>Terima kasih!</h4><p id="tt-berhasil-teks">Testimoni Anda sudah terkirim dan akan tampil di situs setelah saya tinjau.</p><button class="btn btn-utama btn-kecil" type="button" id="tt-selesai"><span class="ms">close</span>Tutup</button></div>';
+    TESTI.kunci = kunci;
+    pasangFormTesti(k.jenis || 'Perorangan');
+  }
+  function pasangFormTesti(jenisAwal) {
+    var A = window.API, e = A.esc, f = $('#form-testi'), el = f.elements;
+    var LABEL_RATING = ['', 'Kurang', 'Cukup', 'Baik', 'Sangat baik', 'Luar biasa'];
+    var setGalat = function (kol, pesan) {
+      var b = $('[data-bidang="' + kol + '"]', f); if (!b) return;
+      b.classList.toggle('salah', !!pesan);
+      $$('input,textarea', b).forEach(function (i) { i.setAttribute('aria-invalid', pesan ? 'true' : 'false'); });
+      var g = $('#tg-' + kol); if (g) g.lastChild.textContent = pesan || '';
+    };
+    var nilai = function (k) { var x = el[k]; return x ? String(x.value || '').trim() : ''; };
+    var jenis = function () { var r = $('input[name=jenis]:checked', f); return r ? r.value : ''; };
+    var rating = function () { var r = $('input[name=rating]:checked', f); return r ? +r.value : 0; };
+    var cek = function (kol) {
+      var v = nilai(kol), m = '', inst = jenis() === 'Instansi';
+      if (kol === 'jenis') m = jenis() ? '' : 'Pilih: perorangan atau atas nama instansi';
+      if (kol === 'nama') m = !v ? 'Nama wajib diisi' : v.length < 2 ? 'Nama minimal 2 karakter' : '';
+      if (kol === 'jabatan') m = inst && !v ? 'Jabatan Anda di instansi wajib diisi' : '';
+      if (kol === 'instansi') m = inst && !v ? 'Nama instansi wajib diisi' : '';
+      if (kol === 'rating') m = rating() ? '' : 'Pilih rating 1–5 bintang';
+      if (kol === 'isi') m = !v ? 'Testimoni wajib diisi' : v.length < 20 ? 'Testimoni minimal 20 karakter' : v.length > 500 ? 'Testimoni maksimal 500 karakter' : '';
+      if (kol === 'kontak') {
+        var hp = v.replace(/[\s.-]/g, '');
+        m = !v ? (TESTI.klien ? '' : 'Email atau WhatsApp wajib diisi untuk konfirmasi') : (/^[^@\s<>"']+@[^@\s<>"']+\.[^@\s<>"']{2,}$/.test(v) || /^(\+?62|0)8\d{8,12}$/.test(hp)) ? '' : 'Isi email atau nomor WhatsApp yang valid';
+      }
+      if (kol === 'izin') m = el.izin.checked ? '' : 'Centang persetujuan agar testimoni boleh ditampilkan';
+      if (kol === 'wewenang') m = !inst || el.wewenang.checked ? '' : 'Centang pernyataan ini untuk testimoni atas nama instansi';
+      setGalat(kol, m); return !m;
+    };
+    var pratinjau = function () {
+      var r = rating() || 5, b = '', nm = $('input[name=tampil_nama]:checked', f).value === 'singkat' ? namaSingkat(nilai('nama')) : nilai('nama');
+      for (var n = 1; n <= 5; n++) b += '<span class="ms isi' + (n > r ? ' redup' : '') + '">star</span>';
+      var jab = [nilai('jabatan'), nilai('instansi')].filter(Boolean).join(', ');
+      $('#tt-pratinjau').innerHTML = '<div><div class="atas"><span class="bintang">' + b + '</span><span class="kutip" aria-hidden="true"><span class="ms">format_quote</span></span></div><blockquote style="margin-top:12px">“' + e(nilai('isi') || 'Isi testimoni Anda akan tampil di sini…') + '”</blockquote></div>' +
+        '<figcaption class="orang"><span class="avatar">' + e(inisial(nm || '?')) + '</span><span><b>' + e(nm || 'Nama Anda') + '</b><span>' + e(jab) + '</span></span></figcaption>';
+      $('#tt-singkat').textContent = nilai('nama').split(/\s+/).filter(Boolean).length > 1 ? '(' + namaSingkat(nilai('nama')) + ')' : '';
+    };
+    var aturJenis = function () {
+      var inst = jenis() === 'Instansi', wajib = '<span aria-hidden="true" style="color:var(--merah)"> *</span>', ops = ' <span style="font-weight:500;color:var(--abu)">(opsional)</span>';
+      $$('.pilih-jenis label', f).forEach(function (l) { l.classList.toggle('dipilih', $('input', l).checked); });
+      $('#lb-nama').innerHTML = (inst ? 'Nama Anda (perwakilan instansi)' : 'Nama lengkap') + wajib;
+      $('#lb-jabatan').innerHTML = (inst ? 'Jabatan Anda di instansi' + wajib : 'Pekerjaan / jabatan' + ops);
+      $('#lb-instansi').innerHTML = (inst ? 'Nama instansi / perusahaan' + wajib : 'Instansi / perusahaan' + ops);
+      $('#bd-wewenang').hidden = !inst;
+      $('#tx-wewenang').textContent = 'Saya berwenang menyampaikan testimoni ini atas nama ' + (nilai('instansi') || 'instansi saya') + '.';
+      if (!inst) { setGalat('wewenang', ''); setGalat('jabatan', ''); setGalat('instansi', ''); }
+    };
+    var aturBintang = function () {
+      var r = rating();
+      $$('.bintang-input label', f).forEach(function (l, i) { l.classList.toggle('nyala', i < r); });
+      $('#tt-rating-teks').textContent = r ? r + ' dari 5 · ' + LABEL_RATING[r] : 'Pilih 1–5 bintang';
+    };
+    var awal = $('input[name=jenis][value="' + jenisAwal + '"]', f); if (awal) awal.checked = true;
+    aturJenis(); aturBintang(); pratinjau();
+    f.addEventListener('change', function (ev) {
+      var n = ev.target.name;
+      if (n === 'jenis') { aturJenis(); cek('jenis'); }
+      if (n === 'rating') { aturBintang(); cek('rating'); }
+      if (n === 'tampil_nama') $$('.pilih-nama label', f).forEach(function (l) { l.classList.toggle('dipilih', $('input', l).checked); });
+      if (n === 'izin' || n === 'wewenang') cek(n);
+      pratinjau();
+    });
+    f.addEventListener('input', function (ev) {
+      var n = ev.target.name;
+      if (n === 'isi') { var c = ev.target.value.length, h = $('#tt-hitung'); h.textContent = c.toLocaleString('id-ID') + '/500'; h.classList.toggle('lewat', c > 500); }
+      if (n === 'instansi') aturJenis();
+      var b = $('[data-bidang="' + n + '"]', f); if (b && b.classList.contains('salah')) cek(n);
+      pratinjau();
+    });
+    ['nama', 'jabatan', 'instansi', 'isi', 'kontak'].forEach(function (k) { el[k].addEventListener('blur', function () { if (this.value) cek(k); }); });
+    // pratinjau bintang saat kursor diarahkan
+    var bi = $('.bintang-input', f);
+    bi.addEventListener('mouseover', function (ev) { var l = ev.target.closest('label'); if (!l) return; var i = $$('label', bi).indexOf(l); $$('label', bi).forEach(function (x, j) { x.classList.toggle('nyala', j <= i); }); });
+    bi.addEventListener('mouseleave', aturBintang);
+    $('#tt-selesai').addEventListener('click', function () { tutupTulis(); });
+    f.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      $('#tt-galat').classList.remove('tampil');
+      var kol = ['jenis', 'nama', 'jabatan', 'instansi', 'rating', 'isi', 'kontak', 'izin', 'wewenang'];
+      var ok = kol.map(cek).every(Boolean);
+      if (!ok) { $('#tt-galat').classList.add('tampil'); $('#tt-galat-teks').textContent = 'Periksa kembali isian yang ditandai merah.'; var x = $('.salah input,.salah textarea', f); if (x) x.focus(); return; }
+      var tombol = $('#tt-kirim'), asli = tombol.innerHTML;
+      tombol.disabled = true; tombol.innerHTML = '<span class="ms putar">progress_activity</span><span>Mengirim…</span>';
+      A.post('pub.kirimTestimoni', { jenis: jenis(), nama: nilai('nama'), jabatan: nilai('jabatan'), instansi: nilai('instansi'), isi: nilai('isi'), rating: rating(), kontak: nilai('kontak'),
+        tampil_nama: $('input[name=tampil_nama]:checked', f).value, izin: el.izin.checked, wewenang: el.wewenang.checked, t: TESTI.t, website: el.website.value,
+        dev: A.devId(), perangkat: A.perangkat() }, { tanpaDedupe: true }).then(function (r) {
+        tombol.disabled = false; tombol.innerHTML = asli;
+        if (r.ok) {
+          f.hidden = true; $$('#isi-tulis > .info-testi').forEach(function (x) { x.hidden = true; });
+          if (r.message) $('#tt-berhasil-teks').textContent = r.message;
+          var b = $('#tt-berhasil'); b.classList.add('tampil'); b.focus(); $('#lembar-tulis').scrollTop = 0;
+          TESTI.kunci = '';                                         // buka lagi = formulir baru
+          return;
+        }
+        if (r.code === 'RATE_LIMIT') { $('#tt-batas').classList.add('tampil'); tombol.disabled = true; return; }
+        if (r.code === 'VALIDASI' && r.data && r.data.galat) Object.keys(r.data.galat).forEach(function (k) { setGalat(k, r.data.galat[k]); });
+        $('#tt-galat-teks').textContent = r.message || 'Testimoni gagal dikirim. Coba lagi.';
+        $('#tt-galat').classList.add('tampil'); $('#tt-galat').scrollIntoView({ block: 'center', behavior: 'smooth' });
+      });
+    });
+  }
 
   /* ---------------- statistik: dikirim berkelompok ---------------- */
   var antre = [], timer = null;

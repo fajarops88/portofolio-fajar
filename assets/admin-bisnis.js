@@ -51,7 +51,7 @@
         K.rows.map(function (k) {
           return '<tr data-id="' + e(k.id) + '" class="' + (k.status !== 'Aktif' ? 'redup' : '') + '"><td class="sel-utama"><b>' + e(k.nama) + '</b><small>' + e(k.instansi || '–') + '</small></td><td class="sel-utama"><small>' + e(k.email || '–') + '</small><small>' + e(k.no_wa || '–') + '</small></td>' +
             '<td style="text-align:right" class="mono">' + rp(k.tarif_bulanan) + '</td><td style="text-align:right">' + (k.tunggakan ? '<b style="color:var(--merah)">' + rp(k.tunggakan) + '</b><br><small style="color:var(--abu)">' + k.nBelum + ' tagihan</small>' : '<span class="lencana hijau">Lunas</span>') + (k.menunggu ? '<br><span class="lencana kuning">' + k.menunggu + ' menunggu</span>' : '') + '</td>' +
-            '<td>' + A.lencana(k.status) + '</td><td class="aksi"><button class="btn btn-ikon mini" type="button" data-a="tautan" title="Tautan bayar" aria-label="Tautan bayar"><span class="ms">link</span></button><button class="btn btn-ikon mini" type="button" data-a="riwayat" title="Riwayat" aria-label="Riwayat"><span class="ms">history</span></button><button class="btn btn-ikon mini" type="button" data-a="ubah" aria-label="Ubah"><span class="ms">edit</span></button><button class="btn btn-ikon mini merah" type="button" data-a="hapus" aria-label="Hapus"><span class="ms">delete</span></button></td></tr>';
+            '<td>' + A.lencana(k.status) + '</td><td class="aksi"><button class="btn btn-ikon mini" type="button" data-a="tautan" title="Tautan bayar" aria-label="Tautan bayar"><span class="ms">link</span></button><button class="btn btn-ikon mini" type="button" data-a="testi" title="Minta testimoni" aria-label="Minta testimoni dari ' + e(k.nama) + '"><span class="ms">rate_review</span></button><button class="btn btn-ikon mini" type="button" data-a="riwayat" title="Riwayat" aria-label="Riwayat"><span class="ms">history</span></button><button class="btn btn-ikon mini" type="button" data-a="ubah" aria-label="Ubah"><span class="ms">edit</span></button><button class="btn btn-ikon mini merah" type="button" data-a="hapus" aria-label="Hapus"><span class="ms">delete</span></button></td></tr>';
         }).join('') + '</tbody></table></div>' : A.kosong('groups', 'Belum ada klien. Tambahkan klien jasa Anda untuk mulai menerbitkan tagihan.', '<button class="btn btn-utama btn-kecil" type="button" id="k-tambah2"><span class="ms">person_add</span>Tambah Klien</button>');
       if ($('#k-tambah2', w)) $('#k-tambah2', w).onclick = function () { formKlien({}); };
       w.onclick = function (ev) {
@@ -59,6 +59,7 @@
         var k = K.rows.filter(function (x) { return x.id === b.closest('tr').dataset.id; })[0];
         if (b.dataset.a === 'ubah') formKlien(k);
         if (b.dataset.a === 'tautan') tautan(k, false);
+        if (b.dataset.a === 'testi') mintaTesti(k);
         if (b.dataset.a === 'riwayat') riwayat(k);
         if (b.dataset.a === 'hapus') A.konfirmasi('Hapus klien ' + k.nama + '?', 'Klien yang sudah punya tagihan hanya dinonaktifkan agar riwayat pembayaran tetap utuh.', 'Hapus', true).then(function (ya) { if (ya) api('klien.hapus', { id: k.id }).then(function (r) { toast(r.message, r.ok ? '' : 'galat'); muat(); }); });
       };
@@ -83,6 +84,20 @@
           '<div class="info-kotak kuning"><span class="ms">autorenew</span><span>Buat tautan baru bila tautan lama tersebar. Tautan lama langsung tidak berlaku. <button class="btn btn-teks" type="button" id="putar">Buat tautan baru</button></span></div>', tombol: [{ teks: 'Tutup' }] });
         $('#s-url', m.isi).onclick = function () { salin(url, 'Tautan disalin.'); };
         $('#putar', m.isi).onclick = function () { A.konfirmasi('Buat tautan baru?', 'Tautan lama milik ' + k.nama + ' tidak akan berlaku lagi.', 'Buat baru', true).then(function (ya) { if (ya) { m.tutup(); tautan(k, true); } }); };
+      });
+    };
+    /** tautan pribadi formulir testimoni — berbeda dari tautan bayar (tidak membuka halaman tagihan) */
+    var mintaTesti = function (k) {
+      api('klien.tautanTesti', { id: k.id }).then(function (r) {
+        if (!r.ok) return toast(A.pesanBelumDeploy ? A.pesanBelumDeploy(r) : r.message, 'galat');
+        var url = r.data.url, sapa = 'Halo ' + k.nama + ', terima kasih atas kerja samanya. Bila berkenan, mohon kesediaannya memberi testimoni singkat tentang pengalaman bekerja sama dengan saya' + (k.instansi ? ' (sebagai pribadi atau atas nama ' + k.instansi + ')' : '') + '. Testimoni hanya ditampilkan di situs portofolio saya dengan persetujuan Anda: ' + url;
+        var m = A.modal({ judul: 'Minta Testimoni — ' + k.nama, isi: '<p style="color:var(--abu-2);font-size:14px">Tautan pribadi ini membuka formulir testimoni dengan nama' + (k.instansi ? ' dan instansi' : '') + ' klien sudah terisi, dan ditandai <b>Klien</b> di antrean Anda. Testimoni tetap menunggu persetujuan Anda sebelum tampil.</p>' +
+          '<input class="input mono" readonly value="' + e(url) + '" style="font-size:12.5px" aria-label="Tautan testimoni">' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-utama btn-kecil" type="button" id="s-testi"><span class="ms">content_copy</span>Salin tautan</button>' + (k.no_wa ? '<a class="btn btn-hijau btn-kecil" target="_blank" rel="noopener" href="' + e(waLink(k.no_wa, sapa)) + '"><span class="ms">chat</span>Kirim via WhatsApp</a>' : '') +
+          (k.email ? '<a class="btn btn-garis btn-kecil" href="mailto:' + e(k.email) + '?subject=' + encodeURIComponent('Permohonan testimoni') + '&body=' + encodeURIComponent(sapa) + '"><span class="ms">mail</span>Kirim via Email</a>' : '') + '<a class="btn btn-garis btn-kecil" href="' + e(url) + '" target="_blank" rel="noopener"><span class="ms">open_in_new</span>Buka</a></div>' +
+          (r.data.mode === 'Nonaktif' ? '<div class="info-kotak kuning"><span class="ms">lock</span><span>Formulir testimoni sedang <b>Nonaktif</b>, jadi tautan ini belum bisa dipakai. Ubah di menu <a href="#/testimoni">Testimoni</a>.</span></div>' : '') +
+          '<div class="info-kotak"><span class="ms">shield</span><span>Tautan ini tidak membuka halaman tagihan klien. Bila Anda membuat tautan bayar baru untuk klien ini, tautan testimoni lama ikut tidak berlaku.</span></div>', tombol: [{ teks: 'Tutup' }] });
+        $('#s-testi', m.isi).onclick = function () { salin(url, 'Tautan testimoni disalin.'); };
       });
     };
     var riwayat = function (k) {

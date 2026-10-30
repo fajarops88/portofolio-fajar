@@ -133,7 +133,7 @@
   function kosong(ikon, teks, tombol) { return '<div class="kosong"><span class="ms">' + ikon + '</span><p>' + e(teks) + '</p>' + (tombol || '') + '</div>'; }
   function lencana(st) {
     var w = { 'baru': 'biru', 'dibaca': 'abu', 'Ya': 'hijau', 'Tidak': 'abu', 'Lunas': 'hijau', 'Gratis': 'hijau', 'Terverifikasi': 'hijau', 'Terkirim': 'hijau', 'Selesai': 'hijau', 'Aktif': 'hijau',
-      'Menunggu Verifikasi': 'kuning', 'Menunggu': 'kuning', 'Antri': 'kuning', 'Proses': 'kuning', 'Berjalan': 'biru', 'Terlambat': 'merah', 'Ditolak': 'merah', 'Gagal': 'merah',
+      'Menunggu Verifikasi': 'kuning', 'Menunggu': 'kuning', 'Disetujui': 'hijau', 'Antri': 'kuning', 'Proses': 'kuning', 'Berjalan': 'biru', 'Terlambat': 'merah', 'Ditolak': 'merah', 'Gagal': 'merah',
       'Belum Bayar': 'oranye', 'Batal': 'abu', 'Dihentikan': 'abu', 'Nonaktif': 'abu', 'Terdaftar': 'hijau', 'Tidak Terdaftar': 'merah' }[st] || 'abu';
     var label = { 'baru': 'Baru', 'dibaca': 'Dibaca', 'Ya': 'Tampil', 'Tidak': 'Disembunyikan' }[st] || st;
     return '<span class="lencana ' + w + '">' + e(label) + '</span>';
@@ -290,7 +290,7 @@
     clearInterval(S.timer); perbaruiTimer(); S.timer = setInterval(perbaruiTimer, 30000);
     if (!location.hash || location.hash.indexOf('#/') !== 0) location.hash = '#/beranda'; else rute();
     // pemanasan: 1 panggilan batch berisi data yang hampir pasti dibuka (gas-scale-turbo)
-    api('batch', { calls: [{ action: 'konten.list' }, { action: 'profil.get' }, { action: 'pengaturan.get' }, { action: 'pesan.list', data: { status: 'baru', per: 5 } }] }).then(function (r) {
+    api('batch', { calls: [{ action: 'konten.list' }, { action: 'profil.get' }, { action: 'pengaturan.get' }, { action: 'pesan.list', data: { status: 'baru', per: 5 } }, { action: 'testimoni.masuk' }] }).then(function (r) {
       if (!r.ok) return;
       var h = r.data.hasil;
       if (h[0].ok) {
@@ -300,9 +300,11 @@
       if (h[1].ok) S.cache.profil = h[1].data;
       if (h[2].ok) S.cache.pengaturan = h[2].data;
       if (h[3].ok) setLencanaPesan(h[3].data.ringkasan.baru);
+      if (h[4] && h[4].ok) { S.cache.testiMasuk = h[4].data; setLencanaTesti(h[4].data.ringkasan.Menunggu || 0); }
     });
     if (me.darurat) toast('Anda masuk dengan akses darurat. Ganti sandinya & isi Google Client ID di Pengaturan → Keamanan.', 'info');
   }
+  function setLencanaTesti(n) { S.testiMenunggu = n; var a = $('#sb-hitung-testi'); if (a) { a.textContent = n; a.hidden = !n; } }
   function setLencanaPesan(n) {
     S.pesanBaru = n;
     var a = $('#sb-hitung-pesan'); if (a) { a.textContent = n; a.hidden = !n; }
@@ -314,7 +316,7 @@
       var isi = g[1].filter(function (id) { return MODUL[id]; });
       if (!isi.length) return;
       h += '<div class="grup">' + e(g[0]) + '</div>';
-      isi.forEach(function (id) { var m = MODUL[id]; h += '<a href="#/' + id + '" data-r="' + id + '"><span class="ms">' + m.ikon + '</span>' + e(m.judul) + (id === 'pesan' ? '<span class="hitung" id="sb-hitung-pesan" hidden>0</span>' : '') + '</a>'; });
+      isi.forEach(function (id) { var m = MODUL[id]; h += '<a href="#/' + id + '" data-r="' + id + '"><span class="ms">' + m.ikon + '</span>' + e(m.judul) + (id === 'pesan' ? '<span class="hitung" id="sb-hitung-pesan" hidden>0</span>' : id === 'testimoni' ? '<span class="hitung" id="sb-hitung-testi" title="Menunggu persetujuan" hidden>0</span>' : '') + '</a>'; });
     });
     $('#sb-nav').innerHTML = h;
     $('#buka-lembar').onclick = function () { bukaLembar(GRUP[1][1], 'Semua Modul Konten'); };
@@ -379,7 +381,7 @@
   MODUL.beranda = { judul: 'Beranda', ikon: 'dashboard', render: function (el) {
     var gambar = function (d) {
       var k = d.kpi;
-      setLencanaPesan(k.pesanBaru);
+      setLencanaPesan(k.pesanBaru); setLencanaTesti(k.testimoniMenunggu || 0);
       var puncak = d.seri.reduce(function (m, x) { return x.kunjungan > m.kunjungan ? x : m; }, { kunjungan: -1 });
       el.innerHTML = '<div class="kepala-hal"><div><h1>Ikhtisar Panel Kendali</h1><p>Selamat datang kembali, ' + e(d.namaAdmin || 'Admin') + ' · ' + e(hariIni(true)) + '</p></div><div class="aksi">' +
         '<button class="btn btn-garis" type="button" id="b-segar"><span class="ms">refresh</span>Segarkan</button><a class="btn btn-garis" href="#/profil"><span class="ms">manage_accounts</span>Ubah Profil</a><a class="btn btn-utama" href="#/portofolio/baru"><span class="ms">add</span>Tambah Proyek</a></div></div>' +
@@ -399,6 +401,7 @@
         '<div class="status-baris"><span><span class="ms">table_chart</span>Database Google Sheets</span><span class="lencana hijau">Terhubung</span></div>' +
         '<div class="status-baris"><span><span class="ms">notifications</span>Antrean notifikasi</span>' + (d.sistem.antreanNotif ? '<span class="lencana kuning">Ada antrean</span>' : '<span class="lencana hijau">Kosong</span>') + '</div>' +
         (k.tagihanMenunggu ? '<div class="status-baris"><span><span class="ms">receipt_long</span>Bukti bayar menunggu</span><a class="lencana kuning" href="#/tagihan/verifikasi">' + k.tagihanMenunggu + ' bukti</a></div>' : '') +
+        (k.testimoniMenunggu ? '<div class="status-baris"><span><span class="ms">rate_review</span>Testimoni menunggu persetujuan</span><a class="lencana kuning" href="#/testimoni">' + k.testimoniMenunggu + ' testimoni</a></div>' : '') +
         '<div class="status-baris"><span><span class="ms">public</span>Situs publik</span>' + (d.sistem.urlSitus ? '<a href="' + e(API.urlAman(d.sistem.urlSitus)) + '" target="_blank" rel="noopener" style="font-size:13px">Buka ↗</a>' : '<span>–</span>') + '</div>' +
         '<p style="font-size:12px;color:var(--abu);margin-top:10px">Data diperbarui ' + e(API.relatif(d.dibuat)) + ' · versi ' + e(d.sistem.versi) + '</p></section></div>';
       $('#b-segar').onclick = function () { sibuk(this, true); muat(true); };
@@ -623,7 +626,10 @@
           }
           if (kunci === 'testimoni') {
             var rr = semua.length ? (semua.reduce(function (s, r) { return s + Number(r.rating || 0); }, 0) / semua.length).toFixed(1).replace('.', ',') : '0';
-            atas = '<div class="grid-kpi"><div class="panel kpi"><div class="atas">Total testimoni<span class="ms">format_quote</span></div><b>' + semua.length + '</b><small>' + tampilN + ' tampil · ' + (semua.length - tampilN) + ' disembunyikan</small></div><div class="panel kpi"><div class="atas">Rata-rata rating<span class="ms">star</span></div><b>' + rr + '</b><small>dari 5 bintang</small></div><div class="panel kpi ' + (tampilN ? '' : 'sorot') + '"><div class="atas">Bagian di situs<span class="ms">public</span></div><b style="font-size:20px">' + (tampilN ? 'Terlihat' : 'Tersembunyi') + '</b><small>' + (tampilN ? 'Ada testimoni aktif' : 'Aktifkan minimal 1 testimoni') + '</small></div></div>';
+            var tm = S.cache.testiMasuk && S.cache.testiMasuk.ringkasan ? S.cache.testiMasuk.ringkasan.Menunggu || 0 : 0;
+            atas = '<div class="grid-kpi"><div class="panel kpi"><div class="atas">Total testimoni<span class="ms">format_quote</span></div><b>' + semua.length + '</b><small>' + tampilN + ' tampil · ' + (semua.length - tampilN) + ' disembunyikan</small></div><div class="panel kpi"><div class="atas">Rata-rata rating<span class="ms">star</span></div><b>' + rr + '</b><small>dari 5 bintang</small></div><div class="panel kpi"><div class="atas">Bagian di situs<span class="ms">public</span></div><b style="font-size:20px">' + (tampilN ? 'Terlihat' : 'Tersembunyi') + '</b><small>' + (tampilN ? 'Ada testimoni aktif' : 'Aktifkan minimal 1 testimoni') + '</small></div>' +
+              '<a class="panel kpi ' + (tm ? 'sorot' : '') + '" href="#masuk-testi" data-ke-masuk style="text-decoration:none"><div class="atas">Menunggu persetujuan<span class="ms">rate_review</span></div><b>' + tm + '</b><small>' + (tm ? 'Tinjau sekarang →' : 'Tidak ada antrean') + '</small></a></div>' +
+              '<section class="panel" id="masuk-testi" style="margin-bottom:20px"></section>';
           }
           if (kunci === 'kontak') {
             atas = '<section class="panel" style="margin-bottom:20px"><div class="panel-kepala"><div><h2><span class="ms">visibility</span>Pratinjau Tombol Publik</h2><p>Urutan & visibilitas di bawah langsung memengaruhi bagian Kontak dan footer.</p></div></div><div style="display:flex;flex-wrap:wrap;gap:10px">' +
@@ -639,6 +645,10 @@
         var tersaring = rows.length !== semua.filter(function (r) { return kunci !== 'tentang' || r.jenis === filter.jenis; }).length;
         el.innerHTML = kepala + atas + '<section class="panel"><div class="panel-kepala"><div><h2><span class="ms">reorder</span>Daftar ' + e(c.tunggal) + '</h2><p>' + (tersaring ? 'Hapus filter untuk mengatur urutan.' : 'Seret ikon ⋮⋮ atau gunakan tombol panah untuk mengatur urutan tampil.') + '</p></div><span class="lencana abu">' + rows.length + ' entri</span></div>' +
           (rows.length ? '<div class="daftar-item" id="daftar">' + rows.map(function (r) { return itemKonten(kunci, r); }).join('') + '</div>' : kosong(c.ikon, 'Belum ada ' + c.tunggal + '.', '<button class="btn btn-utama btn-kecil" type="button" data-tambah2><span class="ms">add</span>Tambah ' + e(c.tunggal) + '</button>')) + '</section>';
+        if (kunci === 'testimoni') {
+          panelTestiMasuk($('#masuk-testi'), gambar);
+          var km = $('[data-ke-masuk]', el); if (km) km.onclick = function (ev) { ev.preventDefault(); $('#masuk-testi').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+        }
         // event
         var tambah = function () { bukaFormKonten(kunci, {}, filter.jenis, gambar); };
         $('#b-tambah').onclick = tambah; if ($('[data-tambah2]', el)) $('[data-tambah2]', el).onclick = tambah;
@@ -686,11 +696,109 @@
           });
         });
       };
-      Promise.all([ambilKonten(), kunci === 'tentang' ? ambilProfil() : null]).then(function () { gambar(); if (param && param[0] === 'baru') bukaFormKonten(kunci, {}, null, gambar); })
+      Promise.all([ambilKonten(), kunci === 'tentang' ? ambilProfil() : null, kunci === 'testimoni' ? muatTestiMasuk() : null]).then(function () { gambar(); if (param && param[0] === 'baru') bukaFormKonten(kunci, {}, null, gambar); })
         .catch(function (x) { el.innerHTML = kosong('error', x.message); });
     } };
   }
   Object.keys(KONTEN).forEach(function (k) { MODUL[k] = modulKonten(k); });
+
+  /* =====================================================================
+   * ANTREAN FORMULIR TESTIMONI (v1.2) — tampil di situs hanya setelah disetujui
+   * ===================================================================== */
+  var MODE_TESTI = [['Semua', 'Semua pengunjung — tombol "Tulis testimoni" tampil di situs'], ['Tautan', 'Hanya lewat tautan pribadi klien'], ['Nonaktif', 'Nonaktif — formulir ditutup']];
+  function muatTestiMasuk() {
+    return api('testimoni.masuk').then(function (r) {
+      if (r.ok) { S.cache.testiMasuk = r.data; setLencanaTesti(r.data.ringkasan.Menunggu || 0); }
+      else S.cache.testiMasuk = { galat: pesanBelumDeploy(r) };
+    });
+  }
+  /** frontend sudah 1.2 tetapi Apps Script belum diterapkan ulang → pesan yang bisa ditindaklanjuti */
+  function pesanBelumDeploy(r) {
+    return /tidak dikenal|tidak boleh di-batch/i.test(r.message || '') ? 'Backend Apps Script belum versi 1.2. Tambahkan berkas 12_Testimoni.gs, jalankan setupAppEnvironment, lalu Deploy → Kelola deployment → Versi baru.' : r.message;
+  }
+  function kontakTesti(k) {
+    if (!k) return '';
+    var em = k.indexOf('@') > -1, u = em ? 'mailto:' + k : 'https://wa.me/' + String(k).replace(/\D/g, '').replace(/^0/, '62');
+    return '<a href="' + e(u) + '"' + (em ? '' : ' target="_blank" rel="noopener"') + '><span class="ms">' + (em ? 'mail' : 'chat') + '</span>' + e(k) + '</a>';
+  }
+  function kartuMasuk(r) {
+    var tunggu = r.status === 'Menunggu', n = Math.max(0, Math.min(5, Number(r.rating) || 0));
+    return '<article class="kartu-antre' + (tunggu ? '' : ' selesai') + '" data-id="' + e(r.id) + '">' +
+      '<div class="km-kepala"><span class="km-avatar">' + e(inisial(r.nama)) + '</span><div class="km-nama"><b>' + e(r.nama) + '</b><small>' + e([r.jabatan, r.instansi].filter(Boolean).join(' · ') || (r.jenis === 'Instansi' ? 'Instansi' : 'Perorangan')) + '</small></div>' +
+      '<div class="km-lencana"><span class="lencana ' + (r.jenis === 'Instansi' ? 'biru' : 'abu') + '"><span class="ms" style="font-size:13px">' + (r.jenis === 'Instansi' ? 'apartment' : 'person') + '</span>' + e(r.jenis || '-') + '</span>' +
+      (r.klien_id ? '<span class="lencana hijau" title="' + e(r.klien_nama) + '"><span class="ms" style="font-size:13px">verified</span>Klien</span>' : '') + lencana(r.status) + '</div></div>' +
+      '<div class="km-bintang" aria-label="Rating ' + n + ' dari 5">' + '★'.repeat(n) + '<span>' + '★'.repeat(5 - n) + '</span></div>' +
+      '<blockquote class="km-isi">' + e(r.isi) + '</blockquote>' +
+      '<div class="km-meta"><span><span class="ms">schedule</span>' + e(API.relatif(r.dikirim)) + '</span>' + (r.kontak ? kontakTesti(r.kontak) : '') +
+      '<span title="Pengirim mencentang persetujuan publikasi"><span class="ms ok">check_circle</span>Setuju ditampilkan</span>' +
+      (r.jenis === 'Instansi' ? '<span title="Pengirim menyatakan berwenang mewakili instansi"><span class="ms ok">check_circle</span>Berwenang atas nama instansi</span>' : '') +
+      (r.tampil_nama === 'singkat' ? '<span><span class="ms">badge</span>Minta nama singkat</span>' : '') +
+      (r.diubah_admin === 'Ya' ? '<span><span class="ms">edit_note</span>Dirapikan admin</span>' : '') + '</div>' +
+      '<div class="km-aksi">' + (tunggu ? '<button class="btn btn-utama btn-kecil" type="button" data-m="setujui"><span class="ms">task_alt</span>Tinjau &amp; setujui</button><button class="btn btn-garis btn-kecil" type="button" data-m="tolak"><span class="ms">block</span>Tolak</button>'
+        : (r.status === 'Ditolak' ? '<button class="btn btn-garis btn-kecil" type="button" data-m="setujui"><span class="ms">undo</span>Setujui</button>' : '') +
+          '<button class="btn btn-teks btn-kecil" type="button" data-m="hapus" style="color:var(--merah)"><span class="ms">delete</span>Hapus dari antrean</button>') + '</div></article>';
+  }
+  function panelTestiMasuk(w, segarkan) {
+    if (!w) return;
+    var d = S.cache.testiMasuk;
+    if (!d) { w.innerHTML = '<div class="skeleton" style="height:140px"></div>'; return; }
+    if (d.galat) { w.innerHTML = kosong('error', d.galat); return; }
+    var tunggu = d.rows.filter(function (r) { return r.status === 'Menunggu'; }), riwayat = d.rows.filter(function (r) { return r.status !== 'Menunggu'; });
+    w.innerHTML = '<div class="panel-kepala"><div><h2><span class="ms">rate_review</span>Testimoni Masuk</h2><p>Kiriman dari formulir situs dan tautan pribadi klien. Tidak tampil di situs sebelum Anda setujui.</p></div>' +
+      (tunggu.length ? '<span class="lencana kuning">' + tunggu.length + ' menunggu</span>' : '<span class="lencana hijau">Tidak ada antrean</span>') + '</div>' +
+      (d.belumSetup ? '<div class="info-kotak kuning" style="margin-bottom:14px"><span class="ms">warning</span><span>Database belum diperbarui. Buka editor Apps Script, jalankan <b>setupAppEnvironment</b> sekali lagi, lalu muat ulang halaman ini.</span></div>' : '') +
+      '<div class="mode-testi"><div class="bidang"><label for="mode-testi">Siapa yang boleh mengisi formulir</label><select id="mode-testi">' + MODE_TESTI.map(function (m) { return '<option value="' + m[0] + '"' + (d.mode === m[0] ? ' selected' : '') + '>' + e(m[1]) + '</option>'; }).join('') + '</select></div>' +
+      (d.mode === 'Semua' && d.urlFormulir ? '<div class="bidang"><span class="label">Tautan formulir umum</span><div class="url-salin"><input class="input mono" readonly value="' + e(d.urlFormulir) + '" aria-label="Tautan formulir testimoni"><button class="btn btn-garis btn-kecil" type="button" id="salin-ft"><span class="ms">content_copy</span>Salin</button></div></div>' :
+       d.mode === 'Tautan' ? '<div class="info-kotak" style="align-self:end"><span class="ms">link</span><span>Bagikan tautan pribadi dari <a href="#/tagihan/klien">Klien &amp; Tagihan</a> → ikon <b>Minta testimoni</b> di baris klien.</span></div>' :
+       d.mode === 'Nonaktif' ? '<div class="info-kotak" style="align-self:end"><span class="ms">lock</span><span>Formulir ditutup. Testimoni tetap bisa Anda tambahkan sendiri lewat tombol Tambah testimoni.</span></div>' : '') + '</div>' +
+      (tunggu.length ? '<div class="daftar-masuk">' + tunggu.map(kartuMasuk).join('') + '</div>' : '<div class="kosong" style="padding:24px 12px"><span class="ms">inbox</span><p>Belum ada testimoni yang menunggu persetujuan.</p></div>') +
+      (riwayat.length ? '<button class="btn btn-teks btn-kecil" type="button" id="b-riwayat-testi" style="margin-top:10px"><span class="ms">' + (S.testiRiwayat ? 'expand_less' : 'history') + '</span>' + (S.testiRiwayat ? 'Sembunyikan riwayat' : 'Riwayat: ' + riwayat.length + ' sudah diproses') + '</button>' +
+        (S.testiRiwayat ? '<div class="daftar-masuk" style="margin-top:10px">' + riwayat.map(kartuMasuk).join('') + '</div>' : '') : '');
+    var sf = $('#salin-ft', w); if (sf) sf.onclick = function () { var u = d.urlFormulir; if (navigator.clipboard) navigator.clipboard.writeText(u).then(function () { toast('Tautan formulir disalin.'); }, function () { toast(u, 'info'); }); else toast(u, 'info'); };
+    var br = $('#b-riwayat-testi', w); if (br) br.onclick = function () { S.testiRiwayat = !S.testiRiwayat; panelTestiMasuk(w, segarkan); };
+    $('#mode-testi', w).onchange = function () {
+      var sel = this, v = sel.value, lama = d.mode; sel.disabled = true;
+      api('pengaturan.simpan', { nilai: { testimoni_formulir: v } }).then(function (r) {
+        sel.disabled = false;
+        if (!r.ok) { sel.value = lama; return toast(r.data && r.data.galat ? r.data.galat.testimoni_formulir : r.message, 'galat'); }
+        d.mode = v; if (S.cache.pengaturan && S.cache.pengaturan.nilai) S.cache.pengaturan.nilai.testimoni_formulir = v;
+        toast(v === 'Semua' ? 'Tombol "Tulis testimoni" kini tampil di situs.' : v === 'Tautan' ? 'Formulir hanya bisa diisi lewat tautan pribadi klien.' : 'Formulir testimoni ditutup.');
+        panelTestiMasuk(w, segarkan);
+      });
+    };
+    $$('.kartu-antre [data-m]', w).forEach(function (b) {
+      b.onclick = function () {
+        var r = d.rows.filter(function (x) { return x.id === b.closest('.kartu-antre').dataset.id; })[0]; if (!r) return;
+        var m = b.dataset.m, selesai = function () { delete S.cache.beranda; muatTestiMasuk().then(segarkan); };
+        if (m === 'setujui') setujuiTesti(r, selesai);
+        if (m === 'tolak') konfirmasi('Tolak testimoni ini?', 'Testimoni dari ' + r.nama + ' tidak akan tampil di situs. Data tetap tersimpan di riwayat sampai Anda hapus.', 'Tolak', true).then(function (ya) {
+          if (ya) api('testimoni.tolak', { id: r.id }).then(function (x) { toast(x.message, x.ok ? '' : 'galat'); if (x.ok) selesai(); });
+        });
+        if (m === 'hapus') konfirmasi('Hapus dari antrean?', 'Data kiriman ' + r.nama + ' (termasuk kontaknya) dihapus permanen. ' + (r.status === 'Disetujui' ? 'Testimoni yang sudah tampil di situs TIDAK ikut terhapus.' : ''), 'Hapus', true).then(function (ya) {
+          if (ya) api('testimoni.hapusMasuk', { ids: [r.id] }).then(function (x) { toast(x.message, x.ok ? '' : 'galat'); if (x.ok) selesai(); });
+        });
+      };
+    });
+  }
+  function setujuiTesti(r, selesai) {
+    var u = r.usulan || {}, isiAsli = String(r.isi || '');
+    var m = modal({ judul: 'Setujui testimoni', lebar: true, isi: '<form id="f-setuju" novalidate><div class="info-kotak" style="margin-bottom:16px"><span class="ms">info</span><span>Testimoni tampil atas nama pengirim. Rapikan ejaan bila perlu, tetapi <b>jangan mengubah maknanya</b>. Perubahan isi dicatat sebagai "dirapikan admin".</span></div><div class="grid-form">' +
+      bidang({ k: 'nama', label: 'Nama yang ditampilkan', nilai: u.nama, wajib: true, maks: 80, bantu: 'Pilihan pengirim: ' + (r.tampil_nama === 'singkat' ? '<b>nama singkat</b>' : 'nama lengkap') + '.' }) +
+      bidang({ k: 'jabatan_instansi', label: 'Jabatan / instansi', nilai: u.jabatan_instansi, maks: 120 }) +
+      bidang({ k: 'rating', label: 'Rating', tipe: 'select', nilai: String(r.rating || 5), opsi: [5, 4, 3, 2, 1].map(function (n) { return [String(n), '★'.repeat(n) + '  (' + n + ')']; }), bantu: 'Penilaian dari pengirim.' }) +
+      bidang({ k: 'tampil', label: 'Langsung tampil di situs', tipe: 'saklar', nilai: true, bantu: 'Matikan untuk menyimpan dulu tanpa menampilkan.' }) +
+      bidang({ k: 'isi', label: 'Isi testimoni', tipe: 'textarea', nilai: isiAsli, wajib: true, maks: 500, penuh: true, baris: 5, bantu: '<span id="ket-ubah"></span>' }) + '</div></form>',
+      tombol: [{ teks: 'Batal' }, { teks: '<span class="ms">task_alt</span>Setujui', kelas: 'btn-utama', aksi: function (mm) {
+        var f = $('#f-setuju', mm.isi), x = ambil(f); x.id = r.id;
+        return api('testimoni.setujui', x).then(function (h) {
+          if (!h.ok) { tandaiGalat(f, h.data && h.data.galat); toast(h.message, 'galat'); return false; }
+          if (S.cache.konten) (S.cache.konten.Testimoni = S.cache.konten.Testimoni || []).push(h.data.testimoni);
+          toast(h.message); selesai();
+        });
+      } }] });
+    var ta = $('textarea[name=isi]', m.isi), ket = $('#ket-ubah', m.isi);
+    ta.addEventListener('input', function () { ket.textContent = ta.value.trim() !== isiAsli.trim() ? 'Isi berbeda dari kiriman asli — akan ditandai "dirapikan admin".' : ''; ket.style.color = 'var(--oranye)'; });
+  }
 
   /* =====================================================================
    * MODUL: PESAN MASUK (A8, UI-14)
@@ -760,6 +868,6 @@
   /* ---------- ekspor untuk berkas modul lain ---------- */
   window.ADM = { MODUL: MODUL, S: S, api: api, toast: toast, modal: modal, konfirmasi: konfirmasi, laci: laci, sibuk: sibuk, ambil: ambil, tandaiGalat: tandaiGalat, bidang: bidang,
     kosong: kosong, lencana: lencana, ubahPersen: ubahPersen, angka: angka, inisial: inisial, grafik: grafik, ekspor: bolehEkspor, ambilProfil: ambilProfil,
-    ambilKonten: ambilKonten, $: $, $$: $$, e: e };
+    ambilKonten: ambilKonten, pesanBelumDeploy: pesanBelumDeploy, $: $, $$: $$, e: e };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai); else setTimeout(mulai, 0);
 })();
