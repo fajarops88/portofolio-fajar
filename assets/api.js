@@ -130,7 +130,9 @@
     if (dimuat[src]) return dimuat[src];
     dimuat[src] = new Promise(function (ok, gagal) {
       var s = document.createElement('script');
-      s.src = src; s.async = true; s.crossOrigin = 'anonymous';
+      // JANGAN set crossOrigin: mode CORS memblokir skrip pihak ketiga yang tidak mengirim header
+      // Access-Control-Allow-Origin (termasuk accounts.google.com/gsi/client → login Google gagal dimuat).
+      s.src = src; s.async = true;
       s.onload = ok; s.onerror = function () { delete dimuat[src]; gagal(new Error('Gagal memuat ' + src)); };
       document.head.appendChild(s);
     });
