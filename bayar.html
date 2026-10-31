@@ -59,7 +59,7 @@
 <script src="./assets/kwitansi.js" defer></script>
 </head>
 <body>
-<header class="atas"><div class="wadah"><span class="logo" id="logo">FK</span><div><b id="nama-usaha">Tagihan &amp; Kwitansi</b><small id="sub-usaha">Halaman pembayaran klien</small></div></div></header>
+<header class="atas"><div class="wadah"><span class="logo" id="logo">FFK</span><div><b id="nama-usaha">Tagihan &amp; Kwitansi</b><small id="sub-usaha">Halaman pembayaran klien</small></div></div></header>
 <main class="wadah isi" id="utama" aria-live="polite">
   <div class="kartu skeleton" style="height:180px"></div>
 </main>
@@ -117,7 +117,7 @@
   function render() {
     var d = DATA, e = API.esc, u = d.usaha || {};
     $('#nama-usaha').textContent = u.nama || 'Tagihan'; $('#sub-usaha').textContent = u.alamat || '';
-    var nm = String(u.nama || 'F K').split(/\s+/); $('#logo').textContent = ((nm[0] || ' ')[0] + ((nm[nm.length - 1] || ' ')[0])).toUpperCase();
+    var nm = String(u.nama || '').split(',')[0].trim().split(/\s+/).filter(function (k) { return /^[A-Za-z\u00C0-\u024F]/.test(k); }); $('#logo').textContent = nm.length ? nm.slice(0, 3).map(function (k) { return k[0]; }).join('').toUpperCase() : 'FFK';
     var belum = d.tagihan.filter(function (t) { return t.status === 'Belum Bayar' || t.status === 'Terlambat'; });
     var h = '<div class="kartu"><h1>Halo, ' + e(d.klien.nama) + '</h1><p style="color:var(--abu-2);margin:4px 0 18px">' + e(d.klien.instansi || '') + '</p><div class="ringkas">' +
       '<div><small>Belum dibayar</small><b>' + API.rupiah(d.ringkasan.tunggakan) + '</b></div><div><small>Menunggu verifikasi</small><b>' + API.rupiah(d.ringkasan.menunggu) + '</b></div><div><small>Sudah lunas</small><b>' + API.rupiah(d.ringkasan.lunas) + '</b></div></div></div>';

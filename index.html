@@ -44,7 +44,7 @@
   .navbar { background: var(--putih); height: 72px; border-bottom: 1px solid var(--permukaan-tinggi); }
   .navbar .wadah { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .merek { display: flex; align-items: center; gap: 12px; text-decoration: none; min-width: 0; }
-  .logo { width: 40px; height: 40px; border-radius: 12px; background: var(--navy); color: var(--kuning); display: grid; place-items: center; font-weight: 800; font-size: 15px; letter-spacing: .02em; flex-shrink: 0; }
+  .logo { width: 40px; height: 40px; border-radius: 12px; background: var(--navy); color: var(--kuning); display: grid; place-items: center; font-weight: 800; font-size: 14px; letter-spacing: 0; flex-shrink: 0; }
   .merek .nama { font-size: 17px; font-weight: 700; color: var(--navy); line-height: 1.2; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 46vw; }
   .merek .profesi { font-size: 12px; color: var(--abu-2); font-weight: 500; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 46vw; }
   .menu { display: none; height: 100%; align-items: center; gap: 26px; }
@@ -451,7 +451,7 @@
   <div class="navbar">
     <div class="wadah">
       <a class="merek" href="#home" data-cta="logo">
-        <span class="logo" id="logo-inisial" aria-hidden="true">FK</span>
+        <span class="logo" id="logo-inisial" aria-hidden="true">FFK</span>
         <span><span class="nama" id="nav-nama">Fajar Ferdian Kuswicaksono</span><span class="profesi" id="nav-profesi">&nbsp;</span></span>
       </a>
       <nav class="menu" aria-label="Navigasi utama" id="menu-utama">
@@ -638,7 +638,7 @@
   <div class="wadah">
     <div class="grid-kaki">
       <div>
-        <div class="merek-kaki"><span class="logo" id="kaki-inisial" aria-hidden="true">FK</span><b id="kaki-nama">Fajar Ferdian Kuswicaksono</b></div>
+        <div class="merek-kaki"><span class="logo" id="kaki-inisial" aria-hidden="true">FFK</span><b id="kaki-nama">Fajar Ferdian Kuswicaksono</b></div>
         <p class="tagline" id="kaki-tagline"></p>
         <div class="sosial" id="kaki-sosial"></div>
       </div>
@@ -721,6 +721,11 @@
     if (!bersih.length) return 'FK';
     return (bersih[0][0] + (bersih.length > 1 ? bersih[bersih.length - 1][0] : '')).toUpperCase();
   }
+  /** monogram logo: huruf depan tiap kata nama (tanpa gelar di belakang koma), maks. 3 → "Fajar Ferdian Kuswicaksono" = FFK */
+  function inisialLogo(nama) {
+    var kata = String(nama || '').split(',')[0].trim().split(/\s+/).filter(function (k) { return /^[A-Za-z\u00C0-\u024F]/.test(k); });
+    return kata.length ? kata.slice(0, 3).map(function (k) { return k[0]; }).join('').toUpperCase() : 'FFK';
+  }
   function gelapkan(hex, f) {
     var m = /^#?([0-9a-f]{6})$/i.exec(hex || ''); if (!m) return null;
     var n = parseInt(m[1], 16), r = Math.round((n >> 16) * f), g = Math.round(((n >> 8) & 255) * f), b = Math.round((n & 255) * f);
@@ -758,7 +763,7 @@
     if (s.judul_situs) document.title = s.judul_situs;
     if (s.meta_deskripsi) { var md = $('meta[name=description]'); if (md) md.setAttribute('content', s.meta_deskripsi); }
 
-    var nama = p.nama_lengkap || 'Fajar Ferdian Kuswicaksono', namaPendek = nama.split(',')[0].trim(), ini = inisial(nama);
+    var nama = p.nama_lengkap || 'Fajar Ferdian Kuswicaksono', namaPendek = nama.split(',')[0].trim(), ini = inisialLogo(nama);
     $('#nav-nama').textContent = nama; $('#nav-profesi').textContent = p.profesi || '';
     $('#logo-inisial').textContent = ini; $('#kaki-inisial').textContent = ini; $('#kaki-nama').textContent = namaPendek;
     $('#hak-cipta').textContent = '© ' + new Date().getFullYear() + ' ' + namaPendek + '. Hak cipta dilindungi.';
