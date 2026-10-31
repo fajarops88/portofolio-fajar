@@ -890,7 +890,7 @@
     var A = window.API, e = A.esc, hari = A.hariIniYmd();
     var jumlah = {
       sertifikat: (d.sertifikat || []).length,
-      agenda: (d.agenda || []).length ? A.jabarkanAgenda(d.agenda, hari, A.geserTgl(hari, 30)).length : -1,
+      agenda: (d.agenda || []).length ? A.jabarkanAgenda(d.agenda, hari, A.geserTgl(hari, 6)).length : -1,
       kinerja: (d.kinerja || []).length, wawasan: (d.wawasan || []).length
     };
     var ada = TAB_REKAM.filter(function (t) { return t[0] === 'agenda' ? jumlah.agenda > -1 : jumlah[t[0]] > 0; });
@@ -938,12 +938,12 @@
 
   function renderAgenda(list) {
     var A = window.API, e = A.esc, hari = A.hariIniYmd(), p = $('#panel-agenda');
-    var datang = A.jabarkanAgenda(list, hari, A.geserTgl(hari, 30)), lalu = A.jabarkanAgenda(list, A.geserTgl(hari, -30), A.geserTgl(hari, -1)).reverse();
+    var datang = A.jabarkanAgenda(list, hari, A.geserTgl(hari, 6)), lalu = A.jabarkanAgenda(list, A.geserTgl(hari, -30), A.geserTgl(hari, -1)).reverse();
     var mode = REKAM.agMode === 'lalu' && lalu.length ? 'lalu' : 'datang', rows = mode === 'lalu' ? lalu : datang;
     var sekarang = new Date(), jamKini = ('0' + sekarang.getHours()).slice(-2) + ':' + ('0' + sekarang.getMinutes()).slice(-2);
     var grup = [], idx = {};
     rows.slice(0, REKAM.agN).forEach(function (k) { if (!(k.tgl in idx)) { idx[k.tgl] = grup.length; grup.push({ tgl: k.tgl, isi: [] }); } grup[idx[k.tgl]].isi.push(k); });
-    p.innerHTML = '<div class="alat-rekam"><div class="filter" role="group" aria-label="Rentang agenda"><button type="button" data-ag="datang" aria-pressed="' + (mode === 'datang') + '">30 hari ke depan (' + datang.length + ')</button>' +
+    p.innerHTML = '<div class="alat-rekam"><div class="filter" role="group" aria-label="Rentang agenda"><button type="button" data-ag="datang" aria-pressed="' + (mode === 'datang') + '">7 hari ke depan (' + datang.length + ')</button>' +
       (lalu.length ? '<button type="button" data-ag="lalu" aria-pressed="' + (mode === 'lalu') + '">30 hari terakhir (' + lalu.length + ')</button>' : '') + '</div></div>' +
       (rows.length ? grup.map(function (g) {
         var label = g.tgl === hari ? 'Hari ini' : g.tgl === A.geserTgl(hari, 1) ? 'Besok' : g.tgl === A.geserTgl(hari, -1) ? 'Kemarin' : '';
@@ -954,7 +954,7 @@
             '<h5>' + e(k.judul) + '</h5>' + (k.tempat ? '<span class="tempat"><span class="ms">location_on</span>' + e(k.tempat) + '</span>' : '') + (k.keterangan ? '<p>' + e(k.keterangan) + '</p>' : '') + '</div></div>';
         }).join('') + '</div>';
       }).join('') + tombolLebih('b-lebih-ag', rows.length - REKAM.agN, 20)
-      : kosongRekam('event_available', mode === 'lalu' ? 'Tidak ada agenda dalam 30 hari terakhir.' : 'Belum ada agenda dalam 30 hari ke depan.'));
+      : kosongRekam('event_available', mode === 'lalu' ? 'Tidak ada agenda dalam 30 hari terakhir.' : 'Belum ada agenda dalam 7 hari ke depan.'));
   }
 
   function renderKinerja(list) {
