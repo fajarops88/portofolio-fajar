@@ -56,6 +56,21 @@
   #tombol-menu { display: inline-flex; }
   @media (min-width: 640px) { .aksi-nav .btn-kuning { display: inline-flex; } }
   @media (min-width: 1024px) { .menu { display: flex; } #tombol-menu { display: none; } .merek .nama, .merek .profesi { max-width: 300px; } }
+  /* ponsel & tablet: nama dan jabatan ditampilkan utuh (boleh 2 baris), tidak dipotong "…" */
+  @media (max-width: 1023px) {
+    .merek { flex: 1 1 auto; }
+    .merek > span:last-child { min-width: 0; }
+    .aksi-nav { flex-shrink: 0; }
+    .merek .nama, .merek .profesi { white-space: normal; text-overflow: clip; max-width: none; overflow-wrap: break-word;
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+    .merek .profesi { margin-top: 2px; line-height: 1.3; }
+  }
+  @media (max-width: 639px) {
+    .merek { gap: 10px; }
+    .merek .nama { font-size: 15px; line-height: 1.15; }
+    .merek .profesi { font-size: 11.5px; line-height: 1.25; margin-top: 1px; }
+  }
+  @media (max-width: 359px) { .navbar .wadah { gap: 10px; } .merek { gap: 8px; } .merek .nama { font-size: 14px; } .merek .profesi { font-size: 11px; } }
   .laci { position: fixed; inset: 0; z-index: 60; display: none; }
   .laci.buka { display: block; }
   .laci .latar { position: absolute; inset: 0; background: rgba(7, 28, 54, .5); }
