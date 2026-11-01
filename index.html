@@ -371,19 +371,20 @@
   @media (min-width: 640px) { .pita h2 { font-size: 38px; } }
   .pita p { color: var(--navy); font-weight: 500; font-size: 17px; }
   .pita .coret { position: absolute; top: 28px; right: 56px; color: var(--kuning); opacity: .95; }
-  .grid-kontak { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: start; }
-  @media (min-width: 1024px) { .grid-kontak { grid-template-columns: 5fr 7fr; gap: 48px; } }
+  .grid-kontak { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: start; }
+  .grid-kontak > * { min-width: 0; }   /* tautan panjang tidak boleh melebarkan kolom di ponsel */
+  @media (min-width: 1024px) { .grid-kontak { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; } }
   .kontak-kiri h3 { font-size: 22px; margin-bottom: 8px; }
   .kontak-kiri > p { font-size: 14px; color: var(--abu-2); margin-bottom: 20px; }
   .daftar-kontak { display: flex; flex-direction: column; gap: 12px; }
   .kartu-kontak { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 14px; background: var(--putih); box-shadow: 0 1px 3px rgba(11, 31, 58, .06); text-decoration: none; transition: box-shadow var(--transisi), transform var(--transisi); }
   .kartu-kontak:hover { box-shadow: var(--bayang); transform: translateY(-1px); }
-  .kartu-kontak .kiri { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .kartu-kontak .kiri { display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1 1 auto; }
   .kartu-kontak .ikon { width: 42px; height: 42px; border-radius: 12px; background: #E5EEFF; color: var(--utama); display: grid; place-items: center; flex-shrink: 0; }
   .kartu-kontak small { display: block; font-size: 12px; color: var(--abu); font-weight: 500; }
-  .kartu-kontak b { display: block; font-size: 14px; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .kartu-kontak b { display: block; font-size: 14px; color: var(--navy); line-height: 1.35; overflow-wrap: anywhere; }   /* tautan panjang turun baris, tampil utuh */
   .kartu-kontak:hover b { color: var(--utama-hover); }
-  .kartu-kontak > .ms { color: #A3A8B8; }
+  .kartu-kontak > .ms { color: #A3A8B8; flex-shrink: 0; }
   .info-jam { margin-top: 16px; padding: 14px 16px; border-radius: 14px; background: rgba(255, 255, 255, .7); border: 1px solid rgba(195, 198, 215, .5); display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--abu-2); }
   .info-jam .ms { color: var(--kuning-redup); }
   .kartu-form { padding: 28px; position: relative; }
@@ -758,7 +759,8 @@
     if (u.indexOf('youtube') > -1) return 'smart_display';
     return 'link';
   }
-  function tampilanUrl(u) { return String(u || '').replace(/^mailto:|^tel:|^https:\/\/(www\.)?/i, '').replace(/\/$/, ''); }
+  /** teks tautan yang dibaca pengunjung: tanpa https://www., tanpa parameter pelacak (?igsh=…, ?_r=…) — href aslinya tidak diubah */
+  function tampilanUrl(u) { return String(u || '').replace(/^mailto:|^tel:|^https:\/\/(www\.)?/i, '').replace(/[?#].*$/, '').replace(/\/$/, ''); }
 
   function render(d) {
     var A = window.API, e = A.esc, p = d.profil || {}, s = d.pengaturan || {};
