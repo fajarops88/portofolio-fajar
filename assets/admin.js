@@ -146,6 +146,8 @@
   function angka(n) { return (Number(n) || 0).toLocaleString('id-ID'); }
   function hariIni(panjang) { return new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: panjang ? 'long' : 'short', year: 'numeric' }); }
   function inisial(n) { var p = String(n || '').split(',')[0].trim().split(/\s+/).filter(Boolean); return p.length ? (p[0][0] + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase() : 'A'; }
+  /** monogram logo situs (sama dengan landing page): huruf depan tiap kata nama tanpa gelar, maks. 3 */
+  function inisialLogo(n) { var k = String(n || '').split(',')[0].trim().split(/\s+/).filter(function (w) { return /^[A-Za-z\u00C0-\u024F]/.test(w); }); return k.length ? k.slice(0, 3).map(function (w) { return w[0]; }).join('').toUpperCase() : 'FFK'; }
 
   /** urutan seret-lepas + tombol naik/turun (aksesibel keyboard) */
   function pasangUrut(wadah, selektor, simpan) {
@@ -431,6 +433,12 @@
       el.innerHTML = '<div class="kepala-hal"><div><h1>Profil &amp; Identitas Diri</h1><p>Kelola narasi pembuka, foto, dan teks yang tampil di bagian Hero landing page.</p></div><div class="aksi"><span class="lencana abu"><span class="ms" style="font-size:14px">sync</span>Diperbarui ' + e(p.diperbarui ? API.relatif(p.diperbarui) : '–') + '</span></div></div>' +
         '<div class="grid-2 lebar-kiri"><form class="panel" id="f-profil" novalidate>' +
         '<div class="bagian-form" style="border:0;padding-top:0"><h3><span class="ms">account_circle</span>1. Foto Profil</h3><div class="unggah-foto"><span class="pratinjau" id="pv-foto"></span><div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;gap:8px;flex-wrap:wrap"><label class="btn btn-utama btn-kecil"><span class="ms">upload_file</span>Unggah Foto<input type="file" accept="image/jpeg,image/png,image/webp" id="in-foto" class="sr-only"></label><button class="btn btn-garis btn-kecil" type="button" id="hapus-foto"><span class="ms">delete</span>Hapus</button></div><span class="bantu" style="font-size:12.5px;color:var(--abu)">JPG, PNG, atau WebP. Dikompres otomatis di browser, maks. 2 MB.</span></div></div><input type="hidden" name="url_foto"></div>' +
+        '<div class="bagian-form"><h3><span class="ms">panorama</span>Latar Seluruh Bagian Hero</h3><div class="unggah-foto lebar"><span class="pratinjau" id="pv-latar-hero"></span><div style="display:flex;flex-direction:column;gap:8px;min-width:0"><div style="display:flex;gap:8px;flex-wrap:wrap"><label class="btn btn-garis btn-kecil"><span class="ms">upload_file</span>Unggah Latar Hero<input type="file" accept="image/jpeg,image/png,image/webp" id="in-latar-hero" class="sr-only"></label><button class="btn btn-garis btn-kecil" type="button" id="hapus-latar-hero"><span class="ms">delete</span>Hapus</button></div><span class="bantu" style="font-size:12.5px;color:var(--abu)">Memenuhi seluruh bagian pembuka situs, di belakang judul, tombol, dan bingkai. Gambar mendatar, min. 1600 px lebar. Dikompres otomatis.</span></div></div>' +
+        '<div class="grid-form" style="margin-top:14px">' + bidang({ k: 'latar_hero_mode', label: 'Gaya teks di atas gambar', tipe: 'select', nilai: p.latar_hero_mode || 'terang', penuh: true,
+          opsi: [['terang', 'Terang — lapisan putih, teks gelap (untuk gambar cerah)'], ['gelap', 'Gelap — lapisan navy, teks putih (untuk gambar gelap atau ramai)']],
+          bantu: 'Lapisan transparan selalu dipasang agar judul dan tombol tetap terbaca. Pilih yang paling cocok dengan gambar Anda.' }) + '</div><input type="hidden" name="url_latar_hero"></div>' +
+        '<div class="bagian-form"><h3><span class="ms">wallpaper</span>Gambar Latar Bingkai</h3><div class="unggah-foto"><span class="pratinjau latar" id="pv-latar"></span><div style="display:flex;flex-direction:column;gap:8px;min-width:0"><div style="display:flex;gap:8px;flex-wrap:wrap"><label class="btn btn-garis btn-kecil"><span class="ms">upload_file</span>Unggah Latar<input type="file" accept="image/jpeg,image/png,image/webp" id="in-latar" class="sr-only"></label><button class="btn btn-garis btn-kecil" type="button" id="hapus-latar"><span class="ms">delete</span>Hapus</button></div><span class="bantu" style="font-size:12.5px;color:var(--abu)">Tampil di bingkai hero bila foto profil kosong; inisial tetap di atasnya. Gambar tegak atau persegi, min. 900 px. Dikompres otomatis.</span></div></div>' +
+        '<div class="info-kotak kuning" id="info-latar" style="margin-top:12px" hidden><span class="ms">info</span><span>Foto profil sedang terisi, jadi gambar latar tidak terlihat di situs. Hapus foto profil bila ingin memakai gambar latar.</span></div><input type="hidden" name="url_latar"></div>' +
         '<div class="bagian-form"><h3><span class="ms">badge</span>2. Identitas &amp; Narasi Hero</h3><div class="grid-form">' +
         bidang({ k: 'nama_lengkap', label: 'Nama lengkap', nilai: p.nama_lengkap, wajib: true, maks: 100 }) + bidang({ k: 'profesi', label: 'Profesi / jabatan', nilai: p.profesi, wajib: true, maks: 80 }) +
         bidang({ k: 'headline', label: 'Headline utama (H1)', nilai: p.headline, wajib: true, maks: 120, penuh: true }) +
@@ -445,7 +453,7 @@
         '<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap"><a class="btn btn-garis" href="./" target="_blank" rel="noopener"><span class="ms">visibility</span>Lihat di situs</a><button class="btn btn-utama" type="submit"><span class="ms">save</span>Simpan Profil</button></div></form>' +
         '<aside><div class="panel" style="position:sticky;top:84px"><div class="panel-kepala"><div><h2><span class="ms">preview</span>Pratinjau Hero</h2><p>Berubah otomatis saat Anda mengetik.</p></div></div><div class="pratinjau-hero"><div class="bar"><i style="background:#FF6B6B"></i><i style="background:#FFC300"></i><i style="background:#3DD68C"></i><span style="margin-left:6px">landing page</span></div><div class="isi-hero"><div><span class="eyebrow" id="pv-profesi" style="font-size:10px"></span><h3 id="pv-headline" style="margin:8px 0"></h3><p id="pv-desk" style="font-size:12.5px;color:var(--abu-2)"></p><div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap"><span class="btn btn-utama btn-kecil" id="pv-t1" style="min-height:30px;font-size:12px"></span><span class="btn btn-garis btn-kecil" id="pv-t2" style="min-height:30px;font-size:12px"></span></div></div><div style="position:relative"><div class="foto" id="pv-foto2"></div><span class="lencana kuning" id="pv-th" style="position:absolute;left:-8px;bottom:-8px"></span></div></div></div></div></aside></div>';
       var f = $('#f-profil');
-      f.elements.url_foto.value = p.url_foto || '';
+      f.elements.url_foto.value = p.url_foto || ''; f.elements.url_latar.value = p.url_latar || ''; f.elements.url_latar_hero.value = p.url_latar_hero || '';
       var pv = function () {
         var v = ambil(f), h = v.headline || '', a = (v.kata_aksen || '').trim(), i = a ? h.toLowerCase().indexOf(a.toLowerCase()) : -1;
         $('#pv-profesi').textContent = v.profesi;
@@ -454,7 +462,17 @@
         $('#pv-t1').textContent = v.teks_tombol_1 || 'Lihat Portofolio'; $('#pv-t2').textContent = v.teks_tombol_2 || 'Tentang Saya';
         $('#pv-th').textContent = v.tahun_pengalaman ? v.tahun_pengalaman + '+ Tahun' : ''; $('#pv-th').hidden = !v.tahun_pengalaman;
         var foto = v.url_foto ? '<img src="' + e(v.url_foto) + '" alt="" referrerpolicy="no-referrer">' : '<span class="ms" style="font-size:40px">photo_camera</span>';
-        $('#pv-foto').innerHTML = foto; $('#pv-foto2').innerHTML = v.url_foto ? foto : e(inisial(v.nama_lengkap));
+        var latar = /^https:\/\//i.test(v.url_latar || '') ? v.url_latar : '';
+        $('#pv-foto').innerHTML = foto;
+        $('#pv-latar').innerHTML = latar ? '<img src="' + e(latar) + '" alt="" referrerpolicy="no-referrer">' : '<span class="ms" style="font-size:32px">wallpaper</span>';
+        $('#pv-foto2').innerHTML = v.url_foto ? foto : (latar ? '<img src="' + e(latar) + '" alt="" referrerpolicy="no-referrer"><span class="plat">' + e(inisialLogo(v.nama_lengkap)) + '</span>' : e(inisialLogo(v.nama_lengkap)));
+        $('#pv-foto2').classList.toggle('ada-latar', !v.url_foto && !!latar);
+        $('#info-latar').hidden = !(v.url_foto && latar);
+        var lh = /^https:\/\//i.test(v.url_latar_hero || '') ? v.url_latar_hero : '', ph = $('.pratinjau-hero'), isi = $('.pratinjau-hero .isi-hero'), lama = $('.ph-latar', isi);
+        $('#pv-latar-hero').innerHTML = lh ? '<img src="' + e(lh) + '" alt="" referrerpolicy="no-referrer">' : '<span class="ms" style="font-size:32px">panorama</span>';
+        if (lama && (!lh || lama.getAttribute('data-src') !== lh)) { lama.remove(); lama = null; }
+        if (lh && !lama) isi.insertAdjacentHTML('afterbegin', '<span class="ph-latar" data-src="' + e(lh) + '"><img src="' + e(lh) + '" alt="" referrerpolicy="no-referrer"></span>');
+        ph.classList.toggle('ph-terang', !!lh && v.latar_hero_mode !== 'gelap'); ph.classList.toggle('ph-gelap', !!lh && v.latar_hero_mode === 'gelap');
         var bA = f.elements.kata_aksen.closest('.bidang');
         if (a && i < 0) { bA.classList.add('salah'); $('.galat', bA).textContent = 'Kata aksen tidak ditemukan di headline'; } else if (bA.classList.contains('salah') && (!a || i > -1)) bA.classList.remove('salah');
       };
@@ -470,6 +488,28 @@
         this.value = '';
       };
       $('#hapus-foto').onclick = function () { f.elements.url_foto.value = ''; pv(); };
+      $('#in-latar').onchange = function () {
+        var fl = this.files[0]; if (!fl) return;
+        toast('Mengompres & mengunggah gambar latar…', 'info');
+        API.kompresGambar(fl, 1200, .82).then(function (b) {
+          if (b.ukuran > 2 * 1024 * 1024) throw new Error('Gambar masih ' + (b.ukuran / 1048576).toFixed(1) + ' MB setelah dikompres. Batas 2 MB.');
+          return api('berkas.unggah', { jenis: 'latar', berkas: { nama: b.nama, mime: b.mime, b64: b.b64 } }, { timeout: 90000 });
+        }).then(function (r) { if (!r.ok) throw new Error(r.message); f.elements.url_latar.value = r.data.url; pv(); toast('Gambar latar terunggah. Klik Simpan Profil untuk menerapkan.'); })
+          .catch(function (x) { toast(/jenis unggahan/i.test(x.message) ? 'Apps Script belum diperbarui. Deploy ulang backend dulu.' : x.message, 'galat'); });
+        this.value = '';
+      };
+      $('#hapus-latar').onclick = function () { f.elements.url_latar.value = ''; pv(); };
+      $('#in-latar-hero').onchange = function () {
+        var fl = this.files[0]; if (!fl) return;
+        toast('Mengompres & mengunggah latar Hero…', 'info');
+        API.kompresGambar(fl, 1920, .8).then(function (b) {
+          if (b.ukuran > 2 * 1024 * 1024) throw new Error('Gambar masih ' + (b.ukuran / 1048576).toFixed(1) + ' MB setelah dikompres. Batas 2 MB.');
+          return api('berkas.unggah', { jenis: 'hero', berkas: { nama: b.nama, mime: b.mime, b64: b.b64 } }, { timeout: 90000 });
+        }).then(function (r) { if (!r.ok) throw new Error(r.message); f.elements.url_latar_hero.value = r.data.url; pv(); toast('Latar Hero terunggah. Klik Simpan Profil untuk menerapkan.'); })
+          .catch(function (x) { toast(/jenis unggahan/i.test(x.message) ? 'Apps Script belum diperbarui ke versi 1.4. Deploy ulang backend dulu.' : x.message, 'galat'); });
+        this.value = '';
+      };
+      $('#hapus-latar-hero').onclick = function () { f.elements.url_latar_hero.value = ''; pv(); };
       $('#in-cv').onchange = function () {
         var fl = this.files[0]; if (!fl) return;
         if (fl.size > 2 * 1024 * 1024) { toast('Ukuran PDF ' + (fl.size / 1048576).toFixed(1) + ' MB melebihi batas 2 MB.', 'galat'); this.value = ''; return; }
