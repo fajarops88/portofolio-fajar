@@ -56,6 +56,9 @@
   #tombol-menu { display: inline-flex; }
   @media (min-width: 640px) { .aksi-nav .btn-kuning { display: inline-flex; } }
   @media (min-width: 1024px) { .menu { display: flex; } #tombol-menu { display: none; } .merek .nama, .merek .profesi { max-width: 300px; } }
+  /* v1.6: nama tidak lagi menabrak menu di layar 1024–1279 px (teks dipotong "…" di dalam kotak merek, jarak menu dirapatkan) */
+  .merek > span:last-child { min-width: 0; }
+  @media (min-width: 1024px) and (max-width: 1279px) { .menu { gap: 14px; } .menu a { font-size: 14.5px; } .navbar .wadah { gap: 12px; } }
   /* ponsel & tablet: nama dan jabatan ditampilkan utuh (boleh 2 baris), tidak dipotong "…" */
   @media (max-width: 1023px) {
     .merek { flex: 1 1 auto; }
@@ -132,6 +135,7 @@
   .angka-hero div { display: flex; flex-direction: column; }
   .angka-hero b { font-size: 24px; font-weight: 800; color: var(--navy); line-height: 1.2; }
   .angka-hero span { font-size: 12.5px; color: var(--abu); font-weight: 500; }
+  .angka-hero p { margin: 0; display: flex; flex-direction: column; }
   .hero-visual { position: relative; display: flex; justify-content: center; padding: 16px 8px 24px; }
   .bingkai-foto { position: relative; width: 100%; max-width: 440px; }
   .blob { position: absolute; inset: -22px -18px -10px -26px; z-index: 0; pointer-events: none; }
@@ -150,6 +154,88 @@
   .badge-pengalaman b { font-size: 24px; font-weight: 800; color: var(--navy); line-height: 1; display: flex; align-items: center; gap: 4px; }
   .badge-pengalaman span.ket { font-size: 12px; color: var(--abu); font-weight: 600; }
   @media (min-width: 640px) { .badge-pengalaman { left: -22px; } }
+
+  /* ---------- v1.6 — Hero gaya "Hidup" (Profil → Gaya Hero) ----------
+   * latar foto di kanan memudar ke putih di kiri (teks selalu di atas putih), potret tanpa latar,
+   * ikon layanan melayang pelan + garis penghubung, gelombang navy-kuning. Gaya Klasik tidak berubah. */
+  .hidup-latar, .hidup-visual, .gelombang-hero, .angka-hero .ms { display: none; }
+  #home.gaya-hidup { background: var(--putih); }
+  #home.gaya-hidup .hidup-latar { display: block; position: absolute; z-index: 0; pointer-events: none; overflow: hidden;
+    left: 0; right: 0; bottom: 0; height: clamp(360px, 100vw, 470px);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 34%); mask-image: linear-gradient(180deg, transparent 0%, #000 34%);
+    background: radial-gradient(120% 70% at 75% 15%, #FFFFFF 0%, rgba(255, 255, 255, 0) 55%), linear-gradient(180deg, #AFCFFF 0%, #D6E7FF 48%, #EEF5FF 100%); }
+  .hidup-latar img { width: 100%; height: 100%; object-fit: cover; object-position: center 60%; display: block; }
+  #home.gaya-hidup .hero { padding-bottom: 0; }
+  #home.gaya-hidup .hero-teks { padding-bottom: 8px; }
+  #home.gaya-hidup .hero .deskripsi { border-left: 4px solid var(--kuning-redup); padding-left: 16px; }
+  #home.gaya-hidup .hero-visual { padding: 0; align-self: end; }
+  #home.gaya-hidup.ada-potret .bingkai-foto { display: none; }
+  #home.gaya-hidup.ada-potret .hidup-visual { display: block; }
+  #home.gaya-hidup:not(.ada-potret) .hero-visual { padding: 0 8px 96px; }
+  .hidup-visual { position: relative; width: 100%; max-width: 560px; height: clamp(330px, 96vw, 440px); margin: 0 auto; }
+  /* ikon & garis memakai koordinat foto potret (0–100%), jadi jaraknya ke wajah sama di semua ukuran layar */
+  .wadah-potret { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); height: 92%; aspect-ratio: var(--rasio-potret, 447 / 559); }
+  .potret { position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center bottom;
+    filter: drop-shadow(0 18px 30px rgba(11, 31, 58, .22));
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%), linear-gradient(180deg, #000 80%, transparent 100%);
+    -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%), linear-gradient(180deg, #000 80%, transparent 100%); mask-composite: intersect; }
+  .jaringan { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; overflow: visible; pointer-events: none; }
+  .jaringan .j-dt { display: none; }
+  @media (min-width: 1024px) { .jaringan .j-hp { display: none; } .jaringan .j-dt { display: inline; } }
+  .jaringan path { fill: none; stroke: rgba(255, 255, 255, .95); stroke-width: 2; stroke-dasharray: 2 7; stroke-linecap: round; }
+  #home.latar-polos .jaringan path { stroke: rgba(37, 99, 235, .45); }
+  .ikon-layang { position: absolute; z-index: 3; width: 50px; height: 50px; margin: -25px 0 0 -25px; border-radius: 50%; display: grid; place-items: center;
+    background: rgba(255, 255, 255, .78); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); color: var(--utama-tua);
+    border: 2px solid rgba(255, 255, 255, .95); box-shadow: 0 0 0 6px rgba(255, 255, 255, .28), 0 12px 26px -10px rgba(11, 31, 58, .45);
+    animation: melayang 7s ease-in-out infinite; }
+  .ikon-layang .ms { font-size: 25px; font-variation-settings: 'FILL' 1; }
+  .ikon-layang.l1 { left: 9%;  top: 44%; animation-duration: 7.5s; }
+  .ikon-layang.l2 { left: 12%; top: 14%; animation-duration: 6.4s; animation-delay: -1.2s; }
+  .ikon-layang.l3 { left: 88%; top: 14%; animation-duration: 7s; animation-delay: -2.6s; }
+  .ikon-layang.l4 { left: 91%; top: 44%; animation-duration: 8s; animation-delay: -3.4s; }
+  .ikon-layang.l5 { display: none; }
+  @media (max-width: 379px) { .ikon-layang { width: 40px; height: 40px; margin: -20px 0 0 -20px; } .ikon-layang .ms { font-size: 21px; } }
+  @keyframes melayang { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+  .gelombang-hero { position: absolute; z-index: 4; left: 0; bottom: -1px; width: 100%; height: 64px; pointer-events: none; }
+  #home.gaya-hidup .gelombang-hero { display: block; }
+  #home.gaya-hidup .angka-hero { gap: 0; }
+  #home.gaya-hidup .angka-hero > div { flex-direction: row; align-items: center; gap: 10px; padding: 4px 18px; border-left: 1px solid var(--garis); }
+  #home.gaya-hidup .angka-hero > div:first-child { padding-left: 0; border-left: 0; }
+  #home.gaya-hidup .angka-hero .ms { display: block; font-size: 32px; color: var(--utama-tua); }
+  #home.gaya-hidup .hero .tombol .btn-utama { padding-right: 8px; }
+  .bulat-panah { width: 34px; height: 34px; border-radius: 50%; background: var(--utama-tua); display: grid; place-items: center; margin-left: 4px; }
+  .bulat-panah .ms { font-size: 20px; }
+  @media (max-width: 639px) {   /* HP: ikon di atas angka agar tiga angka muat satu baris */
+    #home.gaya-hidup .angka-hero { flex-wrap: nowrap; }
+    #home.gaya-hidup .angka-hero > div { flex: 1 1 0; min-width: 0; flex-direction: column; align-items: flex-start; gap: 4px; padding: 2px 10px; }
+    #home.gaya-hidup .angka-hero .ms { font-size: 24px; }
+    #home.gaya-hidup .angka-hero b { font-size: 21px; }
+    #home.gaya-hidup .angka-hero span:not(.ms) { font-size: 12px; line-height: 1.3; }
+  }
+  @media (min-width: 1024px) {
+    #home.gaya-hidup .hero { grid-template-columns: 1.08fr 1fr; gap: 24px; align-items: stretch; padding-top: 64px; }
+    #home.gaya-hidup .hero-teks { padding: 16px 0 112px; justify-content: center; }
+    /* latar mulai tepat di batas kolom teks (±50,5% lebar layar) → teks selalu di atas putih, apa pun gambarnya */
+    #home.gaya-hidup .hidup-latar { top: 0; height: auto; left: 51%;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .5) 16%, #000 40%); mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .5) 16%, #000 40%); }
+    #home.gaya-hidup.ada-potret .hero-visual { align-self: end; }
+    .hidup-visual { height: 620px; max-width: none; }
+    .wadah-potret { height: auto; width: min(100%, 470px); left: auto; right: 0; transform: none; }
+    .ikon-layang { width: 62px; height: 62px; margin: -31px 0 0 -31px; }
+    .ikon-layang .ms { font-size: 30px; }
+    .ikon-layang.l1 { left: 6%;  top: 50%; }
+    .ikon-layang.l2 { left: 4%;  top: 28%; }
+    .ikon-layang.l3 { left: 14%; top: 8%; }
+    .ikon-layang.l4 { left: 48%; top: -8%; }
+    .ikon-layang.l5 { display: grid; left: 86%; top: 8%; animation-duration: 6.8s; animation-delay: -4.2s; }
+    .gelombang-hero { height: 112px; }
+    #home.gaya-hidup .angka-hero { flex-wrap: nowrap; }
+  }
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    #home.gaya-hidup .angka-hero > div { padding: 4px 13px; gap: 8px; }
+    #home.gaya-hidup .angka-hero .ms { font-size: 27px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .ikon-layang { animation: none; } }
 
   /* ---------- about ---------- */
   #about { background: var(--permukaan-rendah); }
@@ -526,6 +612,7 @@
   <!-- ======================= HERO (F3) ======================= -->
   <section id="home" aria-labelledby="judul-hero">
     <div class="latar-hero" id="latar-hero" aria-hidden="true" hidden></div>
+    <div class="hidup-latar" id="hidup-latar" aria-hidden="true"></div>
     <div class="wadah">
       <div class="hero">
         <div class="hero-teks" id="hero-teks">
@@ -546,6 +633,20 @@
               <span><b><span><span id="badge-tahun">0</span>+</span><span class="ms isi" style="color:var(--kuning-redup);font-size:16px">star</span></b><span class="ket">Tahun Pengalaman</span></span>
             </div>
           </div>
+          <div class="hidup-visual" id="hidup-visual">
+            <div class="wadah-potret" id="wadah-potret">
+              <svg class="jaringan" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <path class="j-hp" vector-effect="non-scaling-stroke" d="M9 44 Q 3 28 12 14 Q 50 -18 88 14 Q 97 28 91 44"/>
+                <path class="j-dt" vector-effect="non-scaling-stroke" d="M6 50 Q 0 38 4 28 Q 6 14 14 8 Q 28 -6 48 -8 Q 70 -10 86 8"/>
+              </svg>
+              <span class="ikon-layang l1" aria-hidden="true"><span class="ms">directions_boat</span></span>
+              <span class="ikon-layang l2" aria-hidden="true"><span class="ms">directions_bus</span></span>
+              <span class="ikon-layang l3" aria-hidden="true"><span class="ms">local_parking</span></span>
+              <span class="ikon-layang l4" aria-hidden="true"><span class="ms">flight</span></span>
+              <span class="ikon-layang l5" aria-hidden="true"><span class="ms">car_repair</span></span>
+              <img class="potret" id="hidup-potret" alt="" width="447" height="559" decoding="async" referrerpolicy="no-referrer">
+            </div>
+          </div>
         </div>
       </div>
       <div class="galat-muat kartu" id="galat-muat" role="alert">
@@ -553,6 +654,12 @@
         <button class="btn btn-utama" type="button" id="coba-lagi"><span class="ms">refresh</span>Coba lagi</button>
       </div>
     </div>
+    <svg class="gelombang-hero" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+      <path fill="#0B1F3A" d="M0 120 L0 98 C 380 124 760 112 1040 74 C 1220 50 1350 30 1440 20 L1440 120 Z"/>
+      <path fill="none" stroke="#FFC300" stroke-width="5" vector-effect="non-scaling-stroke" d="M0 86 C 380 114 760 100 1040 60 C 1220 36 1350 16 1440 6"/>
+      <path fill="#2563EB" opacity=".9" d="M0 120 L0 108 C 420 128 820 120 1120 94 C 1270 82 1370 74 1440 70 L1440 120 Z"/>
+      <path fill="#EFF4FF" d="M0 120 L0 112 C 440 132 860 126 1160 108 C 1300 100 1390 96 1440 95 L1440 120 Z"/>
+    </svg>
   </section>
 
   <!-- ======================= ABOUT (F4) ======================= -->
@@ -829,15 +936,17 @@
     var garis = '<svg viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><path d="M3 9 Q 50 2 100 7 T 197 5" fill="none" stroke="#FFC300" stroke-width="5" stroke-linecap="round"/></svg>';
     h1.innerHTML = i > -1 ? e(headline.slice(0, i)) + '<span class="aksen">' + e(headline.substr(i, aksen.length)) + garis + '</span>' + e(headline.slice(i + aksen.length)) : e(headline);
     $('#hero-deskripsi').textContent = p.deskripsi_singkat || '';
-    var tb = '<a class="btn btn-utama" href="#portfolio" data-cta="lihat_portofolio"><span>' + e(p.teks_tombol_1 || 'Lihat Portofolio') + '</span><span class="ms">north_east</span></a>' +
-             '<a class="btn btn-garis" href="#about" data-cta="tentang_saya">' + e(p.teks_tombol_2 || 'Tentang Saya') + '</a>';
+    var hidup = p.gaya_hero === 'hidup';   // v1.6: Hero gaya Hidup (tombol & angka berikon)
+    var tb = '<a class="btn btn-utama" href="#portfolio" data-cta="lihat_portofolio"><span>' + e(p.teks_tombol_1 || 'Lihat Portofolio') + '</span>' + (hidup ? '<span class="bulat-panah"><span class="ms">arrow_forward</span></span>' : '<span class="ms">north_east</span>') + '</a>' +
+             '<a class="btn btn-garis" href="#about" data-cta="tentang_saya">' + (hidup ? '<span class="ms">person</span>' : '') + e(p.teks_tombol_2 || 'Tentang Saya') + '</a>';
     if (A.urlAman(p.url_video_intro)) tb += '<button class="btn btn-garis" type="button" id="buka-video" data-cta="video"><span class="play"><span class="ms isi" style="font-size:16px">play_arrow</span></span><span>Video Perkenalan</span></button>';
     if (A.urlAman(p.url_cv)) tb += '<a class="btn btn-garis" href="' + e(A.urlAman(p.url_cv)) + '" target="_blank" rel="noopener noreferrer" data-cta="unduh_cv"><span class="ms">description</span><span>Lihat CV</span></a>';
     $('#hero-tombol').innerHTML = tb;
     var th = parseInt(p.tahun_pengalaman, 10), angka = [];
-    if (th > 0) angka.push('<div><b>' + th + '+</b><span>Tahun Berkarier</span></div>');
-    if ((d.portofolio || []).length) angka.push('<div><b>' + d.portofolio.length + '</b><span>Proyek Ditampilkan</span></div>');
-    if ((d.keahlian || []).length) angka.push('<div><b>' + d.keahlian.length + '</b><span>Keahlian</span></div>');
+    var satuAngka = function (ikon, n, ket) { return '<div><span class="ms" aria-hidden="true">' + ikon + '</span><p><b>' + n + '</b><span>' + ket + '</span></p></div>'; };
+    if (th > 0) angka.push(satuAngka('calendar_month', th + '+', 'Tahun Berkarier'));
+    if ((d.portofolio || []).length) angka.push(satuAngka('settings', d.portofolio.length, 'Proyek Ditampilkan'));
+    if ((d.keahlian || []).length) angka.push(satuAngka('emoji_events', d.keahlian.length, 'Keahlian'));
     $('#hero-angka').innerHTML = angka.join('');
     var foto = A.urlAman(p.url_foto);
     var latar = A.urlAman(p.url_latar || '');
@@ -862,6 +971,25 @@
     }
     $('#badge-pengalaman').hidden = !(th > 0);
     $('#badge-tahun').textContent = th > 0 ? th : '';
+    // v1.6 — gaya Hidup: latar memudar dari kiri (pakai gambar Latar Hero bila ada), potret tanpa latar, ikon melayang, gelombang
+    var potret = A.urlAman(p.url_potret || ''), kotakHidup = $('#hidup-latar'), imgPotret = $('#hidup-potret');
+    home.classList.toggle('gaya-hidup', hidup);
+    home.classList.remove('ada-potret', 'latar-polos');
+    kotakHidup.innerHTML = '';
+    if (hidup) {
+      lepasLatar();                                       // lapisan rata gaya Klasik tidak dipakai di gaya Hidup
+      if (latarHero) {
+        kotakHidup.innerHTML = '<img src="' + e(latarHero) + '" alt="" decoding="async" referrerpolicy="no-referrer">';
+        $('img', kotakHidup).onerror = function () { kotakHidup.innerHTML = ''; home.classList.add('latar-polos'); };   // gagal → gradasi langit bawaan
+      } else home.classList.add('latar-polos');
+      if (potret) {
+        imgPotret.alt = 'Foto ' + namaPendek;
+        imgPotret.onerror = function () { home.classList.remove('ada-potret'); };    // gagal → bingkai foto Klasik
+        imgPotret.onload = function () { if (imgPotret.naturalWidth) $('#wadah-potret').style.setProperty('--rasio-potret', imgPotret.naturalWidth + ' / ' + imgPotret.naturalHeight); };
+        imgPotret.src = potret;
+        home.classList.add('ada-potret');
+      }
+    }
 
     // about (F4)
     var ring = String(p.ringkasan_tentang || p.deskripsi_singkat || '').split(/\n\s*\n|\n/).filter(function (x) { return x.trim(); });
