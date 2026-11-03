@@ -673,6 +673,54 @@
     .kartu-proyek:hover::after, .kartu-sert:hover::after, .kartu-artikel:hover::after, .kinerja:hover::after, .acara:hover::after,
     .kartu-proyek:hover::before, .kartu-sert:hover::before, .kartu-artikel:hover::before, .kinerja:hover::before, .acara:hover::before { animation: none; }
   }
+
+  /* ---------- v1.9 — linimasa hidup: sinar merambat dari entri terbawah ke teratas ----------
+   * Kedua kolom (Pengalaman & Pendidikan) mulai bersamaan dan tiba di atas bersamaan; tiap titik, lencana, dan judul
+   * menyala saat sinar lewat, lalu jeda ±1,5 detik di titik teratas dan mengulang. Judul bergeser ke biru pekat
+   * (bukan lebih terang) agar kontras tetap ≥ 4,5 : 1 di latar terang. */
+  .lini-wadah { position: relative; isolation: isolate; }
+  .lini-wadah .daftar-lini li::before { z-index: 2; transition: box-shadow .5s ease; }
+  .lini-sinar { position: absolute; left: -4px; top: 0; bottom: 0; width: 24px; overflow: hidden; pointer-events: none; z-index: 1; opacity: 0; transition: opacity .6s ease; }
+  .lini-sinar::before { content: ''; position: absolute; left: 11px; top: 10px; bottom: 10px; width: 2px; border-radius: 2px; transform: scaleY(0); transform-origin: 50% 100%;
+    background: linear-gradient(0deg, var(--utama) 0%, var(--biru-terang) 88%, #fff 100%); box-shadow: 0 0 6px rgba(37, 99, 235, .55); }
+  .lini-sinar i { position: absolute; left: 0; right: 0; top: 10px; bottom: 10px; transform: translateY(100%); }
+  .lini-sinar i::after { content: ''; position: absolute; left: 4px; top: -8px; width: 16px; height: 16px; border-radius: 50%;
+    background: radial-gradient(circle, #fff 0 20%, rgba(255, 214, 80, .95) 38%, rgba(255, 195, 0, 0) 72%); }
+  .lini-wadah.jalan .lini-sinar { opacity: 1; transition: opacity .2s ease; }
+  .lini-wadah.jalan .lini-sinar::before { animation: isi-lini var(--naik, 4200ms) linear forwards; }
+  .lini-wadah.jalan .lini-sinar i { animation: naik-lini var(--naik, 4200ms) linear forwards; }
+  .lini-wadah.padam .lini-sinar { opacity: 0; transition: opacity .6s ease; }
+  @keyframes isi-lini { to { transform: scaleY(1); } }
+  @keyframes naik-lini { to { transform: translateY(0); } }
+  /* titik yang sudah dilewati sinar tetap berpendar lembut sampai putaran selesai */
+  .daftar-lini li.lewat::before { box-shadow: 0 0 0 4px var(--permukaan-rendah), 0 0 0 6px rgba(37, 99, 235, .28), 0 0 16px 4px rgba(37, 99, 235, .42); }
+  .daftar-lini li.kini.lewat::before { box-shadow: 0 0 0 4px var(--navy), 0 0 0 6px rgba(255, 195, 0, .5), 0 0 18px 6px rgba(255, 195, 0, .6); }
+  .daftar-lini li.nyala::before { animation: denyut-titik 1.1s ease-out 1; }
+  @keyframes denyut-titik { 0% { transform: scale(1); } 30% { transform: scale(1.4); } 100% { transform: scale(1); } }
+  /* saat sinar tepat lewat (atau kursor di entri): lencana lebih terang, judul ke biru pekat */
+  .daftar-lini h4 { transition: color .35s ease, text-shadow .35s ease; }
+  .daftar-lini .periode { transition: background-color .35s ease, color .35s ease, box-shadow .35s ease; }
+  .daftar-lini li.nyala h4 { color: #003EA8; text-shadow: 0 0 12px rgba(37, 99, 235, .22); }
+  .daftar-lini li.nyala .lencana.abu { background: #DBE1FF; color: #003EA8; box-shadow: 0 0 0 3px rgba(37, 99, 235, .14), 0 0 14px rgba(37, 99, 235, .35); }
+  .daftar-lini li.nyala .lencana.kuning { background: #FFD666; color: #4A3700; box-shadow: 0 0 0 3px rgba(255, 195, 0, .25), 0 0 16px rgba(255, 195, 0, .55); }
+  @media (hover: hover) {
+    .daftar-lini li:hover h4 { color: #003EA8; text-shadow: 0 0 12px rgba(37, 99, 235, .22); }
+    .daftar-lini li:hover .lencana.abu { background: #DBE1FF; color: #003EA8; box-shadow: 0 0 0 3px rgba(37, 99, 235, .14), 0 0 14px rgba(37, 99, 235, .35); }
+    .daftar-lini li:hover .lencana.kuning { background: #FFD666; color: #4A3700; box-shadow: 0 0 0 3px rgba(255, 195, 0, .25), 0 0 16px rgba(255, 195, 0, .55); }
+    .daftar-lini li:hover::before { box-shadow: 0 0 0 4px var(--permukaan-rendah), 0 0 0 6px rgba(37, 99, 235, .3), 0 0 14px 3px rgba(37, 99, 235, .45); animation: nyala-titik 1.6s ease-in-out infinite; }
+    .daftar-lini li.kini:hover::before { box-shadow: 0 0 0 4px var(--navy), 0 0 0 6px rgba(255, 195, 0, .5), 0 0 16px 5px rgba(255, 195, 0, .6); animation: nyala-titik-kini 1.6s ease-in-out infinite; }
+  }
+  @keyframes nyala-titik { 0%, 100% { box-shadow: 0 0 0 4px var(--permukaan-rendah), 0 0 0 6px rgba(37, 99, 235, .25), 0 0 10px 2px rgba(37, 99, 235, .35); }
+    50% { box-shadow: 0 0 0 4px var(--permukaan-rendah), 0 0 0 7px rgba(255, 195, 0, .6), 0 0 20px 6px rgba(37, 99, 235, .55); } }
+  @keyframes nyala-titik-kini { 0%, 100% { box-shadow: 0 0 0 4px var(--navy), 0 0 0 6px rgba(255, 195, 0, .4), 0 0 12px 3px rgba(255, 195, 0, .45); }
+    50% { box-shadow: 0 0 0 4px var(--navy), 0 0 0 8px rgba(255, 195, 0, .7), 0 0 22px 8px rgba(255, 195, 0, .7); } }
+  html.diam .lini-sinar { display: none; }
+  html.diam .daftar-lini li.nyala::before { animation: none !important; }
+  @media (prefers-reduced-motion: reduce) {
+    .lini-sinar { display: none; }
+    .daftar-lini li::before, .daftar-lini li:hover::before { animation: none !important; }
+    .daftar-lini h4, .daftar-lini .periode, .lini-wadah .daftar-lini li::before { transition: none; }
+  }
 </style>
 <script src="./config.js"></script>
 <script src="./assets/api.js" defer></script>
@@ -795,8 +843,8 @@
         </div>
       </div>
       <div class="grid-linimasa">
-        <div class="linimasa muncul" id="blok-pengalaman" hidden><h3><span class="ms">work_history</span>Pengalaman Profesional</h3><ol class="daftar-lini" id="daftar-pengalaman"></ol></div>
-        <div class="linimasa muncul" id="blok-pendidikan" hidden><h3><span class="ms">school</span>Pendidikan</h3><ol class="daftar-lini" id="daftar-pendidikan"></ol></div>
+        <div class="linimasa muncul" id="blok-pengalaman" hidden><h3><span class="ms">work_history</span>Pengalaman Profesional</h3><div class="lini-wadah"><ol class="daftar-lini" id="daftar-pengalaman"></ol><span class="lini-sinar" aria-hidden="true"><i></i></span></div></div>
+        <div class="linimasa muncul" id="blok-pendidikan" hidden><h3><span class="ms">school</span>Pendidikan</h3><div class="lini-wadah"><ol class="daftar-lini" id="daftar-pendidikan"></ol><span class="lini-sinar" aria-hidden="true"><i></i></span></div></div>
       </div>
       <!-- Rekam jejak: tab hanya muncul bila ada isinya -->
       <div class="rekam muncul" id="blok-rekam" hidden>
@@ -1143,6 +1191,7 @@
     // urutan mengikuti kolom 'urutan' yang diatur admin (server sudah mengurutkan)
     $('#blok-pengalaman').hidden = !peng.length; $('#daftar-pengalaman').innerHTML = lini(peng);
     $('#blok-pendidikan').hidden = !pend.length; $('#daftar-pendidikan').innerHTML = lini(pend);
+    if (LINI && !LINI.jalan) setTimeout(siklusLini, 300);   // v1.9: linimasa mungkin sudah terlihat saat data tiba
     renderRekam(d);
 
     // skills (F5) — dikelompokkan per kategori
@@ -1395,6 +1444,55 @@
       setTimeout(function () { k.classList.remove('sorot'); }, 1900);
     });
   }
+  /** v1.9: sinar linimasa — dari entri terbawah ke teratas. Kedua kolom memakai waktu tempuh yang sama (tiba bersamaan),
+   *  jadi kolom yang lebih pendek sinarnya lebih lambat. Hanya berjalan saat linimasa terlihat; tidak memulai putaran
+   *  baru selama kursor berada di linimasa; berhenti total saat "Jeda animasi" atau "kurangi gerakan". */
+  var LINI = { jalan: false, terlihat: false, t: [], lanjut: null, io: null };
+  var LINI_WAKTU = { naik: 4200, tahan: 1500, padam: 600, sela: 400 };
+  function bersihkanLini() {
+    LINI.t.forEach(clearTimeout); LINI.t = []; LINI.jalan = false;
+    $$('.lini-wadah').forEach(function (w) { w.classList.remove('jalan', 'padam'); });
+    $$('.daftar-lini li').forEach(function (li) { li.classList.remove('lewat', 'nyala'); });
+  }
+  function adaKursor() { try { return window.matchMedia('(hover: hover)').matches; } catch (x) { return true; } }
+  function hentikanLini() { clearTimeout(LINI.lanjut); LINI.lanjut = null; bersihkanLini(); }
+  function siklusLini() {
+    clearTimeout(LINI.lanjut); LINI.lanjut = null;
+    if (LINI.jalan || diamSemua() || document.hidden || !LINI.terlihat) return;
+    var grid = $('.grid-linimasa'); if (!grid || (adaKursor() && grid.matches(':hover'))) return;
+    var wadah = $$('.lini-wadah').filter(function (w) { return w.offsetParent !== null && $('li', w); });
+    if (!wadah.length) return;
+    var W = LINI_WAKTU; LINI.jalan = true;
+    wadah.forEach(function (w) {
+      var ro = $('ol', w).getBoundingClientRect(), atas = ro.top + 10, tinggi = Math.max(1, ro.height - 20);
+      w.style.setProperty('--naik', W.naik + 'ms');
+      $$('li', w).forEach(function (li) {
+        var titik = li.getBoundingClientRect().top + 14;                 // pusat titik = top 6px + 8px
+        var f = Math.min(1, Math.max(0, (atas + tinggi - titik) / tinggi));
+        LINI.t.push(setTimeout(function () {
+          li.classList.add('lewat', 'nyala');
+          LINI.t.push(setTimeout(function () { li.classList.remove('nyala'); }, 1100));
+        }, Math.round(f * W.naik)));
+      });
+      w.classList.remove('padam'); void w.offsetWidth; w.classList.add('jalan');
+    });
+    LINI.t.push(setTimeout(function () {
+      wadah.forEach(function (w) { w.classList.add('padam'); });
+      $$('.daftar-lini li.lewat').forEach(function (li) { li.classList.remove('lewat'); });
+    }, W.naik + W.tahan));
+    LINI.t.push(setTimeout(function () { bersihkanLini(); LINI.lanjut = setTimeout(siklusLini, W.sela); }, W.naik + W.tahan + W.padam));
+  }
+  function pantauLini() {
+    var grid = $('.grid-linimasa'); if (!grid || LINI.io !== null) return;
+    grid.addEventListener('mouseleave', function () { if (!LINI.jalan) LINI.lanjut = setTimeout(siklusLini, 600); });
+    document.addEventListener('visibilitychange', function () { if (!document.hidden && !LINI.jalan) siklusLini(); });
+    if (!('IntersectionObserver' in window)) { LINI.io = false; LINI.terlihat = true; siklusLini(); return; }
+    LINI.io = new IntersectionObserver(function (en) {
+      LINI.terlihat = en[0].isIntersecting;
+      if (LINI.terlihat && !LINI.jalan) siklusLini();
+    }, { rootMargin: '-80px 0px -20% 0px' });             // terlihat = sebagian linimasa ada di area tengah layar (tak tergantung tingginya)
+    LINI.io.observe(grid);
+  }
   function aturJedaAnimasi() {
     var b = $('#jeda-animasi'); if (!b) return;
     var tampil = function () {
@@ -1406,10 +1504,12 @@
       document.documentElement.classList.toggle('diam', on);
       try { localStorage.setItem('portofolio-diam', on ? '1' : '0'); } catch (x) {}
       if (on) $$('.sorot, .kartu-testi.terbalik').forEach(function (k) { k.classList.remove('sorot', 'terbalik'); });
+      if (on) hentikanLini(); else siklusLini();
       tampil();
     });
     tampil();
     if (!SOROT.t) SOROT.t = setInterval(langkahSorot, 3200);
+    pantauLini();
   }
   function bintangTesti(r) { var b = ''; for (var n = 1; n <= 5; n++) b += '<span class="ms isi' + (n > r ? ' redup' : '') + '">star</span>'; return b; }
   /** Angka Hero dihitung naik dari 0 — sekali per kunjungan, saat terlihat; pembaca layar langsung membaca nilai akhirnya */
