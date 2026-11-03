@@ -636,6 +636,43 @@
   .modal-video .bingkai { width: min(960px, 100%); aspect-ratio: 16 / 9; background: #000; border-radius: 16px; overflow: hidden; }
   .modal-video iframe { width: 100%; height: 100%; border: 0; }
   .modal-video .tutup { position: absolute; top: 16px; right: 16px; }
+
+  /* ---------- v1.8 — kartu hidup: kilau bergiliran otomatis + menyala saat disentuh kursor ----------
+   * Otomatis: tiap ±3 detik SATU kartu yang terlihat (per daftar) disapu kilau + cincin cahaya, bergiliran.
+   * Kursor/fokus: kartu menyala-nyala biru-kuning dan sedikit terangkat. Tombol "Jeda animasi" menghentikan semua gerak otomatis. */
+  .kartu-proyek, .kartu-sert, .kartu-artikel, .kinerja, .acara { position: relative; isolation: isolate; transition: opacity .7s ease, transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
+  /* kilau 2 lapis: ::after di atas isi (soft-light → mencerahkan gambar & bidang berwarna, teks gelap tetap pekat),
+     ::before di belakang isi (biru-kuning tipis, terlihat di bidang putih) */
+  .kartu-proyek::after, .kartu-sert::after, .kartu-artikel::after, .kinerja::after, .acara::after,
+  .kartu-proyek::before, .kartu-sert::before, .kartu-artikel::before, .kinerja::before, .acara::before { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; background-size: 260% 100%; background-position: 120% 0; }
+  .kartu-proyek::after, .kartu-sert::after, .kartu-artikel::after, .kinerja::after, .acara::after { z-index: 4; mix-blend-mode: soft-light;
+    background-image: linear-gradient(115deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, .95) 47%, rgba(255, 255, 255, .45) 53%, rgba(255, 255, 255, 0) 62%); }
+  .kartu-proyek::before, .kartu-sert::before, .kartu-artikel::before, .kinerja::before, .acara::before { z-index: -1;
+    background-image: linear-gradient(115deg, rgba(37, 99, 235, 0) 36%, rgba(37, 99, 235, .12) 47%, rgba(255, 195, 0, .14) 53%, rgba(255, 195, 0, 0) 62%); }
+  .sorot { animation: nyala-sorot 1.8s ease-in-out 1; }
+  .sorot::after, .sorot::before { animation: sapu-kartu 1.5s ease-out 1; }
+  .kartu-proyek:hover, .kartu-proyek:focus-within, .kartu-sert:hover, .kartu-sert:focus-visible, .kartu-artikel:hover, .kartu-artikel:focus-visible { transform: translateY(-4px); animation: nyala-kartu 1.9s ease-in-out infinite; }
+  .kinerja:hover, .kinerja:focus-within, .acara:hover { transform: translateY(-2px); animation: nyala-kartu 1.9s ease-in-out infinite; }
+  .kartu-proyek:hover::after, .kartu-sert:hover::after, .kartu-artikel:hover::after, .kinerja:hover::after, .acara:hover::after,
+  .kartu-proyek:hover::before, .kartu-sert:hover::before, .kartu-artikel:hover::before, .kinerja:hover::before, .acara:hover::before { animation: sapu-kartu 1.2s ease-out 1; }
+  @keyframes sapu-kartu { 0% { opacity: 1; background-position: 120% 0; } 85% { opacity: 1; } 100% { opacity: 0; background-position: -20% 0; } }
+  @keyframes nyala-sorot { 0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } 40% { box-shadow: 0 0 0 3px rgba(255, 195, 0, .85), 0 18px 40px -16px rgba(37, 99, 235, .6); } }
+  /* tombol Jeda animasi (berlaku untuk seluruh situs, pilihan tersimpan di browser pengunjung) */
+  #jeda-animasi { position: fixed; left: 16px; bottom: 16px; z-index: 40; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(195, 198, 215, .8); background: rgba(255, 255, 255, .94);
+    color: var(--navy); box-shadow: var(--bayang); display: grid; place-items: center; cursor: pointer; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: background .2s, color .2s; }
+  #jeda-animasi:hover { background: var(--permukaan-rendah); }
+  #jeda-animasi[aria-pressed="true"] { background: var(--navy); color: var(--kuning); border-color: var(--navy); }
+  #jeda-animasi .ms { font-size: 20px; }
+  html.diam .hero .tombol .btn, html.diam .hero .tombol .btn::after, html.diam .angka-hero b, html.diam #home.gaya-hidup .angka-hero .ms, html.diam .ikon-layang,
+  html.diam .sorot, html.diam .sorot::after, html.diam .sorot::before { animation: none !important; }
+  html.diam .hero .tombol .btn-utama::after { opacity: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    #jeda-animasi { display: none; }
+    .sorot, .sorot::after, .sorot::before { animation: none !important; }
+    .kartu-proyek:hover, .kartu-proyek:focus-within, .kartu-sert:hover, .kartu-sert:focus-visible, .kartu-artikel:hover, .kartu-artikel:focus-visible, .kinerja:hover, .kinerja:focus-within, .acara:hover { transform: none; animation: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, .55); }
+    .kartu-proyek:hover::after, .kartu-sert:hover::after, .kartu-artikel:hover::after, .kinerja:hover::after, .acara:hover::after,
+    .kartu-proyek:hover::before, .kartu-sert:hover::before, .kartu-artikel:hover::before, .kinerja:hover::before, .acara:hover::before { animation: none; }
+  }
 </style>
 <script src="./config.js"></script>
 <script src="./assets/api.js" defer></script>
@@ -873,6 +910,7 @@
     <div class="bawah"><span id="hak-cipta">© Fajar Ferdian Kuswicaksono</span></div>
   </div>
 </footer>
+<button id="jeda-animasi" type="button" aria-pressed="false" aria-label="Jeda semua animasi" title="Jeda semua animasi"><span class="ms">pause</span></button>
 <button id="ke-atas" type="button" aria-label="Kembali ke atas"><span class="ms">arrow_upward</span></button>
 
 <div class="modal-video" id="modal-video" role="dialog" aria-modal="true" aria-label="Video perkenalan">
@@ -930,6 +968,7 @@
 <script>
 (function () {
   'use strict';
+  try { if (localStorage.getItem('portofolio-diam') === '1') document.documentElement.classList.add('diam'); } catch (x) {}   // v1.8: pilihan "Jeda animasi" pengunjung
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var DATA = null, PRJ_TAMPIL = 6;
@@ -1337,11 +1376,46 @@
 
   /* ---------------- v1.7: efek interaktif ---------------- */
   function gerakDikurangi() { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (x) { return false; } }
+  function diamSemua() { return gerakDikurangi() || document.documentElement.classList.contains('diam'); }
+  /** v1.8: kartu disorot bergiliran — per daftar, hanya kartu yang tampak di layar; berhenti saat kursor di daftar itu */
+  var SOROT = { t: null, i: {} };
+  var DAFTAR_SOROT = ['#grid-proyek .kartu-proyek', '#grid-sert .kartu-sert', '#panel-kinerja .kinerja', '#panel-wawasan .kartu-artikel', '#panel-agenda .acara'];
+  function langkahSorot() {
+    if (diamSemua() || document.hidden) return;
+    var bawah = window.innerHeight;
+    DAFTAR_SOROT.forEach(function (sel, n) {
+      var calon = $$(sel).filter(function (k) {            // ≥ 60% kartu terlihat (di bawah menu atas yang menempel)
+        var r = k.getBoundingClientRect(), tampak = Math.min(r.bottom, bawah) - Math.max(r.top, 80);
+        return r.width > 0 && r.height > 0 && tampak >= r.height * .6 && !k.classList.contains('sorot');
+      });
+      if (!calon.length || calon[0].parentNode.matches(':hover')) return;
+      SOROT.i[n] = (SOROT.i[n] || 0) + 1;
+      var k = calon[SOROT.i[n] % calon.length];
+      k.classList.add('sorot');
+      setTimeout(function () { k.classList.remove('sorot'); }, 1900);
+    });
+  }
+  function aturJedaAnimasi() {
+    var b = $('#jeda-animasi'); if (!b) return;
+    var tampil = function () {
+      var on = document.documentElement.classList.contains('diam'), l = on ? 'Lanjutkan animasi' : 'Jeda semua animasi';
+      b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', l); b.title = l; $('.ms', b).textContent = on ? 'play_arrow' : 'pause';
+    };
+    b.addEventListener('click', function () {
+      var on = !document.documentElement.classList.contains('diam');
+      document.documentElement.classList.toggle('diam', on);
+      try { localStorage.setItem('portofolio-diam', on ? '1' : '0'); } catch (x) {}
+      if (on) $$('.sorot, .kartu-testi.terbalik').forEach(function (k) { k.classList.remove('sorot', 'terbalik'); });
+      tampil();
+    });
+    tampil();
+    if (!SOROT.t) SOROT.t = setInterval(langkahSorot, 3200);
+  }
   function bintangTesti(r) { var b = ''; for (var n = 1; n <= 5; n++) b += '<span class="ms isi' + (n > r ? ' redup' : '') + '">star</span>'; return b; }
   /** Angka Hero dihitung naik dari 0 — sekali per kunjungan, saat terlihat; pembaca layar langsung membaca nilai akhirnya */
   var HITUNG = { sudah: false, io: null };
   function pantauHitung() {
-    if (HITUNG.sudah || gerakDikurangi()) return;
+    if (HITUNG.sudah || diamSemua()) return;
     var wadah = $('#hero-angka'); if (!wadah || !$('.hitung', wadah)) return;
     var mulai = function () {
       if (HITUNG.sudah) return; HITUNG.sudah = true;
@@ -1375,7 +1449,7 @@
     BALIK.t = setInterval(langkahBalik, 4200);
   }
   function langkahBalik() {
-    if (BALIK.jeda || !BALIK.terlihat || document.hidden || $('#testi-penuh').classList.contains('buka')) return;
+    if (BALIK.jeda || diamSemua() || !BALIK.terlihat || document.hidden || $('#testi-penuh').classList.contains('buka')) return;
     var g = $('#geser-testi'), gr = g.getBoundingClientRect();
     var calon = $$('.kartu-testi.balik', g).filter(function (k) {
       var r = k.getBoundingClientRect();
@@ -1492,6 +1566,7 @@
       if (BALIK.jeda) $$('.kartu-testi.terbalik').forEach(function (k) { k.classList.remove('terbalik'); });
     });
     $('#tutup-testi-penuh').addEventListener('click', tutupTestiPenuh);
+    aturJedaAnimasi();
     $('#tp-sebelum').addEventListener('click', function () { bukaTestiPenuh(TP.i - 1); });
     $('#tp-berikut').addEventListener('click', function () { bukaTestiPenuh(TP.i + 1); });
     $('#testi-penuh').addEventListener('mousedown', function (ev) { if (ev.target === this) tutupTestiPenuh(); });
