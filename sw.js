@@ -5,7 +5,7 @@
  * - Permintaan ke Google Apps Script / Google login / Drive TIDAK PERNAH di-cache
  * Naikkan VERSI setiap kali Anda mengubah berkas frontend agar cache lama dibersihkan.
  */
-const VERSI = 'portofolio-v1.9.0';
+const VERSI = 'portofolio-v1.9.1';
 const INTI = ['./', './index.html', './bayar.html', './config.js', './manifest.json', './assets/tema.css', './assets/api.js', './assets/kwitansi.js', './icons/icon-192.png', './icons/icon-512.png'];
 const JANGAN_CACHE = ['script.google.com', 'script.googleusercontent.com', 'accounts.google.com', 'oauth2.googleapis.com', 'drive.google.com', 'googleusercontent.com', 'youtube'];
 
