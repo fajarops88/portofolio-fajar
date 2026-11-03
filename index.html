@@ -413,6 +413,8 @@
   #testimoni { background: var(--putih); }
   .nav-geser { display: flex; gap: 8px; }
   .geser { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 4px 2px 12px; }
+  /* v1.7: ruang untuk cahaya kartu (tidak terpotong tepi area geser), tata letak tetap sama */
+  #geser-testi { padding: 12px 8px 34px; margin: -8px -6px -22px; scroll-padding-inline: 8px; }
   .geser::-webkit-scrollbar { display: none; }
   @media (min-width: 768px) { .geser { grid-auto-columns: calc(50% - 12px); } }
   @media (min-width: 1024px) { .geser { grid-auto-columns: calc(33.333% - 16px); gap: 24px; } }
@@ -429,6 +431,82 @@
   .orang b { display: block; color: var(--navy); font-size: 15px; }
   .orang span { font-size: 13px; color: var(--abu); }
   .aksi-testi { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  /* ---------- v1.7 — efek interaktif: tombol CTA, Angka Hero, kartu testimoni ----------
+   * Bertingkat agar tidak ramai: tombol utama berkilau berkala; tombol lain & kartu menyala saat disentuh kursor.
+   * Semua gerak otomatis berhenti bila pengunjung memilih "kurangi gerakan". */
+  .hero .tombol .btn { position: relative; overflow: hidden; isolation: isolate; transition: transform .25s ease, box-shadow .25s ease, background .25s ease, border-color .25s ease, color .25s ease; }
+  .hero .tombol .btn::after { content: ''; position: absolute; z-index: -1; top: -30%; bottom: -30%; left: -60%; width: 40%; pointer-events: none;
+    background: linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .55), rgba(255, 255, 255, 0)); transform: translateX(0) skewX(-20deg); opacity: 0; }
+  .hero .tombol .btn-utama { animation: nyala-tombol 2.8s ease-in-out infinite; }
+  .hero .tombol .btn-utama::after { opacity: 1; animation: kilau-tombol 5s ease-in-out 1.2s infinite; }
+  .hero .tombol .btn-utama:hover, .hero .tombol .btn-utama:focus-visible { transform: translateY(-2px); box-shadow: 0 14px 30px -8px rgba(37, 99, 235, .8), 0 0 0 6px rgba(37, 99, 235, .18); animation-play-state: paused; }
+  .hero .tombol .btn-utama .bulat-panah, .hero .tombol .btn-utama > .ms { transition: transform .25s ease; }
+  .hero .tombol .btn-utama:hover .bulat-panah, .hero .tombol .btn-utama:hover > .ms { transform: translateX(3px); }
+  .hero .tombol .btn-garis::after { background: linear-gradient(100deg, rgba(37, 99, 235, 0), rgba(37, 99, 235, .16), rgba(37, 99, 235, 0)); }
+  .hero .tombol .btn-garis:hover, .hero .tombol .btn-garis:focus-visible { transform: translateY(-2px); border-color: var(--utama); color: var(--utama-tua);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .12), 0 12px 24px -12px rgba(37, 99, 235, .55); }
+  .hero .tombol .btn-garis:hover::after, .hero .tombol .btn-garis:focus-visible::after { opacity: 1; animation: kilau-tombol 1.2s ease-out 1; }
+  #home.latar-gelap .hero .tombol .btn-garis:hover, #home.latar-gelap .hero .tombol .btn-garis:focus-visible { color: #fff; border-color: var(--kuning); box-shadow: 0 0 0 4px rgba(255, 195, 0, .2); }
+  #home.latar-gelap .hero .tombol .btn-garis::after { background: linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .3), rgba(255, 255, 255, 0)); }
+  @keyframes kilau-tombol { 0% { transform: translateX(0) skewX(-20deg); } 24%, 100% { transform: translateX(480%) skewX(-20deg); } }
+  @keyframes nyala-tombol { 0%, 100% { box-shadow: 0 6px 16px -6px rgba(37, 99, 235, .6), 0 0 0 0 rgba(37, 99, 235, 0); } 50% { box-shadow: 0 10px 26px -6px rgba(37, 99, 235, .75), 0 0 0 6px rgba(37, 99, 235, .15); } }
+  /* Angka Hero: hitung naik + kilau bergantian (biru tua di atas putih tetap ≥ 4,5:1) */
+  .angka-hero > div { transition: transform .25s ease; }
+  .angka-hero > div:hover { transform: translateY(-3px); }
+  .angka-hero b { background: linear-gradient(100deg, var(--navy) 0%, var(--navy) 42%, var(--utama) 50%, var(--navy) 58%, var(--navy) 100%); background-size: 300% 100%; background-position: 100% 0;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--navy); animation: kilau-teks 6s ease-in-out infinite; }
+  .angka-hero > div:nth-child(2) b { animation-delay: 1.4s; } .angka-hero > div:nth-child(3) b { animation-delay: 2.8s; }
+  #home .angka-hero b > .hitung, #home.gaya-hidup .angka-hero b > span.hitung { font: inherit; color: inherit; line-height: inherit; }   /* angka tetap ukuran besar, bukan ukuran keterangan */
+  #home.latar-gelap .angka-hero b { background-image: linear-gradient(100deg, #fff 0%, #fff 42%, var(--kuning) 50%, #fff 58%, #fff 100%); color: #fff; }
+  #home.gaya-hidup .angka-hero .ms { animation: nyala-ikon 3.2s ease-in-out infinite; transition: transform .25s ease; }
+  #home.gaya-hidup .angka-hero > div:nth-child(2) .ms { animation-delay: 1.1s; } #home.gaya-hidup .angka-hero > div:nth-child(3) .ms { animation-delay: 2.2s; }
+  #home.gaya-hidup .angka-hero > div:hover .ms { transform: scale(1.14); }
+  @keyframes kilau-teks { 0% { background-position: 100% 0; } 35%, 100% { background-position: 0 0; } }
+  @keyframes nyala-ikon { 0%, 100% { filter: drop-shadow(0 0 0 rgba(37, 99, 235, 0)); } 50% { filter: drop-shadow(0 0 7px rgba(37, 99, 235, .65)); } }
+  /* kartu testimoni dua sisi: depan = kutipan, belakang = profil pemberi testimoni */
+  .kartu-testi.balik { position: relative; display: block; padding: 0; background: none; perspective: 1400px; cursor: pointer; border-radius: var(--radius); transition: transform .3s ease; }
+  .kartu-testi.balik:hover, .kartu-testi.balik:focus-within { transform: translateY(-4px); }
+  .balik-dalam { display: grid; height: 100%; transform-style: preserve-3d; transition: transform .85s cubic-bezier(.45, .1, .2, 1); border-radius: var(--radius); }
+  .kartu-testi.terbalik .balik-dalam { transform: rotateY(180deg); }
+  .sisi { grid-area: 1 / 1; min-width: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: var(--radius); padding: 30px; display: flex; flex-direction: column; justify-content: space-between; gap: 22px; transition: box-shadow .3s ease; }
+  .sisi-depan { background: var(--permukaan-rendah); }
+  .sisi-depan blockquote { display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+  .baca-testi { margin-top: 10px; border: 0; background: none; padding: 4px 0; font: inherit; font-size: 13.5px; font-weight: 700; color: var(--utama-hover); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .baca-testi .ms { font-size: 17px; }
+  .sisi-belakang { transform: rotateY(180deg); align-items: center; justify-content: center; text-align: center; gap: 10px; color: #fff;
+    background: radial-gradient(130% 90% at 25% 10%, #2B5BE0 0%, var(--navy) 62%); }
+  .sisi-belakang .avatar { width: 88px; height: 88px; font-size: 28px; background: var(--kuning); color: var(--navy); box-shadow: 0 0 0 5px rgba(255, 255, 255, .18), 0 0 0 9px rgba(255, 195, 0, .35); margin-bottom: 8px; }
+  .sisi-belakang b { font-size: 18px; color: #fff; }
+  .sisi-belakang .jabatan { font-size: 13.5px; color: #C9D3E6; max-width: 260px; }
+  .sisi-belakang .bintang { color: var(--kuning); margin: 4px 0 8px; }
+  .sisi-belakang .bintang .redup { color: rgba(255, 255, 255, .3); }
+  .sisi-belakang .ajak { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 999px; background: var(--kuning); color: var(--navy); font-weight: 700; font-size: 13.5px; }
+  .kartu-testi.balik:hover .sisi, .kartu-testi.balik:focus-within .sisi { animation: nyala-kartu 1.9s ease-in-out infinite; }
+  @keyframes nyala-kartu { 0%, 100% { box-shadow: 0 0 0 2px rgba(37, 99, 235, .5), 0 16px 36px -16px rgba(37, 99, 235, .5); } 50% { box-shadow: 0 0 0 3px rgba(255, 195, 0, .9), 0 22px 46px -12px rgba(37, 99, 235, .7); } }
+  #testi-jeda[aria-pressed="true"] { background: var(--permukaan-rendah); border-color: var(--utama); color: var(--utama-tua); }
+  /* pop-up testimoni lengkap */
+  .testi-penuh { position: fixed; inset: 0; z-index: 958; background: rgba(7, 28, 54, .62); display: none; align-items: center; justify-content: center; padding: 20px 16px; }
+  .testi-penuh.buka { display: flex; }
+  .testi-penuh .lembar { position: relative; width: min(640px, 100%); max-height: calc(100vh - 40px); overflow: auto; background: var(--putih); border-radius: 24px; padding: 34px 28px 22px; box-shadow: var(--bayang-tinggi); animation: muncul-testi .28s ease; }
+  @keyframes muncul-testi { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
+  .testi-penuh .tutup { position: absolute; top: 12px; right: 12px; }
+  .testi-penuh .kepala-tp { display: flex; gap: 16px; align-items: center; margin: 0 40px 18px 0; }
+  .testi-penuh .avatar { width: 64px; height: 64px; font-size: 20px; box-shadow: 0 0 0 4px #fff, 0 0 0 7px var(--kuning); }
+  .testi-penuh .kepala-tp b { display: block; font-size: 18px; color: var(--navy); }
+  .testi-penuh .kepala-tp .jabatan { display: block; font-size: 13.5px; color: var(--abu); margin: 2px 0 6px; }
+  .testi-penuh .kutip-tp { color: #B5C7EA; } .testi-penuh .kutip-tp .ms { font-size: 44px; }
+  .testi-penuh blockquote { margin: 0; font-size: 17px; line-height: 1.8; color: var(--teks); white-space: pre-line; overflow-wrap: anywhere; }
+  .testi-penuh .kaki-tp { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 22px; padding-top: 14px; border-top: 1px solid rgba(195, 198, 215, .5); }
+  .testi-penuh .kaki-tp small { color: var(--abu); font-size: 13px; white-space: nowrap; }
+  @media (max-width: 420px) { .testi-penuh .kaki-tp .lbl { display: none; } .testi-penuh .kaki-tp .btn { padding: 0 12px; } }
+  @media (prefers-reduced-motion: reduce) {
+    .hero .tombol .btn, .hero .tombol .btn::after, .angka-hero b, #home.gaya-hidup .angka-hero .ms, .kartu-testi.balik .sisi, .testi-penuh .lembar { animation: none !important; }
+    .hero .tombol .btn::after { display: none; }
+    .balik-dalam { transition: none; }
+    .kartu-testi.balik:hover, .kartu-testi.balik:focus-within, .angka-hero > div:hover { transform: none; }
+    .kartu-testi.balik:hover .sisi, .kartu-testi.balik:focus-within .sisi { box-shadow: 0 0 0 3px rgba(37, 99, 235, .55); }
+  }
   .ajak-testi { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 28px; border-radius: var(--radius); background: var(--permukaan-rendah); border: 1.5px dashed rgba(115, 118, 134, .35); }
   .ajak-testi .ms.besar { font-size: 36px; color: var(--utama); }
   .ajak-testi p { color: var(--abu-2); max-width: 560px; }
@@ -722,7 +800,7 @@
     <div class="wadah">
       <div class="baris-kepala">
         <div class="kepala-bagian muncul"><span class="eyebrow">Testimoni</span><h2 id="judul-testimoni">Apa Kata Mereka</h2></div>
-        <div class="aksi-testi"><button class="btn btn-garis btn-kecil" type="button" id="tombol-tulis-testi" hidden><span class="ms">rate_review</span>Tulis testimoni</button><div class="nav-geser"><button class="btn btn-ikon" type="button" id="testi-kiri" aria-label="Testimoni sebelumnya"><span class="ms">chevron_left</span></button><button class="btn btn-ikon" type="button" id="testi-kanan" aria-label="Testimoni berikutnya"><span class="ms">chevron_right</span></button></div></div>
+        <div class="aksi-testi"><button class="btn btn-garis btn-kecil" type="button" id="tombol-tulis-testi" hidden><span class="ms">rate_review</span>Tulis testimoni</button><div class="nav-geser"><button class="btn btn-ikon" type="button" id="testi-jeda" aria-pressed="false" aria-label="Jeda kartu berbalik otomatis" title="Jeda kartu berbalik otomatis"><span class="ms">pause</span></button><button class="btn btn-ikon" type="button" id="testi-kiri" aria-label="Testimoni sebelumnya"><span class="ms">chevron_left</span></button><button class="btn btn-ikon" type="button" id="testi-kanan" aria-label="Testimoni berikutnya"><span class="ms">chevron_right</span></button></div></div>
       </div>
       <div class="geser" id="geser-testi" tabindex="0" aria-label="Daftar testimoni, geser ke samping"></div>
       <div class="ajak-testi muncul" id="ajak-testi" hidden><span class="ms besar" aria-hidden="true">rate_review</span><h3 style="font-size:20px">Pernah bekerja sama dengan saya?</h3><p>Bagikan pengalaman Anda, sebagai pribadi atau atas nama instansi. Testimoni ditinjau dulu sebelum tampil di sini.</p><button class="btn btn-utama" type="button" data-tulis-testi><span class="ms">edit</span>Tulis testimoni</button></div>
@@ -800,6 +878,15 @@
 <div class="modal-video" id="modal-video" role="dialog" aria-modal="true" aria-label="Video perkenalan">
   <button class="btn btn-ikon tutup" type="button" id="tutup-video" aria-label="Tutup video"><span class="ms">close</span></button>
   <div class="bingkai" id="bingkai-video"></div>
+</div>
+<div class="testi-penuh" id="testi-penuh" role="dialog" aria-modal="true" aria-labelledby="tp-nama">
+  <div class="lembar">
+    <button class="btn btn-ikon tutup" type="button" id="tutup-testi-penuh" aria-label="Tutup testimoni"><span class="ms">close</span></button>
+    <div class="kepala-tp"><span class="avatar" id="tp-avatar"></span><div><b id="tp-nama"></b><span class="jabatan" id="tp-jabatan"></span><span class="bintang" id="tp-bintang"></span></div></div>
+    <span class="kutip-tp" aria-hidden="true"><span class="ms">format_quote</span></span>
+    <blockquote id="tp-isi"></blockquote>
+    <div class="kaki-tp"><button class="btn btn-garis btn-kecil" type="button" id="tp-sebelum" aria-label="Testimoni sebelumnya"><span class="ms" aria-hidden="true">chevron_left</span><span class="lbl">Sebelumnya</span></button><small id="tp-posisi"></small><button class="btn btn-garis btn-kecil" type="button" id="tp-berikut" aria-label="Testimoni berikutnya"><span class="lbl">Berikutnya</span><span class="ms" aria-hidden="true">chevron_right</span></button></div>
+  </div>
 </div>
 <figure class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Pratinjau gambar" style="margin:0">
   <button class="btn btn-ikon tutup" type="button" id="tutup-lightbox" aria-label="Tutup gambar"><span class="ms">close</span></button>
@@ -943,11 +1030,15 @@
     if (A.urlAman(p.url_cv)) tb += '<a class="btn btn-garis" href="' + e(A.urlAman(p.url_cv)) + '" target="_blank" rel="noopener noreferrer" data-cta="unduh_cv"><span class="ms">description</span><span>Lihat CV</span></a>';
     $('#hero-tombol').innerHTML = tb;
     var th = parseInt(p.tahun_pengalaman, 10), angka = [];
-    var satuAngka = function (ikon, n, ket) { return '<div><span class="ms" aria-hidden="true">' + ikon + '</span><p><b>' + n + '</b><span>' + ket + '</span></p></div>'; };
+    var satuAngka = function (ikon, n, ket) {
+      var m = String(n).match(/^(\d+)(.*)$/), isi = m ? '<span class="sr-only">' + e(n) + '</span><span class="hitung" aria-hidden="true" data-n="' + m[1] + '" data-akhir="' + e(m[2]) + '">' + e(n) + '</span>' : e(n);
+      return '<div><span class="ms" aria-hidden="true">' + ikon + '</span><p><b>' + isi + '</b><span>' + ket + '</span></p></div>';
+    };
     if (th > 0) angka.push(satuAngka('calendar_month', th + '+', 'Tahun Berkarier'));
     if ((d.portofolio || []).length) angka.push(satuAngka('settings', d.portofolio.length, 'Proyek Ditampilkan'));
     if ((d.keahlian || []).length) angka.push(satuAngka('emoji_events', d.keahlian.length, 'Keahlian'));
     $('#hero-angka').innerHTML = angka.join('');
+    pantauHitung();
     var foto = A.urlAman(p.url_foto);
     var latar = A.urlAman(p.url_latar || '');
     var kartuInisial = function () {
@@ -1039,14 +1130,20 @@
     // data terbaru (setelah cache) bisa mengubah mode: formulir umum yang sedang terbuka ikut menyesuaikan
     if (!formTesti && !TESTI.t && $('#form-testi') && $('#tulis-testi').classList.contains('buka')) { TESTI.kunci = ''; bukaTulis(''); }
     $$('[data-opsional]').forEach(function (a) { a.hidden = !ts.length; });
-    $('#geser-testi').innerHTML = ts.map(function (t) {
-      var r = Math.max(1, Math.min(5, parseInt(t.rating, 10) || 5)), b = '';
-      for (var n = 1; n <= 5; n++) b += '<span class="ms isi' + (n > r ? ' redup' : '') + '">star</span>';
-      var ft = A.urlAman(t.url_foto);
-      return '<figure class="kartu-testi" style="margin:0"><div><div class="atas"><span class="bintang" aria-label="Rating ' + r + ' dari 5">' + b + '</span><span class="kutip" aria-hidden="true"><span class="ms">format_quote</span></span></div>' +
-        '<blockquote style="margin-top:14px">“' + e(t.isi) + '”</blockquote></div><figcaption class="orang"><span class="avatar">' + (ft ? '<img src="' + e(ft) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : e(inisial(t.nama))) + '</span><span><b>' + e(t.nama) + '</b><span>' + e(t.jabatan_instansi || '') + '</span></span></figcaption></figure>';
+    TESTI.daftar = ts;
+    $('#geser-testi').innerHTML = ts.map(function (t, i) {
+      var r = Math.max(1, Math.min(5, parseInt(t.rating, 10) || 5)), b = bintangTesti(r);
+      var ft = A.urlAman(t.url_foto), av = '<span class="avatar">' + (ft ? '<img src="' + e(ft) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : e(inisial(t.nama))) + '</span>';
+      // v1.7: dua sisi — depan kutipan, belakang profil; berbalik otomatis, menyala saat disentuh kursor, klik → pop-up lengkap
+      return '<figure class="kartu-testi balik" style="margin:0" data-i="' + i + '"><div class="balik-dalam">' +
+        '<div class="sisi sisi-depan"><div><div class="atas"><span class="bintang" aria-label="Rating ' + r + ' dari 5">' + b + '</span><span class="kutip" aria-hidden="true"><span class="ms">format_quote</span></span></div>' +
+        '<blockquote style="margin-top:14px">“' + e(t.isi) + '”</blockquote><button type="button" class="baca-testi" data-buka-testi="' + i + '">Baca selengkapnya<span class="ms" aria-hidden="true">open_in_full</span></button></div>' +
+        '<figcaption class="orang">' + av + '<span><b>' + e(t.nama) + '</b><span>' + e(t.jabatan_instansi || '') + '</span></span></figcaption></div>' +
+        '<div class="sisi sisi-belakang" aria-hidden="true">' + av + '<b>' + e(t.nama) + '</b>' + (t.jabatan_instansi ? '<span class="jabatan">' + e(t.jabatan_instansi) + '</span>' : '') +
+        '<span class="bintang">' + b + '</span><span class="ajak"><span class="ms">open_in_full</span>Lihat testimoni</span></div></div></figure>';
     }).join('');
     aturNavTesti();
+    aturBalikTesti();
 
     // kontak (F8) & footer (F9)
     var kontak = d.kontak || [];
@@ -1238,6 +1335,80 @@
     bukaArtikel(decodeURIComponent(m[1]));
   }
 
+  /* ---------------- v1.7: efek interaktif ---------------- */
+  function gerakDikurangi() { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (x) { return false; } }
+  function bintangTesti(r) { var b = ''; for (var n = 1; n <= 5; n++) b += '<span class="ms isi' + (n > r ? ' redup' : '') + '">star</span>'; return b; }
+  /** Angka Hero dihitung naik dari 0 — sekali per kunjungan, saat terlihat; pembaca layar langsung membaca nilai akhirnya */
+  var HITUNG = { sudah: false, io: null };
+  function pantauHitung() {
+    if (HITUNG.sudah || gerakDikurangi()) return;
+    var wadah = $('#hero-angka'); if (!wadah || !$('.hitung', wadah)) return;
+    var mulai = function () {
+      if (HITUNG.sudah) return; HITUNG.sudah = true;
+      if (HITUNG.io) HITUNG.io.disconnect();
+      $$('#hero-angka .hitung').forEach(function (el, i) {
+        var n = +el.getAttribute('data-n'), akhir = el.getAttribute('data-akhir') || '', t0 = null, lama = 1500;
+        if (!(n > 0)) return;
+        el.textContent = '0' + akhir;
+        var jalan = function (ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / lama); el.textContent = Math.round(n * (1 - Math.pow(1 - p, 3))) + akhir; if (p < 1) requestAnimationFrame(jalan); };
+        setTimeout(function () { requestAnimationFrame(jalan); }, 200 + i * 160);
+      });
+    };
+    if (!('IntersectionObserver' in window)) return mulai();
+    if (HITUNG.io) HITUNG.io.disconnect();
+    HITUNG.io = new IntersectionObserver(function (en) { if (en.some(function (x) { return x.isIntersecting; })) mulai(); }, { threshold: .4 });
+    HITUNG.io.observe(wadah);
+  }
+  /** kartu testimoni berbalik otomatis satu per satu — hanya yang terlihat; berhenti saat disentuh kursor/difokus,
+   *  saat bagian testimoni di luar layar, saat tab disembunyikan, saat pop-up terbuka, atau saat tombol Jeda ditekan */
+  var BALIK = { t: null, i: 0, jeda: false, terlihat: false, io: null };
+  function aturBalikTesti() {
+    clearInterval(BALIK.t); BALIK.t = null;
+    var g = $('#geser-testi'), tj = $('#testi-jeda');
+    var ada = g && $$('.kartu-testi.balik', g).length;
+    if (tj) tj.hidden = !ada || gerakDikurangi();
+    if (!ada || gerakDikurangi()) return;
+    if (!BALIK.io && 'IntersectionObserver' in window) {
+      BALIK.io = new IntersectionObserver(function (en) { BALIK.terlihat = en.some(function (x) { return x.isIntersecting; }); }, { threshold: .35 });
+      BALIK.io.observe($('#testimoni'));
+    } else if (!('IntersectionObserver' in window)) BALIK.terlihat = true;
+    BALIK.t = setInterval(langkahBalik, 4200);
+  }
+  function langkahBalik() {
+    if (BALIK.jeda || !BALIK.terlihat || document.hidden || $('#testi-penuh').classList.contains('buka')) return;
+    var g = $('#geser-testi'), gr = g.getBoundingClientRect();
+    var calon = $$('.kartu-testi.balik', g).filter(function (k) {
+      var r = k.getBoundingClientRect();
+      return r.left >= gr.left - 4 && r.right <= gr.right + 4 && !k.matches(':hover') && !k.contains(document.activeElement) && !k.classList.contains('terbalik');
+    });
+    if (!calon.length) return;
+    var k = calon[BALIK.i++ % calon.length];
+    k.classList.add('terbalik');
+    var kembali = function () { if (k.matches(':hover')) return setTimeout(kembali, 800); k.classList.remove('terbalik'); };
+    setTimeout(kembali, 3400);
+  }
+  var TP = { i: 0, fokus: null };
+  function bukaTestiPenuh(i) {
+    var ts = TESTI.daftar || [], A = window.API, e = A.esc; if (!ts.length) return;
+    TP.i = (i + ts.length) % ts.length;
+    var t = ts[TP.i], r = Math.max(1, Math.min(5, parseInt(t.rating, 10) || 5)), ft = A.urlAman(t.url_foto), m = $('#testi-penuh');
+    if (!m.classList.contains('buka')) TP.fokus = document.activeElement;
+    $('#tp-avatar').innerHTML = ft ? '<img src="' + e(ft) + '" alt="" referrerpolicy="no-referrer">' : e(inisial(t.nama));
+    $('#tp-nama').textContent = t.nama || '';
+    $('#tp-jabatan').textContent = t.jabatan_instansi || ''; $('#tp-jabatan').hidden = !t.jabatan_instansi;
+    $('#tp-bintang').innerHTML = bintangTesti(r); $('#tp-bintang').setAttribute('aria-label', 'Rating ' + r + ' dari 5');
+    $('#tp-isi').textContent = '“' + (t.isi || '') + '”';
+    $('#tp-posisi').textContent = (TP.i + 1) + ' / ' + ts.length;
+    $('#tp-sebelum').hidden = $('#tp-berikut').hidden = ts.length < 2;
+    $$('.kartu-testi.terbalik').forEach(function (k) { k.classList.remove('terbalik'); });
+    m.classList.add('buka'); document.body.style.overflow = 'hidden';
+    $('#tutup-testi-penuh').focus();
+  }
+  function tutupTestiPenuh() {
+    var m = $('#testi-penuh'); if (!m || !m.classList.contains('buka')) return;
+    m.classList.remove('buka'); document.body.style.overflow = '';
+    if (TP.fokus && TP.fokus.focus) TP.fokus.focus();
+  }
   function aturNavTesti() {
     var g = $('#geser-testi'), perlu = g.scrollWidth > g.clientWidth + 4;
     $('#testi-kiri').hidden = !perlu; $('#testi-kanan').hidden = !perlu;
@@ -1288,7 +1459,7 @@
     var setLaci = function (b) { laci.classList.toggle('buka', b); laci.setAttribute('aria-hidden', String(!b)); tb.setAttribute('aria-expanded', String(b)); document.body.style.overflow = b ? 'hidden' : ''; if (b) $('nav a', laci).focus(); };
     tb.addEventListener('click', function () { setLaci(true); });
     laci.addEventListener('click', function (ev) { if (ev.target.closest('[data-tutup-laci]') || ev.target.closest('a')) setLaci(false); });
-    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { setLaci(false); tutupVideo(); tutupGambar(); tutupArtikel(); tutupTulis(); } });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { setLaci(false); tutupVideo(); tutupGambar(); tutupArtikel(); tutupTulis(); tutupTestiPenuh(); } });
     // menu aktif sesuai bagian yang terlihat
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (es) {
@@ -1309,6 +1480,29 @@
     // testimoni
     var geser = function (arah) { var g = $('#geser-testi'), k = $('.kartu-testi', g); if (k) g.scrollBy({ left: arah * (k.offsetWidth + 24), behavior: 'smooth' }); };
     $('#testi-kiri').addEventListener('click', function () { geser(-1); });
+    $('#geser-testi').addEventListener('click', function (ev) {          // v1.7: klik kartu / "Baca selengkapnya" → pop-up lengkap
+      var k = ev.target.closest('.kartu-testi.balik'); if (!k) return;
+      bukaTestiPenuh(+k.getAttribute('data-i'));
+    });
+    $('#geser-testi').addEventListener('focusin', function (ev) { var k = ev.target.closest('.kartu-testi.terbalik'); if (k) k.classList.remove('terbalik'); });
+    $('#testi-jeda').addEventListener('click', function () {
+      BALIK.jeda = !BALIK.jeda; this.setAttribute('aria-pressed', String(BALIK.jeda));
+      var lbl = BALIK.jeda ? 'Lanjutkan kartu berbalik otomatis' : 'Jeda kartu berbalik otomatis';
+      this.setAttribute('aria-label', lbl); this.title = lbl; $('.ms', this).textContent = BALIK.jeda ? 'play_arrow' : 'pause';
+      if (BALIK.jeda) $$('.kartu-testi.terbalik').forEach(function (k) { k.classList.remove('terbalik'); });
+    });
+    $('#tutup-testi-penuh').addEventListener('click', tutupTestiPenuh);
+    $('#tp-sebelum').addEventListener('click', function () { bukaTestiPenuh(TP.i - 1); });
+    $('#tp-berikut').addEventListener('click', function () { bukaTestiPenuh(TP.i + 1); });
+    $('#testi-penuh').addEventListener('mousedown', function (ev) { if (ev.target === this) tutupTestiPenuh(); });
+    $('#testi-penuh').addEventListener('keydown', function (ev) {
+      if (ev.key === 'ArrowLeft') bukaTestiPenuh(TP.i - 1);
+      else if (ev.key === 'ArrowRight') bukaTestiPenuh(TP.i + 1);
+      else if (ev.key === 'Tab') {                                       // fokus tetap di dalam pop-up
+        var f = $$('#testi-penuh button:not([hidden])'), a = f[0], z = f[f.length - 1];
+        if (ev.shiftKey && document.activeElement === a) { ev.preventDefault(); z.focus(); } else if (!ev.shiftKey && document.activeElement === z) { ev.preventDefault(); a.focus(); }
+      }
+    });
     $('#testi-kanan').addEventListener('click', function () { geser(1); });
     window.addEventListener('resize', function () { if (DATA) aturNavTesti(); }, { passive: true });
     // pencatatan klik (statistik)
