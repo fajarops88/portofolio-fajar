@@ -582,9 +582,9 @@
           <h3><span class="ms">verified</span>Rekam Jejak &amp; Aktivitas</h3>
           <div class="tab-rekam" role="tablist" aria-label="Rekam jejak dan aktivitas" id="tab-rekam"></div>
         </div>
+        <div class="panel-rekam" id="panel-kinerja" role="tabpanel" aria-labelledby="tab-kinerja" hidden></div>
         <div class="panel-rekam" id="panel-sertifikat" role="tabpanel" aria-labelledby="tab-sertifikat" hidden></div>
         <div class="panel-rekam" id="panel-agenda" role="tabpanel" aria-labelledby="tab-agenda" hidden></div>
-        <div class="panel-rekam" id="panel-kinerja" role="tabpanel" aria-labelledby="tab-kinerja" hidden></div>
         <div class="panel-rekam" id="panel-wawasan" role="tabpanel" aria-labelledby="tab-wawasan" hidden></div>
       </div>
     </div>
@@ -945,7 +945,8 @@
 
   /* ---------------- rekam jejak: sertifikat · agenda · kinerja · wawasan ---------------- */
   var REKAM = { tab: '', sertN: 8, sertF: '*', sertQ: '', agMode: 'datang', agN: 20, kinN: 6, wawN: 6, artikel: {}, hashDicek: false };
-  var TAB_REKAM = [['sertifikat', 'Sertifikat', 'workspace_premium'], ['agenda', 'Agenda', 'event'], ['kinerja', 'Kinerja Harian', 'task_alt'], ['wawasan', 'Wawasan & Insight', 'auto_stories']];
+  // Kinerja Harian paling kiri & terbuka otomatis: pengunjung langsung melihat kegiatan terbaru
+  var TAB_REKAM = [['kinerja', 'Kinerja Harian', 'task_alt'], ['sertifikat', 'Sertifikat', 'workspace_premium'], ['agenda', 'Agenda', 'event'], ['wawasan', 'Wawasan & Insight', 'auto_stories']];
   var WARNA_KAT = { Kuliah: 'biru', Seminar: 'kuning', Rapat: 'hijau' };
   function kosongRekam(ikon, teks) { return '<div class="kosong-rekam"><span class="ms">' + ikon + '</span>' + window.API.esc(teks) + '</div>'; }
   function tombolLebih(id, sisa, n) { return sisa > 0 ? '<div class="lebih" style="margin-top:24px"><button class="btn btn-garis" type="button" id="' + id + '"><span class="ms">expand_more</span>Tampilkan ' + Math.min(n, sisa) + ' lagi</button></div>' : ''; }

@@ -255,3 +255,25 @@ table.tabel { width: 100%; border-collapse: collapse; font-size: 14px; backgroun
 .km-meta .ms { font-size: 16px; color: var(--abu); }
 .km-meta .ms.ok { color: var(--hijau); }
 .km-aksi { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- kolase foto kinerja (v1.5) ---------- */
+.kolase { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.kl-pv { position: relative; width: 100%; max-width: 560px; aspect-ratio: 4 / 3; border-radius: 14px; overflow: hidden; background: var(--permukaan-tinggi); border: 1px solid var(--garis); display: grid; place-items: center; }
+.kl-pv > img, .kl-kanvas { width: 100%; height: 100%; object-fit: cover; display: block; }
+.kl-kanvas.bisa-geser { cursor: grab; touch-action: none; }
+.kl-kanvas.menyeret { cursor: grabbing; }
+.kl-kosong { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--abu); font-size: 13px; text-align: center; padding: 12px; }
+.kl-kosong .ms { font-size: 36px; color: var(--utama); }
+.kl-alat { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.kl-cek { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--abu-2); cursor: pointer; min-height: 36px; }
+.kl-urut { display: flex; gap: 8px; flex-wrap: wrap; }
+.kl-item { position: relative; width: 96px; border-radius: 10px; overflow: hidden; border: 1px solid var(--garis); background: var(--putih); }
+.kl-item img { width: 96px; height: 72px; object-fit: cover; display: block; }
+.kl-no { position: absolute; top: 4px; left: 4px; width: 20px; height: 20px; border-radius: 50%; background: var(--navy); color: var(--kuning); font-size: 11px; font-weight: 800; display: grid; place-items: center; }
+.kl-tombol { display: flex; }
+.kl-tombol button { flex: 1; height: 30px; border: 0; background: none; color: var(--navy); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.kl-tombol button:hover:not(:disabled) { background: var(--permukaan-rendah); }
+.kl-tombol button:disabled { color: #C3C6D7; cursor: default; }
+.kl-tombol button .ms { font-size: 18px; }
+.kl-tombol button[data-buang] { color: #B42318; }
+.kl-ket { color: var(--abu); font-size: 12.5px; }

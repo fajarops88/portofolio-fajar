@@ -57,7 +57,7 @@
     document.addEventListener('keydown', esc);
     document.body.appendChild(latar);
     var f = $('input:not([type=hidden]):not([readonly]),textarea,select', m.isi);
-    setTimeout(function () { (f || $('[data-tutup]', latar)).focus(); }, 30);
+    setTimeout(function () { if (!latar.contains(document.activeElement)) (f || $('[data-tutup]', latar)).focus(); }, 30);   // jangan rebut kolom yang sudah diisi
     if (o.saatBuka) o.saatBuka(m);
     return m;
   }

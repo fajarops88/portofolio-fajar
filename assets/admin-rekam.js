@@ -389,6 +389,277 @@
   } };
 
   /* =====================================================================
+   * KOLASE FOTO KINERJA (v1.5)
+   * 1–5 foto digabung DI BROWSER menjadi SATU gambar JPEG horizontal 4:3 (1600×1200 —
+   * sama dengan bingkai foto kinerja di situs, jadi tidak terpotong lagi di sana).
+   * Foto asli tidak diunggah. Tata letak dipilih otomatis menurut jumlah & orientasi foto;
+   * admin bisa ganti tata letak, menukar urutan, membuang foto, dan menggeser bagian foto
+   * yang tampil langsung di pratinjau. Cahaya & warna dirapikan ringan (bisa dimatikan).
+   * ===================================================================== */
+  var KOL = { W: 1600, H: 1200, G: 12, MAKS: 5, SISI: 1600, BATAS: 2 * 1024 * 1024 };
+  function kanvas(w, h) { var c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h)); return c; }
+  function bagiKolom(x, y, w, h, k) { var r = [], lw = (w - KOL.G * (k - 1)) / k; for (var i = 0; i < k; i++) r.push([x + i * (lw + KOL.G), y, lw, h]); return r; }
+  function bagiBaris(x, y, w, h, k) { var r = [], lh = (h - KOL.G * (k - 1)) / k; for (var i = 0; i < k; i++) r.push([x, y + i * (lh + KOL.G), w, lh]); return r; }
+  /** pilihan tata letak per jumlah foto; sel pertama = sel terbesar */
+  function tataLetak(n) {
+    var W = KOL.W, H = KOL.H, g = KOL.G / 2, L;
+    if (n === 1) L = [{ nama: 'Penuh', sel: [[0, 0, W, H]] }, { nama: 'Utuh dengan latar lembut', utuh: true, sel: [[0, 0, W, H]] }];
+    else if (n === 2) L = [{ nama: 'Berdampingan', sel: bagiKolom(0, 0, W, H, 2) }, { nama: 'Atas dan bawah', sel: bagiBaris(0, 0, W, H, 2) },
+      { nama: 'Besar dan kecil', sel: [[0, 0, W * .62 - g, H], [W * .62 + g, 0, W * .38 - g, H]] }];
+    else if (n === 3) L = [{ nama: 'Satu besar di kiri', sel: [[0, 0, W * .6 - g, H]].concat(bagiBaris(W * .6 + g, 0, W * .4 - g, H, 2)) },
+      { nama: 'Satu besar di atas', sel: [[0, 0, W, H * .6 - g]].concat(bagiKolom(0, H * .6 + g, W, H * .4 - g, 2)) },
+      { nama: 'Tiga kolom', sel: bagiKolom(0, 0, W, H, 3) }];
+    else if (n === 4) L = [{ nama: 'Kotak 2 × 2', sel: bagiKolom(0, 0, W, H / 2 - g, 2).concat(bagiKolom(0, H / 2 + g, W, H / 2 - g, 2)) },
+      { nama: 'Satu besar di kiri', sel: [[0, 0, W * .62 - g, H]].concat(bagiBaris(W * .62 + g, 0, W * .38 - g, H, 3)) },
+      { nama: 'Satu besar di atas', sel: [[0, 0, W, H * .62 - g]].concat(bagiKolom(0, H * .62 + g, W, H * .38 - g, 3)) }];
+    else L = [{ nama: 'Satu besar dan empat kecil', sel: [[0, 0, W / 2 - g, H]].concat(bagiKolom(W / 2 + g, 0, W / 2 - g, H / 2 - g, 2), bagiKolom(W / 2 + g, H / 2 + g, W / 2 - g, H / 2 - g, 2)) },
+      { nama: 'Dua di atas, tiga di bawah', sel: bagiKolom(0, 0, W, H * .55 - g, 2).concat(bagiKolom(0, H * .55 + g, W, H * .45 - g, 3)) },
+      { nama: 'Tiga di atas, dua di bawah', sel: bagiKolom(0, 0, W, H * .45 - g, 3).concat(bagiKolom(0, H * .45 + g, W, H * .55 - g, 2)) }];
+    L.forEach(function (l) { l.sel = l.sel.map(function (s) { var x = Math.round(s[0]), y = Math.round(s[1]); return [x, y, Math.round(s[0] + s[2]) - x, Math.round(s[1] + s[3]) - y]; }); });
+    return L;
+  }
+  /** nilai 0–1 seberapa utuh foto (rasio a) di sel (rasio c). Memotong sisi pendek (atas-bawah foto melebar,
+   *  kiri-kanan foto tegak) dihitung lebih ringan: orang & objek utama biasanya ada di pita tengah foto. */
+  function cocok(a, c) {
+    var hilang = 1 - Math.min(a, c) / Math.max(a, c);
+    if ((a >= 1 && c > a) || (a < 1 && c < a)) hilang *= .8;
+    return 1 - hilang;
+  }
+  /** urutan foto terbaik untuk satu tata letak (n ≤ 5 → maks. 120 kemungkinan), dinilai dari
+   *  seberapa sedikit foto terpotong (rasio foto vs rasio sel, ditimbang luas sel). Seri → urutan pilihan admin. */
+  function aturTerbaik(l, foto) {
+    var n = foto.length, idx = foto.map(function (_, i) { return i; }), terbaik = idx.slice(), nilai = -1;
+    if (l.utuh) return { urut: terbaik, nilai: 1 };
+    var luas = l.sel.map(function (s) { return s[2] * s[3]; }), total = luas.reduce(function (a, b) { return a + b; }, 0);
+    (function per(k) {
+      if (k === n) {
+        var v = 0; for (var i = 0; i < n; i++) v += luas[i] * cocok(foto[idx[i]].a, l.sel[i][2] / l.sel[i][3]);
+        v /= total; if (v > nilai + 1e-9) { nilai = v; terbaik = idx.slice(); } return;
+      }
+      for (var j = k; j < n; j++) { var t = idx[k]; idx[k] = idx[j]; idx[j] = t; per(k + 1); t = idx[k]; idx[k] = idx[j]; idx[j] = t; }
+    })(0);
+    return { urut: terbaik, nilai: nilai };
+  }
+  /** tata letak + urutan otomatis. 1 foto: rasio dekat 4:3 → penuh; tegak, persegi, atau sangat lebar (16:9)
+   *  → utuh dengan latar lembut, jadi tidak ada bagian yang terpotong */
+  function pilihOtomatis(foto) {
+    if (foto.length === 1) return { i: foto[0].a >= 1.2 && foto[0].a <= 1.6 ? 0 : 1, urut: [0] };
+    var hasil = tataLetak(foto.length).map(function (l, i) { var t = aturTerbaik(l, foto); t.i = i; t.skor = t.nilai - i * .015; return t; });
+    hasil.sort(function (a, b) { return b.skor - a.skor; });
+    return hasil[0];
+  }
+  /** perapian ringan: rentang cahaya diregangkan (dibatasi), foto gelap/terlalu terang dikoreksi gamma,
+   *  warna +8%, lalu dipertajam tipis. Semuanya dicampur dengan aslinya agar tetap alami. */
+  function perbaikiFoto(src) {
+    var w = src.width, h = src.height, c = kanvas(w, h), cx = c.getContext('2d'), im;
+    cx.drawImage(src, 0, 0);
+    try { im = cx.getImageData(0, 0, w, h); } catch (x) { return c; }
+    var d = im.data, hist = new Uint32Array(256), tot = 0, i, v;
+    for (i = 0; i < d.length; i += 16) { hist[(d[i] * 54 + d[i + 1] * 183 + d[i + 2] * 19) >> 8]++; tot++; }
+    var pct = function (p) { var s = 0, k = p * tot; for (var q = 0; q < 256; q++) { s += hist[q]; if (s >= k) return q; } return 255; };
+    var lo = pct(.005), hi = pct(.995), penuh = 255 / Math.max(hi - lo, 1), fak = Math.min(penuh, 1.45), tengah = (lo + hi) / 2;
+    // regangan dibatasi: foto gelap → titik hitam tetap hitam; foto terang → titik putih tetap putih (tidak pucat)
+    var lev = function (q) {
+      var o = fak === penuh || lo < 30 ? (q - lo) * fak : hi > 225 ? 255 - (hi - q) * fak : 127.5 + (q - tengah) * fak;
+      return Math.max(0, Math.min(255, o));
+    }, rata = 0;
+    for (v = 0; v < 256; v++) rata += hist[v] * lev(v);
+    rata = rata / Math.max(tot, 1) / 255;
+    var gm = 1;
+    if (rata < .45 && rata > .02) gm = Math.max(.66, Math.min(1, Math.log(.5) / Math.log(rata)));
+    else if (rata > .62 && rata < .98) gm = Math.min(1.2, Math.max(1, Math.log(.56) / Math.log(rata)));
+    var lut = new Uint8ClampedArray(256);
+    for (v = 0; v < 256; v++) lut[v] = v + (255 * Math.pow(lev(v) / 255, gm) - v) * .7;
+    for (i = 0; i < d.length; i += 4) {
+      var r = lut[d[i]], g = lut[d[i + 1]], b = lut[d[i + 2]], L = .299 * r + .587 * g + .114 * b;
+      d[i] = L + (r - L) * 1.08; d[i + 1] = L + (g - L) * 1.08; d[i + 2] = L + (b - L) * 1.08;
+    }
+    var s = new Uint8ClampedArray(d), bw = w * 4, a = .22, y, x, k;
+    for (y = 1; y < h - 1; y++) for (x = 1; x < w - 1; x++) {
+      i = y * bw + x * 4;
+      for (k = 0; k < 3; k++) { var j = i + k; d[j] = s[j] * (1 + 4 * a) - a * (s[j - 4] + s[j + 4] + s[j - bw] + s[j + bw]); }
+    }
+    cx.putImageData(im, 0, 0);
+    return c;
+  }
+  /** berkas → { asli: kanvas (sisi terpanjang ≤ 1600 px), a: rasio, fx/fy: titik fokus 0–1 } */
+  function muatFotoKolase(file) {
+    return new Promise(function (ok, gagal) {
+      if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return gagal(new Error(file.name + ': format tidak didukung. Gunakan JPG, PNG, atau WEBP.'));
+      var img = new Image(), url = URL.createObjectURL(file);
+      img.onload = function () {
+        var w = img.naturalWidth, h = img.naturalHeight, s = Math.min(1, KOL.SISI / Math.max(w, h)), c = kanvas(w * s, h * s), cx = c.getContext('2d');
+        cx.imageSmoothingQuality = 'high'; cx.fillStyle = '#fff'; cx.fillRect(0, 0, c.width, c.height); cx.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        var m = kanvas(96, 72), mk = Math.max(96 / c.width, 72 / c.height), mc = m.getContext('2d');
+        mc.imageSmoothingQuality = 'high'; mc.drawImage(c, (96 - c.width * mk) / 2, (72 - c.height * mk) / 2, c.width * mk, c.height * mk);
+        ok({ nama: file.name, asli: c, a: c.width / c.height, fx: .5, fy: c.height > c.width ? .4 : .5, mini: m.toDataURL('image/jpeg', .7) });
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); gagal(new Error(file.name + ': gambar rusak atau tidak bisa dibaca.')); };
+      img.src = url;
+    });
+  }
+  function jalurBulat(cx, x, y, w, h, r) {
+    cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath();
+  }
+  /** gambar kolase ke kanvas 1600×1200 */
+  function gambarKolase(cv, st) {
+    var cx = cv.getContext('2d'), W = KOL.W, H = KOL.H, l = tataLetak(st.foto.length)[st.tata];
+    cx.imageSmoothingQuality = 'high';
+    cx.fillStyle = '#fff'; cx.fillRect(0, 0, W, H);
+    if (!l) return;
+    if (l.utuh) {
+      var src = st.pakai(st.foto[0]), sw = src.width, sh = src.height, tahap = [[40, 30], [160, 120], [640, 480]], lalu = src;
+      tahap.forEach(function (t) {                                  // latar: foto yang sama diperkecil lalu diperbesar → lembut
+        var c = kanvas(t[0], t[1]), k = Math.max(t[0] / lalu.width, t[1] / lalu.height), tc = c.getContext('2d');
+        tc.imageSmoothingQuality = 'high'; tc.drawImage(lalu, (t[0] - lalu.width * k) / 2, (t[1] - lalu.height * k) / 2, lalu.width * k, lalu.height * k); lalu = c;
+      });
+      cx.drawImage(lalu, -40, -30, W + 80, H + 60);
+      cx.fillStyle = 'rgba(11, 31, 58, .32)'; cx.fillRect(0, 0, W, H);
+      var m = Math.min((W - 96) / sw, (H - 96) / sh), dw = sw * m, dh = sh * m, dx = (W - dw) / 2, dy = (H - dh) / 2;
+      cx.save(); cx.shadowColor = 'rgba(0, 0, 0, .38)'; cx.shadowBlur = 44; cx.shadowOffsetY = 12;
+      jalurBulat(cx, dx, dy, dw, dh, 16); cx.fillStyle = '#fff'; cx.fill(); cx.restore();
+      cx.save(); jalurBulat(cx, dx, dy, dw, dh, 16); cx.clip(); cx.drawImage(src, dx, dy, dw, dh); cx.restore();
+      return;
+    }
+    l.sel.forEach(function (s, i) {
+      var f = st.foto[i], src = st.pakai(f), sw = src.width, sh = src.height, k = Math.max(s[2] / sw, s[3] / sh), vw = s[2] / k, vh = s[3] / k;
+      cx.drawImage(src, (sw - vw) * f.fx, (sh - vh) * f.fy, vw, vh, s[0], s[1], s[2], s[3]);
+    });
+  }
+  function kanvasKeBerkas(cv, q) {
+    return new Promise(function (ok, gagal) {
+      cv.toBlob(function (b) {
+        if (!b) return gagal(new Error('Gagal membuat gambar gabungan.'));
+        var fr = new FileReader();
+        fr.onload = function () { var b64 = String(fr.result).split(',')[1] || ''; ok({ nama: 'kolase.jpg', mime: 'image/jpeg', b64: b64, ukuran: Math.round(b64.length * .75) }); };
+        fr.onerror = function () { gagal(new Error('Gagal membaca gambar gabungan.')); };
+        fr.readAsDataURL(b);
+      }, 'image/jpeg', q);
+    });
+  }
+  function blokKolase(url) {
+    return '<div class="bidang penuh"><span class="label">Foto dokumentasi (opsional)</span><div class="kolase">' +
+      '<div class="kl-pv" id="kl-pv">' + (url ? '<img src="' + e(url) + '" alt="Foto dokumentasi tersimpan" referrerpolicy="no-referrer">' : '<span class="kl-kosong"><span class="ms">photo_library</span>Belum ada foto</span>') + '</div>' +
+      '<div class="kl-alat"><label class="btn btn-garis btn-kecil" id="kl-pilih"><span class="ms">add_photo_alternate</span><span id="kl-pilih-teks">' + (url ? 'Ganti foto (1–5)' : 'Pilih foto (1–5)') + '</span><input type="file" accept="image/jpeg,image/png,image/webp" multiple id="kl-in" class="sr-only"></label>' +
+      '<button class="btn btn-garis btn-kecil" type="button" id="kl-tata" hidden><span class="ms">dashboard</span><span id="kl-tata-teks">Ganti tata letak</span></button>' +
+      '<label class="kl-cek" id="kl-cek" hidden><input type="checkbox" id="kl-cahaya" checked>Rapikan cahaya &amp; warna</label>' +
+      '<button class="btn btn-teks btn-kecil" type="button" id="kl-hapus"' + (url ? '' : ' hidden') + '><span class="ms">delete</span><span id="kl-hapus-teks">Hapus foto</span></button></div>' +
+      '<div class="kl-urut" id="kl-urut" hidden></div>' +
+      '<small class="kl-ket" id="kl-ket">' + (url ? 'Foto tersimpan. Pilih foto baru untuk menggantinya (yang lama otomatis dibuang).' : 'Pilih 1–5 foto. Dua foto atau lebih digabung otomatis menjadi satu gambar horizontal.') + '</small>' +
+      '</div><span class="galat"></span></div>';
+  }
+  /** pasang perilaku kolase; kembalikan { berkas() → Promise<berkas|null>, hapus() → bool } */
+  function pasangKolase(akar, urlLama) {
+    var st = { foto: [], tata: 0, cahaya: true, hapus: false, proses: Promise.resolve() };
+    st.pakai = function (f) { return st.cahaya ? (f.baik || (f.baik = perbaikiFoto(f.asli))) : f.asli; };
+    var pv = $('#kl-pv', akar), inp = $('#kl-in', akar), tTata = $('#kl-tata', akar), cek = $('#kl-cek', akar), cahaya = $('#kl-cahaya', akar),
+        tHapus = $('#kl-hapus', akar), urut = $('#kl-urut', akar), ket = $('#kl-ket', akar), cv = null, seret = null, antre = 0;
+    var gambar = function () { antre = 0; if (cv) gambarKolase(cv, st); };
+    var jadwal = function () { if (!antre) antre = requestAnimationFrame(gambar); };
+    var tampil = function () {
+      var n = st.foto.length, L = n ? tataLetak(n) : [];
+      if (n) {
+        if (!cv) { pv.innerHTML = ''; cv = kanvas(KOL.W, KOL.H); cv.className = 'kl-kanvas'; cv.setAttribute('role', 'img'); pv.appendChild(cv); pasangSeret(); }
+        cv.setAttribute('aria-label', 'Pratinjau gabungan ' + n + ' foto, tata letak ' + L[st.tata].nama);
+        cv.classList.toggle('bisa-geser', !L[st.tata].utuh);
+        gambar();
+      } else {
+        cv = null;
+        pv.innerHTML = urlLama && !st.hapus ? '<img src="' + e(urlLama) + '" alt="Foto dokumentasi tersimpan" referrerpolicy="no-referrer">' : '<span class="kl-kosong"><span class="ms">' + (st.hapus ? 'hide_image' : 'photo_library') + '</span>' + (st.hapus ? 'Foto akan dihapus saat disimpan' : 'Belum ada foto') + '</span>';
+      }
+      tTata.hidden = n < 1; cek.hidden = n < 1;
+      $('#kl-tata-teks', akar).textContent = 'Tata letak ' + (st.tata + 1) + '/' + (L.length || 1);
+      $('#kl-pilih', akar).hidden = n >= KOL.MAKS;
+      $('#kl-pilih-teks', akar).textContent = n ? 'Tambah foto' : urlLama && !st.hapus ? 'Ganti foto (1–5)' : 'Pilih foto (1–5)';
+      tHapus.hidden = !n && (!urlLama || st.hapus);
+      $('#kl-hapus-teks', akar).textContent = n ? 'Kosongkan' : 'Hapus foto';
+      urut.hidden = !n;
+      urut.innerHTML = st.foto.map(function (f, i) {
+        return '<div class="kl-item" data-i="' + i + '"><img src="' + f.mini + '" alt=""><span class="kl-no">' + (i + 1) + '</span><span class="kl-tombol">' +
+          '<button type="button" data-kiri aria-label="Pindah foto ' + (i + 1) + ' ke kiri"' + (i ? '' : ' disabled') + '><span class="ms">chevron_left</span></button>' +
+          '<button type="button" data-kanan aria-label="Pindah foto ' + (i + 1) + ' ke kanan"' + (i < n - 1 ? '' : ' disabled') + '><span class="ms">chevron_right</span></button>' +
+          '<button type="button" data-buang aria-label="Buang foto ' + (i + 1) + '"><span class="ms">close</span></button></span></div>';
+      }).join('');
+      ket.textContent = n ? n + ' foto · ' + L[st.tata].nama + (L[st.tata].utuh ? '' : ' · geser foto di pratinjau untuk mengatur bagian yang tampil') + '. Digabung jadi satu gambar saat disimpan' + (urlLama ? '; foto lama otomatis dibuang.' : '.')
+        : urlLama && !st.hapus ? 'Foto tersimpan. Pilih foto baru untuk menggantinya (yang lama otomatis dibuang).'
+        : st.hapus ? 'Foto lama akan dihapus saat disimpan. Pilih foto baru bila ingin menggantinya.'
+        : 'Pilih 1–5 foto. Dua foto atau lebih digabung otomatis menjadi satu gambar horizontal.';
+    };
+    var aturUlang = function () { var p = pilihOtomatis(st.foto); st.tata = p.i; st.foto = p.urut.map(function (i) { return st.foto[i]; }); };
+    var pasangSeret = function () {
+      var titik = function (ev) { var r = cv.getBoundingClientRect(); return { x: (ev.clientX - r.left) * KOL.W / r.width, y: (ev.clientY - r.top) * KOL.H / r.height }; };
+      cv.addEventListener('pointerdown', function (ev) {
+        var l = tataLetak(st.foto.length)[st.tata]; if (!l || l.utuh) return;
+        var p = titik(ev), i = l.sel.findIndex(function (s) { return p.x >= s[0] && p.x <= s[0] + s[2] && p.y >= s[1] && p.y <= s[1] + s[3]; });
+        if (i < 0) return;
+        seret = { i: i, x: p.x, y: p.y, s: l.sel[i] }; ev.preventDefault();
+        try { cv.setPointerCapture(ev.pointerId); } catch (x) {}
+        cv.classList.add('menyeret');
+      });
+      cv.addEventListener('pointermove', function (ev) {
+        if (!seret) return;
+        var p = titik(ev), f = st.foto[seret.i], src = st.pakai(f), s = seret.s, k = Math.max(s[2] / src.width, s[3] / src.height);
+        var lx = src.width - s[2] / k, ly = src.height - s[3] / k;
+        if (lx > 1) f.fx = Math.max(0, Math.min(1, f.fx - (p.x - seret.x) / k / lx));
+        if (ly > 1) f.fy = Math.max(0, Math.min(1, f.fy - (p.y - seret.y) / k / ly));
+        seret.x = p.x; seret.y = p.y; jadwal();
+      });
+      var lepas = function () { seret = null; if (cv) cv.classList.remove('menyeret'); };
+      cv.addEventListener('pointerup', lepas); cv.addEventListener('pointercancel', lepas); cv.addEventListener('lostpointercapture', lepas);
+    };
+    inp.onchange = function () {
+      var fl = [].slice.call(inp.files || []), sisa = KOL.MAKS - st.foto.length;
+      inp.value = '';
+      if (!fl.length) return;
+      if (fl.length > sisa) { toast('Maksimal ' + KOL.MAKS + ' foto. ' + (fl.length - sisa) + ' foto tidak dipakai.', 'galat'); fl = fl.slice(0, sisa); }
+      ket.textContent = 'Memproses ' + fl.length + ' foto…';
+      st.proses = st.proses.then(function () {
+        return fl.reduce(function (p, f) {                        // satu per satu: hemat memori HP
+          return p.then(function () { return muatFotoKolase(f).then(function (x) { if (st.cahaya) st.pakai(x); st.foto.push(x); }, function (z) { toast(z.message, 'galat'); }); });
+        }, Promise.resolve());
+      }).then(function () { st.hapus = false; if (st.foto.length) aturUlang(); tampil(); });
+    };
+    tTata.onclick = function () {
+      var L = tataLetak(st.foto.length); st.tata = (st.tata + 1) % L.length;
+      var t = aturTerbaik(L[st.tata], st.foto); st.foto = t.urut.map(function (i) { return st.foto[i]; });
+      tampil();
+    };
+    cahaya.onchange = function () { st.cahaya = cahaya.checked; ket.textContent = 'Memproses…'; setTimeout(tampil, 20); };
+    tHapus.onclick = function () {
+      if (st.foto.length) { st.foto = []; st.tata = 0; } else st.hapus = true;
+      tampil();
+    };
+    urut.addEventListener('click', function (ev) {
+      var b = ev.target.closest('button'), it = ev.target.closest('.kl-item'); if (!b || !it) return;
+      var i = +it.dataset.i, f = st.foto;
+      if (b.hasAttribute('data-kiri') && i > 0) { var t = f[i - 1]; f[i - 1] = f[i]; f[i] = t; }
+      else if (b.hasAttribute('data-kanan') && i < f.length - 1) { var t2 = f[i + 1]; f[i + 1] = f[i]; f[i] = t2; }
+      else if (b.hasAttribute('data-buang')) { f.splice(i, 1); if (f.length) aturUlang(); else st.tata = 0; }
+      tampil();
+    });
+    return {
+      hapus: function () { return st.hapus && !st.foto.length; },
+      berkas: function () {
+        return st.proses.then(function () {
+          if (!st.foto.length) return null;
+          var c = kanvas(KOL.W, KOL.H); gambarKolase(c, st);
+          var coba = function (q) {
+            return kanvasKeBerkas(c, q).then(function (b) {
+              if (b.ukuran <= KOL.BATAS) { b.nama = 'kolase_' + st.foto.length + 'foto.jpg'; return b; }
+              if (q > .6) return coba(Math.round((q - .08) * 100) / 100);
+              throw new Error('Gambar gabungan ' + (b.ukuran / 1048576).toFixed(1) + ' MB melebihi batas 2 MB.');
+            });
+          };
+          return coba(.86);
+        });
+      },
+      _st: st
+    };
+  }
+  A.kolase = { tataLetak: tataLetak, aturTerbaik: aturTerbaik, pilihOtomatis: pilihOtomatis };
+
+  /* =====================================================================
    * MODUL: KINERJA HARIAN
    * ===================================================================== */
   A.MODUL.kinerja = { judul: 'Kinerja Harian', ikon: 'task_alt', render: function (el, param) {
@@ -424,24 +695,27 @@
         tombolMini('data-salin', 'content_copy', 'Catat lagi (salin)') + tombolMini('data-ubah', 'edit', 'Ubah') + tombolMini('data-hapus', 'delete', 'Hapus', true) + '</span></div>';
     };
     var form = function (x, salinan) {
-      var baru = !x.id, foto = null, hapus = false, keg = {};
+      var baru = !x.id, kol = null, keg = {};
       (A.S.cache.konten.Kinerja || []).forEach(function (r) { if (r.kegiatan) keg[r.kegiatan] = 1; });
       ['Rapat Koordinasi', 'Rapat Undangan', 'Monitoring Kegiatan', 'Pengawasan Lapangan', 'Penyusunan Dokumen', 'Pelayanan', 'Pengembangan Aplikasi'].forEach(function (k) { keg[k] = 1; });
       A.modal({ judul: salinan ? 'Catat kinerja (salinan)' : (baru ? 'Catat' : 'Ubah') + ' kinerja', lebar: true, isi: '<form id="f-kin" novalidate><div class="grid-form">' +
         A.bidang({ k: 'tanggal', label: 'Tanggal', tipe: 'date', nilai: x.tanggal || API.hariIniYmd(), wajib: true }) +
         A.bidang({ k: 'kegiatan', label: 'Jenis kegiatan', nilai: x.kegiatan, wajib: true, maks: 100, atribut: ' list="dl-keg"' }) + '<datalist id="dl-keg">' + Object.keys(keg).map(function (k) { return '<option value="' + e(k) + '">'; }).join('') + '</datalist>' +
         A.bidang({ k: 'output', label: 'Uraian / output', tipe: 'textarea', nilai: x.output, maks: 1500, penuh: true, baris: 5, bantu: '<span id="hit-out">' + String(x.output || '').length + '</span>/1.500 · mis. hasil rapat, jumlah kapal diawasi, dokumen yang diselesaikan.' }) +
-        blokGambar('ft', x.url_foto, 'Foto dokumentasi (opsional)', 'Dikompres otomatis, maks. 2 MB.') + '<input type="hidden" name="url_foto" value="' + e(x.url_foto) + '">' +
+        blokKolase(x.url_foto) + '<input type="hidden" name="url_foto" value="' + e(x.url_foto) + '">' +
         A.bidang({ k: 'tampil', label: 'Tampilkan di situs', tipe: 'saklar', nilai: x.tampil === undefined ? true : x.tampil, penuh: true, bantu: 'Matikan untuk kegiatan internal yang tidak perlu dipublikasikan.' }) + '</div></form>',
         tombol: [{ teks: 'Batal' }, { teks: '<span class="ms">save</span>' + (baru ? 'Simpan catatan' : 'Simpan'), kelas: 'btn-utama', aksi: function (mm) {
           var fm = $('#f-kin', mm.isi), data = A.ambil(fm);
           if (x.id) data.id = x.id;
-          if (hapus) data.url_foto = '';
-          var kirim = { tabel: 'Kinerja', data: data }; if (foto) kirim.berkas = foto;
-          return kirimForm(fm, 'Kinerja', kirim, gambar);
+          if (kol.hapus()) data.url_foto = '';
+          var kirim = { tabel: 'Kinerja', data: data };
+          return kol.berkas().then(function (b) {
+            if (b) kirim.berkas = { nama: b.nama, mime: b.mime, b64: b.b64 };
+            return kirimForm(fm, 'Kinerja', kirim, gambar);
+          }).catch(function (z) { toast(z.message, 'galat'); return false; });
         } }],
         saatBuka: function (m) {
-          pasangBlokGambar(m.isi, 'ft', 1600, function (b) { foto = b; hapus = !b; });
+          kol = pasangKolase(m.isi, x.url_foto);
           var o = $('[name=output]', m.isi); o.addEventListener('input', function () { $('#hit-out', m.isi).textContent = o.value.length; });
         } });
     };
