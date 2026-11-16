@@ -3,7 +3,7 @@
  * router hash, komponen UI (toast, modal, konfirmasi), modul Beranda, Profil, CRUD Konten, Pesan Masuk.
  * Semua isi dari server ditampilkan lewat esc() — tidak ada innerHTML dari data mentah.
  */
- (function () {
+(function () {
   'use strict';
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -492,7 +492,7 @@
         bidang({ k: 'deskripsi_singkat', label: 'Deskripsi singkat', nilai: p.deskripsi_singkat, tipe: 'textarea', maks: 300, penuh: true, bantu: '<span id="hit-desk">0</span>/300 · disarankan 120–180 karakter' }) + '</div></div>' +
         '<div class="bagian-form"><h3><span class="ms">smart_button</span>3. Tombol &amp; Badge</h3><div class="grid-form">' +
         bidang({ k: 'teks_tombol_1', label: 'Teks tombol utama', nilai: p.teks_tombol_1, maks: 30, placeholder: 'Lihat Portofolio' }) + bidang({ k: 'teks_tombol_2', label: 'Teks tombol kedua', nilai: p.teks_tombol_2, maks: 30, placeholder: 'Tentang Saya' }) +
-        bidang({ k: 'tahun_pengalaman', label: 'Tahun pengalaman (badge kuning)', nilai: p.tahun_pengalaman, tipe: 'number', atribut: ' min="0" max="60"' }) + '</div></div>' +
+        bidang({ k: 'tahun_pengalaman', label: 'Tahun pengalaman (cadangan: situs menghitung otomatis dari Pengalaman terlama di linimasa)', nilai: p.tahun_pengalaman, tipe: 'number', atribut: ' min="0" max="60"' }) + '</div></div>' +
         '<div class="bagian-form"><h3><span class="ms">play_circle</span>4. Media Tambahan</h3><div class="grid-form">' +
         bidang({ k: 'url_video_intro', label: 'URL video perkenalan (opsional)', nilai: p.url_video_intro, penuh: true, placeholder: 'https://youtu.be/…', bantu: 'YouTube atau Google Drive. Bila diisi, tombol "Video Perkenalan" muncul di hero.' }) +
         '<div class="bidang penuh"><label for="in-cv-url">CV / Resume (PDF, opsional)</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="in-cv-url" name="url_cv" value="' + e(p.url_cv) + '" placeholder="https://drive.google.com/file/d/…" style="flex:1;min-width:200px"><label class="btn btn-garis btn-kecil" style="min-height:46px"><span class="ms">upload</span>Unggah PDF<input type="file" accept="application/pdf" id="in-cv" class="sr-only"></label></div><span class="galat"></span></div></div></div>' +

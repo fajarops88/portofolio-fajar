@@ -236,6 +236,31 @@
     #home.gaya-hidup .angka-hero .ms { font-size: 27px; }
   }
   @media (prefers-reduced-motion: reduce) { .ikon-layang { animation: none; } }
+  /* v1.10 — 4–5 angka (Tahun Berkarier, Proyek, Posisi, Jenjang, Sertifikat): selalu satu baris; ikon di atas angka, kolom sama lebar,
+     label boleh dua baris. Di HP ukuran diperkecil agar lima kolom tetap muat. */
+  .angka-hero.banyak { flex-wrap: nowrap; gap: 0; }
+  .angka-hero.banyak > div { flex: 1 1 0; min-width: 0; padding: 2px 12px; }
+  .angka-hero.banyak > div:first-child { padding-left: 0; }
+  .angka-hero.banyak p > span { line-height: 1.3; }
+  #home.gaya-hidup .angka-hero.banyak { flex-wrap: nowrap; }
+  #home.gaya-hidup .angka-hero.banyak > div { flex: 1 1 0; min-width: 0; flex-direction: column; align-items: flex-start; gap: 4px; padding: 2px 12px; }
+  #home.gaya-hidup .angka-hero.banyak > div:first-child { padding-left: 0; }
+  #home.gaya-hidup .angka-hero.banyak .ms { font-size: 26px; }
+  #home.gaya-hidup .angka-hero.banyak b { font-size: 22px; }
+  #home.gaya-hidup .angka-hero.banyak p > span { font-size: 12px; line-height: 1.3; }
+  @media (max-width: 639px) {
+    .angka-hero.banyak > div, #home.gaya-hidup .angka-hero.banyak > div { padding: 2px 5px; gap: 3px; }
+    .angka-hero.banyak > div:first-child, #home.gaya-hidup .angka-hero.banyak > div:first-child { padding-left: 0; }
+    .angka-hero.banyak > div:last-child, #home.gaya-hidup .angka-hero.banyak > div:last-child { padding-right: 0; }
+    #home.gaya-hidup .angka-hero.banyak .ms { font-size: 20px; }
+    .angka-hero.banyak b, #home.gaya-hidup .angka-hero.banyak b { font-size: 17px; }
+    .angka-hero.banyak p > span, #home.gaya-hidup .angka-hero.banyak p > span { font-size: 10px; line-height: 1.25; letter-spacing: -.01em; }
+  }
+  @media (max-width: 379px) {
+    .angka-hero.banyak > div, #home.gaya-hidup .angka-hero.banyak > div { padding-left: 4px; padding-right: 4px; }
+    .angka-hero.banyak b, #home.gaya-hidup .angka-hero.banyak b { font-size: 16px; }
+    .angka-hero.banyak p > span, #home.gaya-hidup .angka-hero.banyak p > span { font-size: 9.5px; }
+  }
 
   /* ---------- about ---------- */
   #about { background: var(--permukaan-rendah); }
@@ -245,9 +270,6 @@
   @media (min-width: 768px) { .kartu-ringkasan { padding: 40px; } }
   .kartu-ringkasan p { font-size: 16.5px; line-height: 1.8; color: var(--teks); }
   .kartu-ringkasan p + p { font-size: 15px; color: var(--abu-2); }
-  .statistik-mini { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 14px; border-top: 1px solid rgba(195, 198, 215, .4); padding-top: 18px; }
-  .statistik-mini b { display: block; font-size: 22px; color: var(--utama-hover); font-weight: 800; }
-  .statistik-mini span { font-size: 12.5px; color: var(--abu); }
   .kolom-kecil { display: flex; flex-direction: column; gap: 24px; }
   .kartu-kecil { padding: 26px; display: flex; flex-direction: column; gap: 14px; }
   .kartu-kecil h3 { font-size: 18px; display: flex; align-items: center; gap: 10px; }
@@ -457,10 +479,12 @@
   .angka-hero b { background: linear-gradient(100deg, var(--navy) 0%, var(--navy) 42%, var(--utama) 50%, var(--navy) 58%, var(--navy) 100%); background-size: 300% 100%; background-position: 100% 0;
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--navy); animation: kilau-teks 6s ease-in-out infinite; }
   .angka-hero > div:nth-child(2) b { animation-delay: 1.4s; } .angka-hero > div:nth-child(3) b { animation-delay: 2.8s; }
+  .angka-hero > div:nth-child(4) b { animation-delay: 4.2s; } .angka-hero > div:nth-child(5) b { animation-delay: 5.6s; }
   #home .angka-hero b > .hitung, #home.gaya-hidup .angka-hero b > span.hitung { font: inherit; color: inherit; line-height: inherit; }   /* angka tetap ukuran besar, bukan ukuran keterangan */
   #home.latar-gelap .angka-hero b { background-image: linear-gradient(100deg, #fff 0%, #fff 42%, var(--kuning) 50%, #fff 58%, #fff 100%); color: #fff; }
   #home.gaya-hidup .angka-hero .ms { animation: nyala-ikon 3.2s ease-in-out infinite; transition: transform .25s ease; }
   #home.gaya-hidup .angka-hero > div:nth-child(2) .ms { animation-delay: 1.1s; } #home.gaya-hidup .angka-hero > div:nth-child(3) .ms { animation-delay: 2.2s; }
+  #home.gaya-hidup .angka-hero > div:nth-child(4) .ms { animation-delay: .55s; } #home.gaya-hidup .angka-hero > div:nth-child(5) .ms { animation-delay: 1.65s; }
   #home.gaya-hidup .angka-hero > div:hover .ms { transform: scale(1.14); }
   @keyframes kilau-teks { 0% { background-position: 100% 0; } 35%, 100% { background-position: 0 0; } }
   @keyframes nyala-ikon { 0%, 100% { filter: drop-shadow(0 0 0 rgba(37, 99, 235, 0)); } 50% { filter: drop-shadow(0 0 7px rgba(37, 99, 235, .65)); } }
@@ -1086,6 +1110,21 @@
   /** teks tautan yang dibaca pengunjung: tanpa https://www., tanpa parameter pelacak (?igsh=…, ?_r=…) — href aslinya tidak diubah */
   function tampilanUrl(u) { return String(u || '').replace(/^mailto:|^tel:|^https:\/\/(www\.)?/i, '').replace(/[?#].*$/, '').replace(/\/$/, ''); }
 
+  /** v1.10: lama berkarier (tahun penuh) sejak periode Pengalaman paling awal, mis. "Januari 2010 – Oktober 2017" → 2010-01.
+   *  Bulan dikenali dari 3 huruf awal (Indonesia/Inggris); tanpa bulan dianggap Januari. 0 bila tak ada tahun yang terbaca. */
+  var BULAN_ID = { jan: 0, feb: 1, mar: 2, apr: 3, mei: 4, may: 4, jun: 5, jul: 6, agu: 7, agt: 7, aug: 7, sep: 8, okt: 9, oct: 9, nov: 10, des: 11, dec: 11 };
+  function tahunBerkarier(rows) {
+    var awal = null;
+    (rows || []).forEach(function (t) {
+      var m = String(t.periode || '').match(/(?:([A-Za-z]{3})[A-Za-z]*\.?\s+)?((?:19|20)\d{2})/);
+      if (!m) return;
+      var b = m[1] ? BULAN_ID[m[1].toLowerCase()] : 0, v = (+m[2]) * 12 + (b == null ? 0 : b);
+      if (awal === null || v < awal) awal = v;
+    });
+    if (awal === null) return 0;
+    var kini = new Date(), selisih = kini.getFullYear() * 12 + kini.getMonth() - awal;
+    return selisih >= 12 ? Math.floor(selisih / 12) : 0;
+  }
   function render(d) {
     var A = window.API, e = A.esc, p = d.profil || {}, s = d.pengaturan || {};
     $('#galat-muat').classList.remove('tampil');
@@ -1135,15 +1174,20 @@
     if (A.urlAman(p.url_video_intro)) tb += '<button class="btn btn-garis" type="button" id="buka-video" data-cta="video"><span class="play"><span class="ms isi" style="font-size:16px">play_arrow</span></span><span>Video Perkenalan</span></button>';
     if (A.urlAman(p.url_cv)) tb += '<a class="btn btn-garis" href="' + e(A.urlAman(p.url_cv)) + '" target="_blank" rel="noopener noreferrer" data-cta="unduh_cv"><span class="ms">description</span><span>Lihat CV</span></a>';
     $('#hero-tombol').innerHTML = tb;
-    var th = parseInt(p.tahun_pengalaman, 10), angka = [];
+    // v1.10: semua angka dihitung otomatis dari data; tahun berkarier dari periode Pengalaman terlama (isian manual jadi cadangan)
+    var tentang = d.tentang || [], peng = tentang.filter(function (t) { return t.jenis === 'pengalaman'; }), pend = tentang.filter(function (t) { return t.jenis === 'pendidikan'; });
+    var th = tahunBerkarier(peng) || parseInt(p.tahun_pengalaman, 10), angka = [];
     var satuAngka = function (ikon, n, ket) {
       var m = String(n).match(/^(\d+)(.*)$/), isi = m ? '<span class="sr-only">' + e(n) + '</span><span class="hitung" aria-hidden="true" data-n="' + m[1] + '" data-akhir="' + e(m[2]) + '">' + e(n) + '</span>' : e(n);
       return '<div><span class="ms" aria-hidden="true">' + ikon + '</span><p><b>' + isi + '</b><span>' + ket + '</span></p></div>';
     };
     if (th > 0) angka.push(satuAngka('calendar_month', th + '+', 'Tahun Berkarier'));
     if ((d.portofolio || []).length) angka.push(satuAngka('settings', d.portofolio.length, 'Proyek Ditampilkan'));
-    if ((d.keahlian || []).length) angka.push(satuAngka('emoji_events', d.keahlian.length, 'Keahlian'));
+    if (peng.length) angka.push(satuAngka('work_history', peng.length, 'Posisi Dijalani'));
+    if (pend.length) angka.push(satuAngka('school', pend.length, 'Jenjang Pendidikan'));
+    if ((d.sertifikat || []).length) angka.push(satuAngka('workspace_premium', d.sertifikat.length, 'Sertifikat'));
     $('#hero-angka').innerHTML = angka.join('');
+    $('#hero-angka').classList.toggle('banyak', angka.length >= 4);   // 4–5 angka: tata letak rapat satu baris
     pantauHitung();
     var foto = A.urlAman(p.url_foto);
     var latar = A.urlAman(p.url_latar || '');
@@ -1190,12 +1234,8 @@
 
     // about (F4)
     var ring = String(p.ringkasan_tentang || p.deskripsi_singkat || '').split(/\n\s*\n|\n/).filter(function (x) { return x.trim(); });
-    var tentang = d.tentang || [], peng = tentang.filter(function (t) { return t.jenis === 'pengalaman'; }), pend = tentang.filter(function (t) { return t.jenis === 'pendidikan'; });
     var minat = tentang.filter(function (t) { return t.jenis === 'minat'; }), tujuan = tentang.filter(function (t) { return t.jenis === 'tujuan_karier'; });
-    $('#ringkasan').innerHTML = (ring.length ? ring.map(function (x) { return '<p>' + e(x) + '</p>'; }).join('') : '<p>' + e(namaPendek) + '</p>') +
-      '<div class="statistik-mini">' + (th > 0 ? '<div><b>' + th + '+</b><span>Tahun pengalaman</span></div>' : '') +
-      (peng.length ? '<div><b>' + peng.length + '</b><span>Posisi dijalani</span></div>' : '') + (pend.length ? '<div><b>' + pend.length + '</b><span>Jenjang pendidikan</span></div>' : '') +
-      ((d.sertifikat || []).length ? '<div><b>' + d.sertifikat.length + '</b><span>Sertifikat</span></div>' : '') + '</div>';
+    $('#ringkasan').innerHTML = ring.length ? ring.map(function (x) { return '<p>' + e(x) + '</p>'; }).join('') : '<p>' + e(namaPendek) + '</p>';   // v1.10: deretan angka ringkas dipindah ke Angka Hero
     $('#kartu-minat').hidden = !minat.length;
     $('#daftar-minat').innerHTML = minat.map(function (m) { return '<span class="chip">' + e(m.judul) + '</span>'; }).join('');
     $('#kartu-tujuan').hidden = !tujuan.length;
