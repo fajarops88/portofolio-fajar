@@ -719,7 +719,7 @@
           var hitung = {}; semua.forEach(function (r) { hitung[r.jenis] = (hitung[r.jenis] || 0) + 1; });
           var p = S.cache.profil || {};
           atas = '<section class="panel" style="margin-bottom:20px"><div class="panel-kepala"><div><h2><span class="ms">format_quote</span>Ringkasan Diri</h2><p>Paragraf utama di bagian "Tentang Saya". Pisahkan paragraf dengan baris kosong.</p></div></div><form id="f-ringkas">' +
-            bidang({ k: 'ringkasan_tentang', label: 'Ringkasan', tipe: 'textarea', nilai: p.ringkasan_tentang, maks: 1500, baris: 6, bantu: '<span id="hit-r">' + String(p.ringkasan_tentang || '').length + '</span>/1.500 karakter' }) +
+            bidang({ k: 'ringkasan_tentang', label: 'Ringkasan', tipe: 'textarea', nilai: p.ringkasan_tentang, maks: 3000, baris: 12, bantu: '<span id="hit-r">' + String(p.ringkasan_tentang || '').length.toLocaleString('id-ID') + '</span>/3.000 karakter (termasuk spasi & enter)' }) +
             '<div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn btn-utama btn-kecil" type="submit"><span class="ms">save</span>Simpan Ringkasan</button></div></form></section>' +
             '<div class="tab" role="tablist">' + JENIS_TENTANG.map(function (j) { return '<button type="button" role="tab" data-jenis="' + j[0] + '" aria-selected="' + (filter.jenis === j[0]) + '"><span class="ms" style="font-size:18px">' + j[2] + '</span>' + e(j[1]) + '<span class="jumlah">' + (hitung[j[0]] || 0) + '</span></button>'; }).join('') + '</div>';
           rows = rows.filter(function (r) { return r.jenis === filter.jenis; });
@@ -763,7 +763,7 @@
         if ($('#f-st')) $('#f-st').onchange = function () { filter.status = this.value; gambar(); };
         var fr = $('#f-ringkas');
         if (fr) {
-          fr.oninput = function () { $('#hit-r').textContent = fr.elements.ringkasan_tentang.value.length; };
+          fr.oninput = function () { $('#hit-r').textContent = fr.elements.ringkasan_tentang.value.length.toLocaleString('id-ID'); };
           fr.onsubmit = function (ev) {
             ev.preventDefault(); var b = $('button', fr); sibuk(b, true);
             ambilProfil().then(function (p) { return api('profil.simpan', Object.assign({}, p, { ringkasan_tentang: fr.elements.ringkasan_tentang.value })); }).then(function (r) {
