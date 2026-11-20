@@ -3,6 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./config.js"></script>
+<script>
+  /* v1.11 (performa): minta konten publik SEGERA, sebelum CSS & font selesai dimuat (api.js memakai janji ini).
+     Kunjungan ulang: gambar Hero dari kunjungan lalu langsung dimuat dengan prioritas tinggi. */
+  (function () {
+    try {
+      var u = (window.APP_CONFIG || {}).API_URL;
+      if (u && u.indexOf('GANTI_') === -1 && window.fetch) {
+        var q = 'action=pub.content', awal = {};
+        awal['GET|' + q] = fetch(u + '?' + q, { method: 'GET', redirect: 'follow' }).then(function (r) { return r.json(); }).catch(function () { return null; });
+        window.__AWAL = awal;
+      }
+      var h = JSON.parse(localStorage.getItem('pf_tata') || 'null');
+      window.__TATA = h;
+      if (h) [h.latar, h.potret].forEach(function (src) {
+        if (!src || !/^https:\/\//.test(src)) return;
+        var l = document.createElement('link');
+        l.rel = 'preload'; l.as = 'image'; l.href = src; l.referrerPolicy = 'no-referrer'; l.setAttribute('fetchpriority', 'high');
+        document.head.appendChild(l);
+      });
+    } catch (e) {}
+  })();
+</script>
 <title>Fajar Ferdian Kuswicaksono — Portofolio</title>
 <meta name="description" content="Portofolio profesional Fajar Ferdian Kuswicaksono: transportasi, inovasi, dan solusi digital.">
 <!-- Open Graph statis: crawler media sosial tidak menjalankan JavaScript, jadi teks ini yang tampil saat tautan dibagikan -->
@@ -19,6 +42,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://script.google.com">
 <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<link rel="preconnect" href="https://drive.google.com">
+<link rel="preconnect" href="https://lh3.googleusercontent.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
 <link rel="stylesheet" href="./assets/tema.css">
@@ -236,6 +261,20 @@
     #home.gaya-hidup .angka-hero .ms { font-size: 27px; }
   }
   @media (prefers-reduced-motion: reduce) { .ikon-layang { animation: none; } }
+  /* v1.11 (performa) — selama data pertama belum tiba: bagian di bawah Hero belum ditampilkan (tidak ikut bergeser),
+     ruang tombol & Angka Hero sudah disisihkan, ikon melayang menunggu foto potret */
+  body.memuat main > section:not(#home), body.memuat footer { visibility: hidden; }
+  body.memuat #home > :not(.kerangka-hero) { visibility: hidden; }
+  body.memuat #home { min-height: calc(100vh - 72px); }
+  body.memuat.ada-infobar #home { min-height: calc(100vh - 112px); }
+  .kerangka-hero { display: none; }
+  body.memuat .kerangka-hero { display: block; position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+  .kerangka-hero .kh-teks { display: flex; flex-direction: column; gap: 12px; max-width: 620px; padding-top: 72px; }
+  @media (min-width: 1024px) { .kerangka-hero .kh-teks { padding-top: 140px; } }
+  .kerangka-hero .skeleton { display: block; }
+  .pemanas-font { position: absolute; left: -9999px; top: 0; visibility: hidden; pointer-events: none; font-family: var(--font); white-space: nowrap; }
+  #home.gaya-hidup .wadah-potret .ikon-layang, #home.gaya-hidup .wadah-potret .jaringan { transition: opacity .4s ease; }
+  #home.gaya-hidup:not(.potret-siap) .wadah-potret .ikon-layang, #home.gaya-hidup:not(.potret-siap) .wadah-potret .jaringan { opacity: 0; }
   /* v1.10 — 4–5 angka (Tahun Berkarier, Proyek, Posisi, Jenjang, Sertifikat): selalu satu baris; ikon di atas angka, kolom sama lebar,
      label boleh dua baris. Di HP ukuran diperkecil agar lima kolom tetap muat. */
   .angka-hero.banyak { flex-wrap: nowrap; gap: 0; }
@@ -765,10 +804,11 @@
     .daftar-lini h4, .daftar-lini .periode, .daftar-lini .instansi, .lini-isi, .lini-wadah .daftar-lini li::before { transition: none; }
   }
 </style>
-<script src="./config.js"></script>
 <script src="./assets/api.js" defer></script>
 </head>
-<body>
+<body class="memuat">
+<script>try { if (window.__TATA && window.__TATA.infobar) document.body.classList.add('ada-infobar'); } catch (e) {}</script>
+<div class="pemanas-font" aria-hidden="true"><span style="font-weight:400">Aa</span><span style="font-weight:500">Aa</span><span style="font-weight:600">Aa</span><span style="font-weight:700">Aa</span><span style="font-weight:800">Aa</span><span style="font-family:var(--font-aksen);font-weight:700">Aa</span></div>
 <a class="lewati" href="#konten">Lewati ke konten utama</a>
 
 <!-- ======================= HEADER ======================= -->
@@ -817,6 +857,12 @@
 <main id="konten" tabindex="-1">
   <!-- ======================= HERO (F3) ======================= -->
   <section id="home" aria-labelledby="judul-hero">
+    <div class="kerangka-hero" aria-hidden="true"><div class="wadah"><div class="kh-teks">
+      <span class="skeleton" style="width:220px;height:14px"></span>
+      <span class="skeleton" style="width:92%;height:46px"></span><span class="skeleton" style="width:70%;height:46px"></span>
+      <span class="skeleton" style="width:100%;height:16px;margin-top:10px"></span><span class="skeleton" style="width:80%;height:16px"></span>
+      <span class="skeleton" style="width:260px;height:48px;margin-top:14px;border-radius:999px"></span>
+    </div></div></div>
     <div class="latar-hero" id="latar-hero" aria-hidden="true" hidden></div>
     <div class="hidup-latar" id="hidup-latar" aria-hidden="true"></div>
     <div class="wadah">
@@ -1069,8 +1115,9 @@
     if (!A) return setTimeout(mulai, 30);
     if (/^#kwitansi=/.test(location.hash)) { location.replace('./bayar.html' + location.hash); return; }
     pasangInteraksi();
-    A.swr('pub_konten', function () { return A.get({ action: 'pub.content' }); }, function (d, dariCache) { DATA = d; render(d); }).then(function (r) {
+    A.swr('pub_konten', function () { return A.get({ action: 'pub.content' }); }, function (d, dariCache) { DATA = d; document.body.classList.remove('memuat'); render(d); }).then(function (r) {
       if (r && !r.ok && !DATA) {
+        document.body.classList.remove('memuat');
         $('#galat-muat-teks').textContent = r.code === 'CONFIG' ? 'Situs belum terhubung ke server: isi API_URL di config.js.' : (r.message || 'Konten belum dapat dimuat.');
         $('#galat-muat').classList.add('tampil');
       }
@@ -1206,7 +1253,7 @@
     var lepasLatar = function () { kotakLatar.hidden = true; kotakLatar.innerHTML = ''; home.classList.remove('latar-terang', 'latar-gelap'); };
     lepasLatar();
     if (latarHero) {
-      kotakLatar.innerHTML = '<img src="' + e(latarHero) + '" alt="" decoding="async" referrerpolicy="no-referrer">';
+      kotakLatar.innerHTML = '<img src="' + e(latarHero) + '" alt="" fetchpriority="high" decoding="async" referrerpolicy="no-referrer">';
       kotakLatar.hidden = false; home.classList.add(p.latar_hero_mode === 'gelap' ? 'latar-gelap' : 'latar-terang');
       $('img', kotakLatar).onerror = lepasLatar;   // gambar gagal dimuat → kembali ke latar putih biasa
     }
@@ -1215,23 +1262,26 @@
     // v1.6 — gaya Hidup: latar memudar dari kiri (pakai gambar Latar Hero bila ada), potret tanpa latar, ikon melayang, gelombang
     var potret = A.urlAman(p.url_potret || ''), kotakHidup = $('#hidup-latar'), imgPotret = $('#hidup-potret');
     home.classList.toggle('gaya-hidup', hidup);
-    home.classList.remove('ada-potret', 'latar-polos');
+    home.classList.remove('ada-potret', 'latar-polos', 'potret-siap');
     kotakHidup.innerHTML = '';
     if (hidup) {
       lepasLatar();                                       // lapisan rata gaya Klasik tidak dipakai di gaya Hidup
       if (latarHero) {
-        kotakHidup.innerHTML = '<img src="' + e(latarHero) + '" alt="" decoding="async" referrerpolicy="no-referrer">';
+        kotakHidup.innerHTML = '<img src="' + e(latarHero) + '" alt="" fetchpriority="high" decoding="async" referrerpolicy="no-referrer">';
         $('img', kotakHidup).onerror = function () { kotakHidup.innerHTML = ''; home.classList.add('latar-polos'); };   // gagal → gradasi langit bawaan
       } else home.classList.add('latar-polos');
       if (potret) {
         imgPotret.alt = 'Foto ' + namaPendek;
-        imgPotret.onerror = function () { home.classList.remove('ada-potret'); };    // gagal → bingkai foto Klasik
-        imgPotret.onload = function () { if (imgPotret.naturalWidth) $('#wadah-potret').style.setProperty('--rasio-potret', imgPotret.naturalWidth + ' / ' + imgPotret.naturalHeight); };
-        imgPotret.src = potret;
+        imgPotret.onerror = function () { home.classList.remove('ada-potret', 'potret-siap'); };    // gagal → bingkai foto Klasik
+        imgPotret.onload = function () { if (imgPotret.naturalWidth) $('#wadah-potret').style.setProperty('--rasio-potret', imgPotret.naturalWidth + ' / ' + imgPotret.naturalHeight); home.classList.add('potret-siap'); };
+        imgPotret.setAttribute('fetchpriority', 'high');
+        if (imgPotret.getAttribute('src') !== potret) imgPotret.src = potret;
+        else if (imgPotret.complete && imgPotret.naturalWidth) imgPotret.onload();
         home.classList.add('ada-potret');
       }
     }
 
+    try { localStorage.setItem('pf_tata', JSON.stringify({ gaya: hidup ? 'hidup' : 'klasik', latar: latarHero || '', potret: hidup ? potret : '', infobar: document.body.classList.contains('ada-infobar') })); } catch (x) {}
     // about (F4)
     var ring = String(p.ringkasan_tentang || p.deskripsi_singkat || '').split(/\n\s*\n|\n/).filter(function (x) { return x.trim(); });
     var minat = tentang.filter(function (t) { return t.jenis === 'minat'; }), tujuan = tentang.filter(function (t) { return t.jenis === 'tujuan_karier'; });

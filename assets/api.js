@@ -63,9 +63,15 @@
     var q = Object.keys(params || {}).map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]); }).join('&');
     var kunci = 'GET|' + q;
     if (inflight[kunci]) return inflight[kunci];
-    var p = fetch(URL_API + (q ? '?' + q : ''), { method: 'GET', redirect: 'follow' })
-      .then(function (r) { return r.json(); })
-      .catch(function () { return { ok: false, code: 'JARINGAN', message: 'Tidak dapat terhubung ke server.' }; })
+    var ambil = function () {
+      return fetch(URL_API + (q ? '?' + q : ''), { method: 'GET', redirect: 'follow' })
+        .then(function (r) { return r.json(); })
+        .catch(function () { return { ok: false, code: 'JARINGAN', message: 'Tidak dapat terhubung ke server.' }; });
+    };
+    // v1.11: permintaan yang sudah dimulai lebih awal di <head> (index.html) dipakai sekali; gagal → ambil biasa
+    var awal = window.__AWAL && window.__AWAL[kunci];
+    if (awal) delete window.__AWAL[kunci];
+    var p = (awal ? awal.then(function (j) { return j || ambil(); }) : ambil())
       .then(function (j) { delete inflight[kunci]; return j; });
     inflight[kunci] = p;
     return p;
